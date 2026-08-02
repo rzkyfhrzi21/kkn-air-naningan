@@ -39,7 +39,6 @@ jobs:
             **/rules/**
             **/Zzz/**
             **/docs/**
-            **/data/json/**
             **/node_modules/**
             **/package.json
             **/package-lock.json

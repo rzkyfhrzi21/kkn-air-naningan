@@ -1,7 +1,6 @@
 # Secrets & Sensitive Data
 .env
 .env.*
-secure/admin_credentials.json
 secure/backup/
 
 # AI Agent Framework & Tooling
