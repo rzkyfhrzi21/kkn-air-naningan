@@ -1,0 +1,35 @@
+# Secrets & Sensitive Data
+.env
+.env.*
+secure/admin_credentials.json
+secure/backup/
+
+# AI Agent Framework & Tooling
+.grok/
+.rtk/
+.codebase-memory/
+.agents/
+.claude/
+.opencode/
+@agents/
+graphify-out/
+rules/
+
+# Project Documentation & Temporary Files
+docs/
+Zzz/
+# AGENTS.md
+# CLAUDE.md
+# GEMINI.md
+# README.md
+
+# Dependencies & Node Files
+node_modules/
+package.json
+package-lock.json
+
+# Logs & System Files
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini

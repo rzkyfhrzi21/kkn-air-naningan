@@ -1,0 +1,81 @@
+Options -Indexes
+DirectoryIndex index.php
+
+# ── A05: Security Headers ──────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always unset X-Powered-By
+    Header always unset Server
+</IfModule>
+
+# ── A05: Lindungi folder sensitif dari akses langsung ─────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ── Force HTTPS (aktifkan di production, matikan untuk local dev) ──────────
+    # RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    # RewriteCond %{HTTPS} off
+    # RewriteCond %{HTTP:CF-Visitor} !{"scheme":"https"}
+    # RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # ── Blok akses langsung ke folder internal project ─────────────────────────
+    RewriteRule ^app(/.*)?$     - [F,L]
+    RewriteRule ^config(/.*)?$  - [F,L]
+    RewriteRule ^secure(/.*)?$  - [F,L]
+    RewriteRule ^includes(/.*)?$ - [F,L]
+    RewriteRule ^Zzz(/.*)?$     - [F,L]
+
+    # ── Blok eksekusi PHP di folder uploads ────────────────────────────────────
+    RewriteRule ^public/uploads/.*\.(php\d?|phtml|pl|py|jsp|asp|sh|cgi)$ - [F,L]
+
+    # ── Arahkan aset ke public/assets/* & uploads ke public/uploads/* ─────────
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(assets|uploads)(/.+)$ public/$1$2 [L]
+
+    # ── Lewati file & folder yang benar-benar ada di root ─────────────────────
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # ── Semua request lain → index.php (front controller) ─────────────────────
+    RewriteRule ^(.*)$ index.php [L,QSA]
+
+</IfModule>
+
+# ── A05: Blok akses ke file sensitif ─────────────────────────────────────────
+<FilesMatch "\.(json|log|md|txt|env|toml|lock|gitignore)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Izinkan manifest.json jika ada
+<FilesMatch "manifest\.json$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+</FilesMatch>
+
+# ── A03: Blok eksekusi PHP di folder uploads ─────────────────────────────────
+<FilesMatch "\.(php\d?|phtml)$">
+    <If "%{REQUEST_URI} =~ m|/uploads/|">
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+    </If>
+</FilesMatch>
+
+# ── Performa: Kompres output ──────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain
+</IfModule>
