@@ -82,5 +82,7 @@
         });
     })();
 </script>
+
+<script src="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/security-warning.js"></script>
 </body>
 </html>
