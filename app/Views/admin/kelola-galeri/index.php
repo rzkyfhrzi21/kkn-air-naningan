@@ -9,7 +9,6 @@ $kategori = $kategori ?? Galeri::KATEGORI;
 ?>
 <div class="flex flex-col w-full px-container-pad-mobile lg:px-container-pad-desktop pb-section-v-desktop gap-10">
 
-    <div id="galeri-toast" class="hidden fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm" role="status"></div>
 
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-10">
@@ -56,10 +55,13 @@ $kategori = $kategori ?? Galeri::KATEGORI;
         <!-- Filters Card (kanan, meregang) -->
         <div class="flex-1 min-w-0 bg-surface-container rounded-2xl p-6 border border-line flex flex-col gap-5">
             <div class="flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3 text-gold-soft">
-                    <span class="material-symbols-outlined">filter_list</span>
-                    <h3 class="font-h3 text-h3">Filter</h3>
-                </div>
+            <div class="flex items-center gap-3 text-gold-soft">
+                <span class="material-symbols-outlined">filter_list</span>
+                <h3 class="font-h3 text-h3">Filter</h3>
+                <button type="button" id="btn-reset-filter" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface border border-line text-ink-dim hover:text-ink hover:border-line-strong font-label-mono text-[10px] uppercase tracking-wider transition-colors" title="Reset semua filter">
+                    <span class="material-symbols-outlined text-[15px]">refresh</span> Reset
+                </button>
+            </div>
                 <div class="flex items-center gap-4 shrink-0">
                     <div class="text-right">
                         <div class="font-label-mono text-[10px] uppercase tracking-wider text-ink-dim">Total</div>
@@ -253,7 +255,6 @@ $kategori = $kategori ?? Galeri::KATEGORI;
     const meta = document.getElementById('galeri-meta');
     const btnPrev = document.getElementById('btn-prev');
     const btnNext = document.getElementById('btn-next');
-    const toastEl = document.getElementById('galeri-toast');
     const modal = document.getElementById('modal-galeri');
     const modalDel = document.getElementById('modal-hapus-galeri');
     const form = document.getElementById('form-galeri');
@@ -264,12 +265,7 @@ $kategori = $kategori ?? Galeri::KATEGORI;
     const btnDeleteLabel = document.getElementById('btn-delete-label');
 
     function toast(msg, ok) {
-        toastEl.textContent = msg;
-        toastEl.className = 'fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm '
-            + (ok ? 'bg-surface-2 border-primary text-ink' : 'bg-surface-2 border-danger text-ink');
-        toastEl.classList.remove('hidden');
-        clearTimeout(toastEl._t);
-        toastEl._t = setTimeout(() => toastEl.classList.add('hidden'), 4000);
+        window.showAdminToast(msg, ok);
     }
 
     function esc(s) {
@@ -665,6 +661,15 @@ $kategori = $kategori ?? Galeri::KATEGORI;
     });
     document.getElementById('filter-kategori')?.addEventListener('change', (e) => {
         kategori = e.target.value;
+        page = 1;
+        loadList();
+    });
+
+    /* ── Reset filter ── */
+    document.getElementById('btn-reset-filter')?.addEventListener('click', () => {
+        document.getElementById('search-galeri').value = '';
+        document.getElementById('filter-kategori').value = '';
+        search = ''; kategori = '';
         page = 1;
         loadList();
     });

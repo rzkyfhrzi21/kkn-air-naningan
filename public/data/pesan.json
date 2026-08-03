@@ -8,15 +8,5 @@
         "pesan": "dadaaaaaaaa",
         "is_read": true,
         "created_at": "2026-08-03T09:07:37+00:00"
-    },
-    {
-        "id": "pesan-1785747821",
-        "nama": "Rizky Fahrezi",
-        "kontak": "rizkyfahrezi210804@gmail.com",
-        "kategori": "pengaduan",
-        "kategori_label": "Pengaduan Masyarakat",
-        "pesan": "testestes",
-        "is_read": true,
-        "created_at": "2026-08-03T09:03:41+00:00"
     }
 ]

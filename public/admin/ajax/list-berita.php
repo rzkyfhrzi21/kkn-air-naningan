@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['admin'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Sesi habis, silakan login ulang.']);
@@ -38,6 +40,8 @@ if ($status !== '') {
 
 $items = array_values($items);
 $total = count($items);
+$statTerbit = count(array_filter($items, fn($i) => ($i['status'] ?? '') === 'terbit'));
+$statDraft  = $total - $statTerbit;
 $paged = array_slice($items, ($page - 1) * $perPage, $perPage);
 
 echo json_encode([
@@ -45,6 +49,8 @@ echo json_encode([
     'data' => $paged,
     'page' => $page,
     'total' => $total,
+    'stat_terbit' => $statTerbit,
+    'stat_draft' => $statDraft,
     'has_next' => ($page * $perPage) < $total,
     'has_prev' => $page > 1,
 ]);

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['admin'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Sesi habis, silakan login ulang.']);
@@ -8,6 +10,13 @@ if (!isset($_SESSION['admin'])) {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
+    exit;
+}
+
+$csrf = (string) ($_POST['csrf_token'] ?? '');
+if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Token keamanan tidak valid. Muat ulang halaman.']);
     exit;
 }
 

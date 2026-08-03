@@ -68,9 +68,11 @@ class Berita
     {
         $items  = self::all();
         $ts     = time();
-        $slug   = self::slugify($payload['judul'] ?? '') . '-' . $ts;
+        $suffix = bin2hex(random_bytes(4));
+        $slugBase = self::slugify($payload['judul'] ?? '');
+        $slug   = ($slugBase !== '' ? $slugBase : 'berita') . '-' . $ts . '-' . $suffix;
         $item   = [
-            'id'             => 'berita-' . $ts,
+            'id'             => 'berita-' . $ts . '-' . $suffix,
             'judul'          => trim($payload['judul'] ?? ''),
             'slug'           => $slug,
             'kategori'       => trim($payload['kategori'] ?? ''),
@@ -95,7 +97,13 @@ class Berita
         $items = self::all();
         foreach ($items as &$item) {
             if (($item['id'] ?? '') !== $id) continue;
-            if (isset($payload['judul']))          $item['judul']          = trim($payload['judul']);
+            if (isset($payload['judul'])) {
+                $newTitle = trim($payload['judul']);
+                if ($newTitle !== ($item['judul'] ?? '')) {
+                    $item['slug'] = self::slugify($newTitle) . '-' . substr(hash('sha256', $id), 0, 8);
+                }
+                $item['judul'] = $newTitle;
+            }
             if (isset($payload['kategori']))       $item['kategori']       = trim($payload['kategori']);
             if (isset($payload['ringkasan']))      $item['ringkasan']      = trim($payload['ringkasan']);
             if (isset($payload['konten']))         $item['konten']         = self::sanitizeHtml($payload['konten']);

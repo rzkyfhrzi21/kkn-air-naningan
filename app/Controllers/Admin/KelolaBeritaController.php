@@ -17,6 +17,16 @@ final class KelolaBeritaController
             exit;
         }
 
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
+        $kategoriList = array_values(array_unique(array_filter(array_map(
+            static fn(array $item): string => trim((string) ($item['kategori'] ?? '')),
+            Berita::all()
+        ))));
+        sort($kategoriList, SORT_NATURAL | SORT_FLAG_CASE);
+
         require __DIR__ . '/../../Views/admin/kelola-berita/index.php';
     }
 }

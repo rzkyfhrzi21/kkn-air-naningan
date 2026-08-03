@@ -13,17 +13,17 @@ $kategoriList = [
     'agrowisata'    => 'Agrowisata',
 ];
 ?>
-<div class="flex flex-col w-full h-full min-h-[calc(100vh-64px)] bg-background">
+<div class="flex flex-col w-full">
 
     <!-- Page Header -->
-    <div class="px-container-pad-desktop py-8 md:py-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line-strong bg-surface-container-lowest">
-        <div class="flex flex-col max-w-2xl">
-            <h1 class="font-h2 text-h2 text-ink mb-2">Kelola Wisata</h1>
-            <p class="font-body-md text-body-md text-ink-dim">Data mengikuti katalog publik <code class="text-gold-soft">/wisata</code>. Tambah, edit, hapus destinasi wisata desa.</p>
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-10 px-container-pad-mobile lg:px-container-pad-desktop">
+        <div class="flex flex-col gap-2 max-w-2xl">
+            <h1 class="font-h1-mobile lg:font-h1 text-h1-mobile lg:text-h1 text-ink">Kelola Wisata</h1>
+            <p class="font-body-lg text-body-lg text-ink-dim">Data mengikuti katalog publik <code class="text-gold-soft">/wisata</code>. Tambah, edit, hapus destinasi wisata desa.</p>
         </div>
-        <div class="flex shrink-0">
+        <div class="flex items-center gap-3">
             <button type="button" id="btn-tambah-wisata"
-                    class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-on-primary font-body-md text-body-md font-medium hover:bg-primary-fixed transition-colors shadow-lg shadow-primary/10">
+                    class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-on-primary font-label-mono text-label-mono uppercase tracking-widest hover:bg-primary-fixed transition-colors shadow-lg shadow-primary/10">
                 <span class="material-symbols-outlined text-[20px]">add</span>
                 Tambah Wisata
             </button>
@@ -31,10 +31,10 @@ $kategoriList = [
     </div>
 
     <!-- Toast -->
-    <div id="wisata-toast" class="hidden fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm" role="status"></div>
 
-    <div class="flex-1 p-container-pad-desktop">
-        <div class="max-w-container-max mx-auto flex flex-col gap-6">
+
+    <div class="flex-1 px-container-pad-mobile lg:px-container-pad-desktop pt-10 pb-section-v-desktop">
+        <div class="flex flex-col gap-6">
 
             <!-- Stats Card -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -98,6 +98,9 @@ $kategoriList = [
                     </button>
                     <?php endforeach; ?>
                 </div>
+                <button type="button" id="btn-reset-filter" class="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-surface border border-line text-ink-dim hover:text-ink hover:border-line-strong font-label-mono text-[11px] uppercase tracking-wider transition-colors" title="Reset semua filter">
+                    <span class="material-symbols-outlined text-[16px]">refresh</span> Reset
+                </button>
             </div>
 
             <!-- Table -->
@@ -315,7 +318,6 @@ $kategoriList = [
     const meta     = document.getElementById('wisata-meta');
     const btnPrev  = document.getElementById('btn-prev');
     const btnNext  = document.getElementById('btn-next');
-    const toastEl  = document.getElementById('wisata-toast');
     const modal    = document.getElementById('modal-wisata');
     const modalDel = document.getElementById('modal-hapus-wisata');
     const modalIcon = document.getElementById('modal-bantuan-ikon');
@@ -326,12 +328,7 @@ $kategoriList = [
 
     /* ── Toast ── */
     function toast(msg, ok) {
-        toastEl.textContent = msg;
-        toastEl.className = 'fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm '
-            + (ok ? 'bg-surface-2 border-primary text-ink' : 'bg-surface-2 border-danger text-ink');
-        toastEl.classList.remove('hidden');
-        clearTimeout(toastEl._t);
-        toastEl._t = setTimeout(() => toastEl.classList.add('hidden'), 4000);
+        window.showAdminToast(msg, ok);
     }
 
     function esc(s) {
@@ -698,6 +695,13 @@ $kategoriList = [
         kategori = btn.dataset.kat;
         page = 1;
         loadList();
+    });
+
+    /* ── Reset filter ── */
+    document.getElementById('btn-reset-filter')?.addEventListener('click', () => {
+        document.getElementById('search-wisata').value = '';
+        search = '';
+        document.querySelector('#filter-wisata .kat-btn[data-kat="all"]')?.click();
     });
 
     /* ── Pagination ── */

@@ -24,7 +24,12 @@ $search = trim($_POST['search'] ?? '');
 $readFilter = trim($_POST['read_filter'] ?? 'all');
 $perPage = 10;
 
-$items = Pesan::all();
+$allItems = Pesan::all();
+$statTotal  = count($allItems);
+$statBaru   = count(array_filter($allItems, static fn(array $i): bool => !($i['is_read'] ?? false)));
+$statDibaca = $statTotal - $statBaru;
+
+$items = $allItems;
 
 if ($search !== '') {
     $items = array_filter($items, fn($i) => 
@@ -48,6 +53,9 @@ echo json_encode([
     'data' => $paged,
     'page' => $page,
     'total' => $total,
+    'stat_total' => $statTotal,
+    'stat_baru' => $statBaru,
+    'stat_dibaca' => $statDibaca,
     'has_next' => ($page * $perPage) < $total,
     'has_prev' => $page > 1,
 ]);

@@ -28,6 +28,7 @@ if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['cs
 }
 
 require_once __DIR__ . '/../../../app/Models/Profil.php';
+require_once __DIR__ . '/../../../includes/sanitize.php';
 
 $visi = trim((string) ($_POST['visi'] ?? ''));
 if ($visi === '') {
@@ -45,16 +46,29 @@ if ($misi === []) {
     exit;
 }
 
-$sejarahText = trim((string) ($_POST['sejarah_teks'] ?? ''));
+$sejarahText  = trim(sanitize_rich_html((string) ($_POST['sejarah_teks'] ?? '')));
 $sejarahQuote = trim((string) ($_POST['sejarah_quote'] ?? ''));
+$petaEmbedUrl = trim((string) ($_POST['peta_embed_url'] ?? ''));
+if ($petaEmbedUrl !== '') {
+    $petaHost = strtolower((string) parse_url($petaEmbedUrl, PHP_URL_HOST));
+    $petaPath = (string) parse_url($petaEmbedUrl, PHP_URL_PATH);
+    if (!in_array($petaHost, ['www.google.com', 'google.com', 'maps.google.com'], true) || !str_starts_with($petaPath, '/maps/embed')) {
+        echo json_encode(['success' => false, 'message' => 'URL peta harus berupa URL embed Google Maps yang valid.']);
+        exit;
+    }
+}
 
 $dusunNama   = $_POST['dusun_nama'] ?? [];
 $dusunJumlah = $_POST['dusun_jumlah'] ?? [];
 $perDusun    = [];
 if (is_array($dusunNama)) {
     foreach ($dusunNama as $i => $nama) {
+        $nama = trim((string) $nama);
+        if ($nama === '') {
+            continue;
+        }
         $perDusun[] = [
-            'nama'   => trim((string) $nama),
+            'nama'   => $nama,
             'jumlah' => (int) ($dusunJumlah[$i] ?? 0),
         ];
     }
@@ -143,6 +157,10 @@ try {
         'sejarah' => [
             'paragraf' => $sejarahText,
             'quote'    => $sejarahQuote,
+        ],
+        'peta' => [
+            'lokasi'    => trim((string) ($_POST['peta_lokasi'] ?? '')),
+            'embed_url' => $petaEmbedUrl,
         ],
     ]);
 } catch (Throwable $e) {

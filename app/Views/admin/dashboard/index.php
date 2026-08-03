@@ -32,8 +32,7 @@ require __DIR__ . '/../partials/header.php';
 
         <!-- UMKM Aktif -->
         <div class="bg-surface-container p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden group border border-line hover:border-line-strong transition-colors">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-colors"></div>
-            <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center justify-between relative z-10">
                 <span class="font-label-mono text-label-mono text-ink-dim uppercase tracking-widest">UMKM Aktif</span>
                 <div class="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center border border-line text-primary">
                     <span class="material-symbols-outlined text-[20px]">storefront</span>
@@ -47,8 +46,7 @@ require __DIR__ . '/../partials/header.php';
 
         <!-- Berita -->
         <div class="bg-surface-container p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden group border border-line hover:border-line-strong transition-colors">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-colors"></div>
-            <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center justify-between relative z-10">
                 <span class="font-label-mono text-label-mono text-ink-dim uppercase tracking-widest">Total Berita</span>
                 <div class="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center border border-line text-primary">
                     <span class="material-symbols-outlined text-[20px]">newspaper</span>
@@ -62,8 +60,7 @@ require __DIR__ . '/../partials/header.php';
 
         <!-- Wisata -->
         <div class="bg-surface-container p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden group border border-line hover:border-line-strong transition-colors">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-colors"></div>
-            <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center justify-between relative z-10">
                 <span class="font-label-mono text-label-mono text-ink-dim uppercase tracking-widest">Destinasi Wisata</span>
                 <div class="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center border border-line text-primary">
                     <span class="material-symbols-outlined text-[20px]">landscape</span>
@@ -77,8 +74,7 @@ require __DIR__ . '/../partials/header.php';
 
         <!-- Galeri -->
         <div class="bg-surface-container p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden group border border-line hover:border-line-strong transition-colors">
-            <div class="absolute -right-4 -top-4 w-24 h-24 bg-tertiary-container/10 rounded-full blur-xl group-hover:bg-tertiary-container/20 transition-colors"></div>
-            <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center justify-between relative z-10">
                 <span class="font-label-mono text-label-mono text-ink-dim uppercase tracking-widest">Foto Galeri</span>
                 <div class="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center border border-line text-tertiary-fixed-dim">
                     <span class="material-symbols-outlined text-[20px]">photo_library</span>
@@ -130,52 +126,13 @@ require __DIR__ . '/../partials/header.php';
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <!-- Baris statis sebagai placeholder -->
-                                <tr class="border-b border-line hover:bg-surface-2/50 transition-colors cursor-pointer group">
-                                    <td class="py-4 px-6">
-                                        <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-[16px]">newspaper</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-6">
-                                        <p class="text-ink truncate max-w-[250px] group-hover:text-primary transition-colors">Panen Raya Kopi Kelompok Tani Mekar Jaya</p>
-                                        <p class="text-[13px] text-ink-dim mt-0.5">Berita Ditambahkan</p>
-                                    </td>
-                                    <td class="py-4 px-6 text-ink-dim text-right text-[14px]">2 jam lalu</td>
-                                </tr>
-                                <tr class="border-b border-line hover:bg-surface-2/50 transition-colors cursor-pointer group">
-                                    <td class="py-4 px-6">
-                                        <div class="w-8 h-8 rounded-full bg-secondary-fixed/10 text-secondary-fixed-dim flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-[16px]">storefront</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-6">
-                                        <p class="text-ink truncate max-w-[250px] group-hover:text-primary transition-colors">Kopi Bubuk 'Aroma Naningan'</p>
-                                        <p class="text-[13px] text-ink-dim mt-0.5">UMKM Diperbarui</p>
-                                    </td>
-                                    <td class="py-4 px-6 text-ink-dim text-right text-[14px]">5 jam lalu</td>
-                                </tr>
-                                <tr class="border-b border-line hover:bg-surface-2/50 transition-colors cursor-pointer group">
-                                    <td class="py-4 px-6">
-                                        <div class="w-8 h-8 rounded-full bg-tertiary-fixed-dim/10 text-tertiary-fixed-dim flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-[16px]">landscape</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-6">
-                                        <p class="text-ink truncate max-w-[250px] group-hover:text-primary transition-colors">Wisata Air Terjun Way Kerap</p>
-                                        <p class="text-[13px] text-ink-dim mt-0.5">Fasilitas Ditambahkan</p>
-                                    </td>
-                                    <td class="py-4 px-6 text-ink-dim text-right text-[14px]">2 hari lalu</td>
+                                <tr class="border-b border-line">
+                                    <td colspan="3" class="py-12 px-6 text-center text-ink-dim text-[14px]">Belum ada aktivitas data.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
-                <?php if (empty($recentActivity)): ?>
-                    <div class="px-6 py-3 border-t border-line flex items-center justify-end">
-                        <span class="font-label-mono text-[11px] text-ink-dim/40 uppercase tracking-widest">Data dummy — belum ada log aktivitas</span>
-                    </div>
-                <?php endif; ?>
             </div>
         </div>
 

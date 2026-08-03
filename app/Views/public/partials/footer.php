@@ -1,4 +1,7 @@
-<?php $base = defined('APP_BASE') ? APP_BASE : ''; ?>
+<?php
+$base = defined('APP_BASE') ? APP_BASE : '';
+$footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
+?>
 </main>
 
 <footer class="bg-surface-container-lowest border-t border-line-strong pt-section-v-mobile lg:pt-section-v-desktop pb-12">
@@ -20,7 +23,7 @@
                 <div class="flex flex-col gap-2 text-ink-dim text-body-md">
                     <span class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm">location_on</span>
-                        Jl. Raya Air Naningan, Tanggamus
+                        <?= htmlspecialchars($footerAlamat, ENT_QUOTES, 'UTF-8') ?>
                     </span>
                     <span class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-sm">mail</span>

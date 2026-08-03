@@ -3,25 +3,22 @@ $pageTitle = 'Kelola Potensi';
 $activeNav = 'kelola-potensi';
 require __DIR__ . '/../partials/header.php';
 ?>
-<div class="flex flex-col w-full min-h-full">
+<div class="flex flex-col w-full">
 
-    <!-- Header -->
-    <div class="px-container-pad-desktop py-8 md:py-12 border-b border-line">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div class="flex flex-col gap-2">
-                <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest">Potensi Unggulan</span>
-                <h1 class="font-h2 text-h2 text-ink">Kelola Potensi</h1>
-                <p class="font-body-md text-body-md text-ink-dim max-w-2xl">Kelola potensi unggulan desa meliputi pertanian, wisata, UMKM, dan peternakan di Pekon Air Naningan.</p>
-            </div>
-            <button class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-fixed-dim text-on-primary rounded-full transition-all duration-300 font-label-mono text-label-mono uppercase shadow-lg shadow-primary/20 shrink-0" id="btn-create">
-                <span class="material-symbols-outlined text-[18px]">add</span>
-                Tambah Potensi
-            </button>
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-10 px-container-pad-mobile lg:px-container-pad-desktop">
+        <div class="flex flex-col gap-2 max-w-2xl">
+            <h1 class="font-h1-mobile lg:font-h1 text-h1-mobile lg:text-h1 text-ink">Kelola Potensi</h1>
+            <p class="font-body-lg text-body-lg text-ink-dim max-w-2xl">Kelola potensi unggulan desa meliputi pertanian, wisata, UMKM, dan peternakan di Pekon Air Naningan.</p>
         </div>
+        <button class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-fixed-dim text-on-primary rounded-full transition-all duration-300 font-label-mono text-label-mono uppercase tracking-widest shadow-lg shadow-primary/20 shrink-0" id="btn-create">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Tambah Potensi
+        </button>
     </div>
 
     <!-- Main Content -->
-    <div class="flex-1 p-6 md:p-8">
+    <div class="flex-1 px-container-pad-mobile lg:px-container-pad-desktop pt-10 pb-section-v-desktop">
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
             <!-- Sidebar Stats -->
@@ -66,6 +63,9 @@ require __DIR__ . '/../partials/header.php';
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-dim text-[18px]">search</span>
                             <input id="search-input" class="w-full bg-surface-container-high text-ink font-body-md text-sm rounded-lg pl-10 pr-4 py-2 border border-line focus:outline-none focus:border-gold-soft transition-colors placeholder:text-ink-dim/50" placeholder="Cari potensi..." type="text"/>
                         </div>
+                        <button type="button" id="btn-reset-filter" class="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface border border-line text-ink-dim hover:text-ink hover:border-line-strong font-label-mono text-[10px] uppercase tracking-wider transition-colors" title="Reset semua filter">
+                            <span class="material-symbols-outlined text-[15px]">refresh</span> Reset
+                        </button>
                     </div>
 
                     <!-- Table -->
@@ -170,21 +170,6 @@ require __DIR__ . '/../partials/header.php';
                     Simpan
                 </button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Toast -->
-<div class="position-fixed bottom-0 end-0 p-4" style="z-index: 9999">
-    <div id="toast" class="hidden bg-surface border-2 border-line rounded-2xl shadow-2xl overflow-hidden min-w-[320px]">
-        <div class="px-6 py-4 flex items-start gap-4">
-            <span id="toast-icon" class="material-symbols-outlined text-[24px] flex-shrink-0"></span>
-            <div class="flex-1 min-w-0">
-                <p id="toast-message" class="font-body-md text-ink leading-relaxed"></p>
-            </div>
-            <button onclick="hideToast()" class="text-ink-dim hover:text-ink transition-colors flex-shrink-0">
-                <span class="material-symbols-outlined text-[20px]">close</span>
-            </button>
         </div>
     </div>
 </div>
@@ -351,20 +336,11 @@ function saveItem() {
 }
 
 function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    const icon = document.getElementById('toast-icon');
-    const msg = document.getElementById('toast-message');
-    
-    icon.textContent = type === 'success' ? 'check_circle' : 'error';
-    icon.className = `material-symbols-outlined text-[24px] flex-shrink-0 ${type === 'success' ? 'text-primary' : 'text-error'}`;
-    msg.textContent = message;
-    
-    toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 4000);
+    window.showAdminToast(message, type !== 'error');
 }
 
 function hideToast() {
-    document.getElementById('toast').classList.add('hidden');
+    window.showAdminToast('', true);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -404,6 +380,12 @@ document.addEventListener('DOMContentLoaded', () => {
             currentPage = 1;
             loadData();
         });
+    });
+
+    document.getElementById('btn-reset-filter').addEventListener('click', () => {
+        document.getElementById('search-input').value = '';
+        currentSearch = '';
+        document.querySelector('.filter-kategori[data-kategori=""]')?.click();
     });
 
     document.getElementById('btn-prev').addEventListener('click', () => {

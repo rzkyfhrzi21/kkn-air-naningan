@@ -6,21 +6,20 @@ require __DIR__ . '/../partials/header.php';
 $csrf = (string) ($_SESSION['csrf_token'] ?? '');
 $base = defined('APP_BASE') ? APP_BASE : '';
 ?>
-<div class="flex flex-col w-full min-h-[calc(100vh-64px)] bg-background">
+<div class="flex flex-col w-full">
 
     <!-- Page Header -->
-    <div class="px-container-pad-desktop py-8 md:py-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line-strong bg-surface-container-lowest">
-        <div class="flex flex-col max-w-2xl">
-            <h1 class="font-h2 text-h2 text-ink mb-2">Pesan Masuk</h1>
-            <p class="font-body-md text-body-md text-ink-dim">Pesan yang dikirim pengunjung melalui halaman <code class="text-gold-soft">/kontak</code>. Mode hanya baca.</p>
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-10 px-container-pad-mobile lg:px-container-pad-desktop">
+        <div class="flex flex-col gap-2 max-w-2xl">
+            <h1 class="font-h1-mobile lg:font-h1 text-h1-mobile lg:text-h1 text-ink">Pesan Masuk</h1>
+            <p class="font-body-lg text-body-lg text-ink-dim">Pesan yang dikirim pengunjung melalui halaman <code class="text-gold-soft">/kontak</code>. Mode hanya baca.</p>
         </div>
     </div>
 
     <!-- Toast -->
-    <div id="pesan-toast" class="hidden fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm" role="status"></div>
 
-    <div class="flex-1 p-container-pad-desktop">
-        <div class="max-w-container-max mx-auto flex flex-col gap-6">
+    <div class="flex-1 px-container-pad-mobile lg:px-container-pad-desktop pt-10 pb-section-v-desktop">
+        <div class="flex flex-col gap-6">
 
             <!-- Stat Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -71,8 +70,13 @@ $base = defined('APP_BASE') ? APP_BASE : '';
                         </div>
                         <div class="flex gap-2" id="filter-pesan">
                             <button type="button" data-filter="all"    class="filter-btn px-3 py-1.5 rounded-full bg-surface-2 text-ink border border-line-strong font-label-mono text-[11px] whitespace-nowrap">Semua</button>
-                            <button type="button" data-filter="baru"   class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Belum Dibaca</button>
-                            <button type="button" data-filter="dibaca" class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Sudah Dibaca</button>
+                            <button type="button" data-filter="unread"  class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Belum Dibaca</button>
+                            <button type="button" data-filter="read"    class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Sudah Dibaca</button>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" id="btn-reset-filter" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface border border-line text-ink-dim hover:text-ink hover:border-line-strong font-label-mono text-[10px] uppercase tracking-wider transition-colors" title="Reset semua filter">
+                                <span class="material-symbols-outlined text-[15px]">refresh</span> Reset
+                            </button>
                         </div>
                     </div>
 
@@ -121,6 +125,10 @@ $base = defined('APP_BASE') ? APP_BASE : '';
                                         class="p-2 rounded-xl text-ink-dim hover:text-ink hover:bg-surface-container-high transition-colors">
                                     <span class="material-symbols-outlined text-[20px]">mark_email_read</span>
                                 </button>
+                                <button id="btn-delete-pesan" type="button" title="Hapus Pesan"
+                                        class="p-2 rounded-xl text-ink-dim hover:text-danger hover:bg-danger/10 transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </button>
                             </div>
                         </div>
                         <!-- Meta info -->
@@ -144,6 +152,19 @@ $base = defined('APP_BASE') ? APP_BASE : '';
     </div>
 </div>
 
+<!-- Modal hapus -->
+<div id="modal-hapus-pesan" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60" id="modal-hapus-pesan-backdrop"></div>
+    <div class="relative w-full max-w-sm bg-surface border border-line rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
+        <h2 class="font-h3 text-h3 text-ink">Hapus Pesan?</h2>
+        <p class="font-body-md text-ink-dim text-sm">Yakin hapus pesan dari <strong id="hapus-pesan-nama" class="text-ink"></strong>? Tindakan ini tidak bisa dibatalkan.</p>
+        <div class="flex justify-end gap-3">
+            <button type="button" id="hapus-pesan-batal" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
+            <button type="button" id="hapus-pesan-ya" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-danger text-white">Hapus</button>
+        </div>
+    </div>
+</div>
+
 <script>
 (function () {
     'use strict';
@@ -157,18 +178,12 @@ $base = defined('APP_BASE') ? APP_BASE : '';
     let hasPrev = false;
     let searchTimer = null;
     let activePesanId = null;
+    let activePesanNama = '';
+    let deletePesanId = null;
 
     // ── Toast ──────────────────────────────────────────────────────────────
     function toast(msg, ok = true) {
-        const el = document.getElementById('pesan-toast');
-        if (!el) return;
-        el.textContent = msg;
-        el.className = [
-            'fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm transition-all duration-300',
-            ok ? 'bg-surface-2 border-primary/30 text-ink' : 'bg-surface-2 border-danger/40 text-danger',
-        ].join(' ');
-        el.classList.remove('hidden');
-        setTimeout(() => el.classList.add('hidden'), 4000);
+        window.showAdminToast(msg, ok);
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -213,7 +228,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
         const fd = new FormData();
         fd.append('page', page);
         fd.append('search', search);
-        fd.append('filter', filter);
+        fd.append('read_filter', filter);
 
         fetch(base + '/admin/ajax/list-pesan', { method: 'POST', body: fd, credentials: 'same-origin' })
             .then(r => {
@@ -287,7 +302,6 @@ $base = defined('APP_BASE') ? APP_BASE : '';
     // ── Open Pesan Detail ────────────────────────────────────────────────────
     async function openPesan(id) {
         activePesanId = id;
-
         // Mark item active in list
         document.querySelectorAll('.pesan-item').forEach(btn => {
             const isActive = btn.dataset.id === id;
@@ -315,6 +329,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
             if (!json.success) { toast(json.message || 'Gagal memuat pesan.', false); return; }
 
             const d = json.data;
+            activePesanNama = d.nama || '';
 
             document.getElementById('detail-initials').textContent = initials(d.nama);
             document.getElementById('detail-nama').textContent     = d.nama || '—';
@@ -372,6 +387,59 @@ $base = defined('APP_BASE') ? APP_BASE : '';
         }
     });
 
+    // ── Delete Pesan ──────────────────────────────────────────────────────────
+    const hapusModal = document.getElementById('modal-hapus-pesan');
+
+    function showHapusModal() {
+        if (!activePesanId) return;
+        deletePesanId = activePesanId;
+        document.getElementById('hapus-pesan-nama').textContent = activePesanNama || 'pengirim';
+        hapusModal.classList.remove('hidden');
+        hapusModal.classList.add('flex');
+    }
+
+    function closeHapusModal() {
+        hapusModal.classList.add('hidden');
+        hapusModal.classList.remove('flex');
+        deletePesanId = null;
+    }
+
+    document.getElementById('btn-delete-pesan')?.addEventListener('click', showHapusModal);
+    document.getElementById('hapus-pesan-batal')?.addEventListener('click', closeHapusModal);
+    document.getElementById('modal-hapus-pesan-backdrop')?.addEventListener('click', closeHapusModal);
+    document.getElementById('hapus-pesan-ya')?.addEventListener('click', async function () {
+        if (!deletePesanId) return;
+        const btn = this;
+        btn.disabled = true;
+
+        const fd = new FormData();
+        fd.append('id', deletePesanId);
+        fd.append('csrf_token', csrf);
+
+        try {
+            const res  = await fetch(base + '/admin/ajax/delete-pesan', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const json = await res.json();
+            if (!json.success) { toast(json.message || 'Gagal menghapus pesan.', false); return; }
+            toast(json.message || 'Pesan berhasil dihapus.');
+            closeHapusModal();
+
+            // Reset detail panel ke empty state
+            activePesanId = null;
+            activePesanNama = '';
+            document.getElementById('detail-content').classList.add('hidden');
+            document.getElementById('detail-content').classList.remove('flex');
+            document.getElementById('detail-empty').classList.remove('hidden');
+
+            // Reset pagination ke halaman 1 lalu muat ulang daftar
+            page = 1;
+            loadList();
+        } catch {
+            toast('Gagal menghubungi server.', false);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
     // ── Search ────────────────────────────────────────────────────────────────
     document.getElementById('search-pesan')?.addEventListener('input', (e) => {
         clearTimeout(searchTimer);
@@ -395,6 +463,13 @@ $base = defined('APP_BASE') ? APP_BASE : '';
         filter = btn.dataset.filter;
         page   = 1;
         loadList();
+    });
+
+    // ── Reset filter ────────────────────────────────────────────────────────────
+    document.getElementById('btn-reset-filter')?.addEventListener('click', () => {
+        document.getElementById('search-pesan').value = '';
+        search = '';
+        document.querySelector('#filter-pesan .filter-btn[data-filter="all"]')?.click();
     });
 
     // ── Pagination ────────────────────────────────────────────────────────────

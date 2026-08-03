@@ -11,49 +11,153 @@
     "masa_bakti": "2022 - 2028",
     "struktur": [
         {
-            "nama": "Budi Santoso",
+            "nama": "Tri Sugiyanto",
             "jabatan": "Kepala Pekon",
-            "foto": "https://lh3.googleusercontent.com/aida-public/AB6AXuClOPTvSysQaxfaVtjru7aFRFRvPIihT_jSx0qHiRl-ICk63YCzmSzISkUxoM0oVYuIu59WxgzGwnsjY1sQoGUOv5khXTgnvwKsTB3xSarrUJWy8-CunOT1SQdCNY6DjZSJfPF5tSbvcVoXjXVuEP3vS6XG8ZYbqJjSkpLWXEMEfXvP4U7gnWPQPybSjBZIKTKycoaymdP1imoWJ9te-00J7L2IiiQMNfYRsPoe28psu4qe5X9mcvMG9A",
+            "foto": "",
             "level": 0
         },
         {
-            "nama": "Ahmad Fauzan",
+            "nama": "Arfan M.Noor, SH",
             "jabatan": "Sekretaris Pekon",
-            "foto": "https://lh3.googleusercontent.com/aida-public/AB6AXuCoa8AKBIj44m8tTq_MCk6Co_50_UxHKRUmpa8yTF-NUvqcWEL-J8iKJpHrY2_3lGHHQ5iOrLevVKt_4TCuaMbsNgRDVgnKGiFmFyoIu70_KXjNvAhobUlD_EGtp3SdnAYOl20F1ucqKt13XegeZZPJRexSUdtv5OQowI2dN4wbk5SWRolBN2r4_phCg9PCSLtv4BB_k2thbK8-ZsNbVGr93CpU1EFttZbiUYisHEVmPcEJPvbcWX9R-Q",
+            "foto": "",
             "level": 1
         },
         {
-            "nama": "Siti Aminah",
+            "nama": "Widia Wati",
+            "jabatan": "Kasi Pemerintahan",
+            "foto": "",
+            "level": 2
+        },
+        {
+            "nama": "Agustina Heni K.",
+            "jabatan": "Staf Pemerintahan",
+            "foto": "",
+            "level": 2
+        },
+        {
+            "nama": "Agus Heriansyah",
+            "jabatan": "Kasi Pelayanan",
+            "foto": "",
+            "level": 2
+        },
+        {
+            "nama": "Nelli Fitriani",
+            "jabatan": "Kasi Kesejahteraan",
+            "foto": "",
+            "level": 2
+        },
+        {
+            "nama": "Surahman",
+            "jabatan": "Kaur TU\/Umum",
+            "foto": "",
+            "level": 2
+        },
+        {
+            "nama": "Inda Agustiana",
             "jabatan": "Kaur Keuangan",
             "foto": "",
             "level": 2
         },
         {
-            "nama": "Rahmat Hidayat",
-            "jabatan": "Kasi Pemerintahan",
+            "nama": "Hariyono",
+            "jabatan": "Kaur Perencanaan",
             "foto": "",
             "level": 2
+        },
+        {
+            "nama": "Agus",
+            "jabatan": "Kepala Dusun Air Naningan",
+            "foto": "",
+            "level": 3
+        },
+        {
+            "nama": "Mudasir",
+            "jabatan": "Kepala Dusun Neglasari",
+            "foto": "",
+            "level": 3
+        },
+        {
+            "nama": "Yadi Ruhyadi",
+            "jabatan": "Kepala Dusun Mataram Selatan",
+            "foto": "",
+            "level": 3
+        },
+        {
+            "nama": "Sugiyono",
+            "jabatan": "Kepala Dusun Mataram Utara",
+            "foto": "",
+            "level": 3
+        },
+        {
+            "nama": "Soni Ari Anggara",
+            "jabatan": "Kepala Dusun Padasuka",
+            "foto": "",
+            "level": 3
+        },
+        {
+            "nama": "Joni Hendrawan",
+            "jabatan": "Kepala Dusun Dusun 6",
+            "foto": "",
+            "level": 3
+        },
+        {
+            "nama": "Suhedi",
+            "jabatan": "Kepala Dusun Pancasila",
+            "foto": "",
+            "level": 3
         }
     ],
     "demografi": {
-        "total_jiwa": 3245,
-        "kepala_keluarga": 842,
-        "luas_wilayah": 45,
-        "luas_satuan": "km²",
-        "ketinggian": 850,
-        "ketinggian_satuan": "mdpl",
+        "total_jiwa": 666,
+        "kepala_keluarga": 666,
+        "luas_wilayah": 666,
+        "luas_satuan": "666",
+        "ketinggian": 666,
+        "ketinggian_satuan": "Mdpl",
         "per_dusun": [
-            { "nama": "Dusun 1", "jumlah": 810 },
-            { "nama": "Dusun 2", "jumlah": 825 },
-            { "nama": "Dusun 3", "jumlah": 790 },
-            { "nama": "Dusun 4", "jumlah": 820 }
+            {
+                "nama": "Dusun 1",
+                "jumlah": 666
+            },
+            {
+                "nama": "Dusun 2",
+                "jumlah": 666
+            },
+            {
+                "nama": "Dusun 3",
+                "jumlah": 666
+            },
+            {
+                "nama": "Dusun 4",
+                "jumlah": 666
+            },
+            {
+                "nama": "Dusun Hacker",
+                "jumlah": 646
+            }
         ]
     },
     "mata_pencaharian": [
-        { "jenis": "Petani Kopi & Kebun", "persen": 75 },
-        { "jenis": "Pedagang / Wiraswasta", "persen": 12 },
-        { "jenis": "Buruh Harian Lepas", "persen": 8 },
-        { "jenis": "PNS / TNI / Polri", "persen": 5 }
+        {
+            "jenis": "Petani Kopi & Kebun",
+            "persen": 100
+        },
+        {
+            "jenis": "Pedagang \/ Wiraswasta",
+            "persen": 100
+        },
+        {
+            "jenis": "Buruh Harian Lepas",
+            "persen": 100
+        },
+        {
+            "jenis": "PNS \/ TNI \/ Polri",
+            "persen": 100
+        },
+        {
+            "jenis": "Hacker",
+            "persen": 82
+        }
     ],
     "apbdes": {
         "tahun": 2024,
@@ -93,5 +197,9 @@
         ],
         "quote": "Tanah ini bukan warisan nenek moyang semata, melainkan titipan untuk dijaga kelestariannya bagi generasi mendatang."
     },
-    "updated_at": "2024-10-08T10:00:00+07:00"
+    "peta": {
+        "lokasi": "Balai Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus",
+        "embed_url": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d3973.1242280727115!2d104.70379107543417!3d-5.243170994734756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e473fe2ee81a5d3%3A0xf76c3a03568014fd!2sBalai%20Pekon%20Air%20Naningan!5e0!3m2!1sid!2sid!4v1785777123090!5m2!1sid!2sid"
+    },
+    "updated_at": "2026-08-03T17:57:43+00:00"
 }

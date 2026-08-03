@@ -56,8 +56,9 @@ final class AuthController
                 ) {
                     // ── Login sukses ──
                     session_regenerate_id(true);
-                    $_SESSION['admin']         = true;
+                    $_SESSION['admin']          = true;
                     $_SESSION['admin_username'] = $username;
+                    $_SESSION['admin_nama_lengkap'] = (string) ($creds['nama_lengkap'] ?? '');
                     $_SESSION['login_at']       = $now;
                     unset($_SESSION[$key], $_SESSION[$key . '_ts']);
 

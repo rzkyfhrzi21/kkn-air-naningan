@@ -17,11 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-require_once __DIR__ . '/../../../app/Models/Pesan.php';
+$csrf = (string) ($_POST['csrf_token'] ?? '');
+if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Token keamanan tidak valid. Muat ulang halaman.']);
+    exit;
+}
 
-http_response_code(405);
-echo json_encode(['success' => false, 'message' => 'Pesan masuk hanya dapat dibaca.']);
-exit;
+require_once __DIR__ . '/../../../app/Models/Pesan.php';
 
 $id = trim($_POST['id'] ?? '');
 if (empty($id)) {

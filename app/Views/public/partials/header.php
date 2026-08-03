@@ -1,6 +1,11 @@
 <?php
 // header.php — Public site header partial
 // Variables expected: $pageTitle (string), $currentPage (string), $metaDescription (string)
+
+// Jaring pengaman: pastikan .env termuat walau akses langsung via file shell
+require_once dirname(__DIR__, 4) . '/includes/env.php';
+loadEnv(dirname(__DIR__, 4) . '/.env');
+
 $pageTitle       = $pageTitle       ?? 'Pekon Air Naningan';
 $currentPage     = $currentPage     ?? 'beranda';
 $metaDescription = $metaDescription ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.';
@@ -33,6 +38,7 @@ $navLinks = [
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
+    <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
     <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">

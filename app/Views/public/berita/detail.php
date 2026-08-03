@@ -5,7 +5,7 @@
  * Variabel dari BeritaController::detail():
  *   $berita  array   — data artikel (id, judul, slug, kategori, ringkasan, konten,
  *                       foto_sampul, penulis, status, tanggal_terbit, tags, created_at)
- *   $terkait array[] — berita terbit lain (maks 4), untuk sidebar "Berita Terpopuler"
+ *   $terkait array[] — berita terbit lain, satu artikel terbaru per kategori
  */
 
 // Fallback supaya view tidak error jika di-preview tanpa controller
@@ -78,7 +78,7 @@ require __DIR__ . '/../partials/header.php';
         <div class="w-full h-[340px] md:h-[520px] rounded-xl overflow-hidden relative shadow-2xl bg-surface-container-highest">
             <?php if (!empty($berita['foto_sampul'])): ?>
                 <img class="w-full h-full object-cover"
-                     src="<?= htmlspecialchars($base . '/' . ltrim($berita['foto_sampul'], '/'), ENT_QUOTES) ?>"
+                     src="<?= htmlspecialchars(mediaUrl($berita['foto_sampul'], $base), ENT_QUOTES) ?>"
                      alt="<?= htmlspecialchars($berita['judul'], ENT_QUOTES) ?>">
             <?php else: ?>
                 <div class="w-full h-full bg-surface-2 flex flex-col items-center justify-center gap-3">
@@ -114,52 +114,6 @@ require __DIR__ . '/../partials/header.php';
                 <div class="artikel-konten flex flex-col gap-6 [&_h2]:text-h3 [&_h2]:font-h3 [&_h2]:text-gold-soft [&_h2]:mt-8 [&_h2]:mb-4 [&_h3]:text-[22px] [&_h3]:font-h3 [&_h3]:text-gold-soft [&_h3]:mt-6 [&_h3]:mb-3 [&_blockquote]:bg-surface-2 [&_blockquote]:p-6 [&_blockquote]:rounded-xl [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:italic [&_a]:text-primary [&_a]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6">
                     <?= $berita['konten'] ?>
                 </div>
-            <?php else: ?>
-                <!-- Konten placeholder dari stitch (data production) -->
-                <p>
-                    <strong>AIR NANINGAN</strong> — Memasuki pertengahan bulan Agustus, kesibukan tampak mewarnai hampir seluruh sudut Pekon Air Naningan. Ribuan petani kopi mulai memetik hasil jerih payah mereka selama setahun terakhir. Panen raya kopi Robusta yang menjadi komoditas andalan daerah ini resmi dimulai, membawa secercah harapan di tengah tantangan iklim global.
-                </p>
-                <p>
-                    Kepala Pekon Air Naningan, Bapak Sudarman, menyatakan rasa syukurnya atas hasil panen tahun ini. "Meskipun kita sempat dilanda cuaca kering, alhamdulillah berkat ketekunan para petani dan pendampingan teknis dari penyuluh pertanian, kualitas buah kopi yang dihasilkan sangat memuaskan. Bijinya padat dan tingkat kematangannya merata," ujarnya saat ditemui di sela-sela peninjauan kebun warga.
-                </p>
-
-                <h2 class="text-h3 font-h3 text-gold-soft mt-8 mb-4">Peningkatan Kualitas dan Harga Jual</h2>
-                <p>
-                    Berbeda dengan tahun sebelumnya, tren harga kopi dunia yang sedang naik turut memberikan angin segar. Kopi Robusta petik merah (<em>fine Robusta</em>) dari Air Naningan kini dihargai jauh lebih tinggi oleh para pengepul maupun pembeli langsung (roastery). Hal ini tidak lepas dari edukasi berkelanjutan mengenai pentingnya pasca-panen yang baik.
-                </p>
-
-                <!-- Grid foto dalam artikel -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-                    <div class="flex flex-col gap-2">
-                        <div class="w-full aspect-[4/3] rounded-lg bg-surface-2 border border-line flex items-center justify-center">
-                            <span class="material-symbols-outlined text-[48px] text-ink-dim/20">coffee</span>
-                        </div>
-                        <span class="text-sm text-ink-dim font-body-md italic text-center">Proses sortir ceri kopi (petik merah)</span>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <div class="w-full aspect-[4/3] rounded-lg bg-surface-2 border border-line flex items-center justify-center">
-                            <span class="material-symbols-outlined text-[48px] text-ink-dim/20">wb_sunny</span>
-                        </div>
-                        <span class="text-sm text-ink-dim font-body-md italic text-center">Penjemuran biji kopi di atas para-para</span>
-                    </div>
-                </div>
-
-                <p>
-                    "Sekarang warga mulai sadar, kalau petik merah harganya bisa beda lumayan. Dulu asal petik campur hijau, sekarang kita sortir. Penjemurannya juga pakai para-para, tidak langsung di tanah," jelas Ibu Maryati, salah satu ketua kelompok tani wanita di Dusun I.
-                </p>
-
-                <h2 class="text-h3 font-h3 text-gold-soft mt-8 mb-4">Membangun Koperasi Desa yang Kuat</h2>
-                <p>
-                    Ke depan, Pemerintah Desa bersama BUMDes berencana untuk memperkuat sistem resi gudang dan membangun pusat pengolahan (<em>processing center</em>) berskala kecil. Langkah ini diambil agar petani tidak terburu-buru menjual hasil panennya saat harga sedang anjlok di awal masa panen.
-                </p>
-
-                <blockquote class="bg-surface-2 p-6 rounded-xl border-l-4 border-primary my-4 italic text-ink-dim">
-                    "Kopi ini urat nadi perekonomian Air Naningan. Jika kita bisa mengelola dari hulu ke hilir, kesejahteraan masyarakat akan meningkat secara signifikan. Kita tidak hanya menjual bahan mentah, tapi juga kualitas."
-                </blockquote>
-
-                <p>
-                    Dengan potensi yang terus berkembang, Air Naningan bersiap untuk tidak hanya menjadi penghasil kopi kuantitas besar, tetapi juga pemasok kopi <em>specialty</em> yang diakui di tingkat nasional maupun internasional.
-                </p>
             <?php endif; ?>
 
             <!-- ── Tags & Share ─────────────────────────────────────────── -->
@@ -199,7 +153,7 @@ require __DIR__ . '/../partials/header.php';
         <!-- ── Sidebar ────────────────────────────────────────────────────── -->
         <aside class="lg:col-span-4 flex flex-col gap-8 mt-10 lg:mt-0">
 
-            <!-- Berita Terpopuler -->
+            <!-- Berita terbaru, satu dari setiap kategori -->
             <div class="bg-surface-container rounded-xl p-6 border border-line shadow-sm">
                 <h3 class="text-h3 font-h3 text-gold-soft mb-6 flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary text-[22px]">newspaper</span>
@@ -214,7 +168,7 @@ require __DIR__ . '/../partials/header.php';
                         <div class="w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-surface-2 border border-line flex items-center justify-center">
                             <?php if (!empty($item['foto_sampul'])): ?>
                                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                     src="<?= htmlspecialchars($base . '/' . ltrim($item['foto_sampul'], '/'), ENT_QUOTES) ?>"
+                                     src="<?= htmlspecialchars(mediaUrl($item['foto_sampul'], $base), ENT_QUOTES) ?>"
                                      alt="<?= htmlspecialchars($item['judul'] ?? '', ENT_QUOTES) ?>">
                             <?php else: ?>
                                 <span class="material-symbols-outlined text-[28px] text-ink-dim/30">newspaper</span>

@@ -1,6 +1,7 @@
 # Secrets & Sensitive Data
 .env
 .env.*
+!.env.example
 secure/backup/
 
 # AI Agent Framework & Tooling

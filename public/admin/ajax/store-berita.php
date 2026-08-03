@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['admin'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Sesi habis, silakan login ulang.']);
@@ -47,6 +49,20 @@ if (empty($ringkasan)) {
 
 if (empty($konten)) {
     echo json_encode(['success' => false, 'message' => 'Konten berita wajib diisi.']);
+    exit;
+}
+
+require_once __DIR__ . '/../../../includes/sanitize.php';
+$konten = sanitize_rich_html($konten);
+
+if (!in_array($status, ['draft', 'terbit'], true)) {
+    echo json_encode(['success' => false, 'message' => 'Status berita tidak valid.']);
+    exit;
+}
+
+$publishedAt = DateTime::createFromFormat('Y-m-d', $tanggal_terbit);
+if (!$publishedAt || $publishedAt->format('Y-m-d') !== $tanggal_terbit) {
+    echo json_encode(['success' => false, 'message' => 'Tanggal publikasi tidak valid.']);
     exit;
 }
 

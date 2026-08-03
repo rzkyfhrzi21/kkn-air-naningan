@@ -149,17 +149,28 @@ class Profil
                         static fn($p) => $p !== ''
                     ));
                 } else {
-                    // textarea plain: pecah per baris kosong
-                    $parts = preg_split('/\n\s*\n/', trim((string) $s['paragraf'])) ?: [];
-                    $current['sejarah']['paragraf'] = array_values(array_filter(
-                        array_map('trim', $parts),
-                        static fn($p) => $p !== ''
-                    ));
+                    $raw = trim((string) $s['paragraf']);
+                    if (strpos($raw, '<') !== false) {
+                        // Rich text dari RTE: simpan HTML utuh sebagai string
+                        $current['sejarah']['paragraf'] = $raw;
+                    } else {
+                        // textarea plain: pecah per baris kosong
+                        $parts = preg_split('/\n\s*\n/', $raw) ?: [];
+                        $current['sejarah']['paragraf'] = array_values(array_filter(
+                            array_map('trim', $parts),
+                            static fn($p) => $p !== ''
+                        ));
+                    }
                 }
             }
             if (isset($s['quote'])) {
                 $current['sejarah']['quote'] = trim((string) $s['quote']);
             }
+        }
+        if (isset($payload['peta']) && is_array($payload['peta'])) {
+            $p = $payload['peta'];
+            $current['peta']['lokasi'] = trim((string) ($p['lokasi'] ?? $current['peta']['lokasi']));
+            $current['peta']['embed_url'] = trim((string) ($p['embed_url'] ?? $current['peta']['embed_url']));
         }
 
         $current['updated_at'] = date('c');
@@ -223,6 +234,10 @@ class Profil
             'sejarah' => [
                 'paragraf' => [],
                 'quote'    => '',
+            ],
+            'peta' => [
+                'lokasi'   => 'Air Naningan, Tanggamus, Lampung, Indonesia',
+                'embed_url' => '',
             ],
             'updated_at' => null,
         ];

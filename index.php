@@ -11,6 +11,11 @@ declare(strict_types=1);
 
 define('BASE_PATH', __DIR__);
 
+// ── Load .env (konfigurasi situs) ──────────────────────────────────────────
+require_once BASE_PATH . '/includes/env.php';
+loadEnv(BASE_PATH . '/.env');
+
+
 // ── Deteksi APP_BASE secara otomatis ─────────────────────────────────────────
 // Misal SCRIPT_NAME = /kkn-air-naningan2/index.php → APP_BASE = /kkn-air-naningan2
 // Misal SCRIPT_NAME = /index.php                   → APP_BASE = ''
@@ -69,7 +74,7 @@ if ($seg0 === 'admin') {
         'kelola-profil'  => 'KelolaProfilController',
         'kelola-berita'  => 'KelolaBeritaController',
         'pesan-masuk'    => 'PesanMasukController',
-        'pengaturan'     => 'PengaturanController',
+        'profil'         => 'ProfilController',
     ];
 
     $seg2 = $segments[2] ?? '';

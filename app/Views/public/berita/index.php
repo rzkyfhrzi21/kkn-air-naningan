@@ -100,10 +100,16 @@ require __DIR__ . '/../partials/header.php';
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-line pb-6">
             <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="filter-buttons">
                 <button data-cat="all" class="filter-btn px-6 py-2.5 rounded-full bg-primary text-on-primary font-body-md text-body-md whitespace-nowrap shadow-md shadow-primary/20 transition-all">Semua Berita</button>
-                <button data-cat="Pengumuman" class="filter-btn px-6 py-2.5 rounded-full bg-surface-2 text-ink hover:text-primary border border-line font-body-md text-body-md whitespace-nowrap transition-colors">Pengumuman</button>
-                <button data-cat="Kegiatan" class="filter-btn px-6 py-2.5 rounded-full bg-surface-2 text-ink hover:text-primary border border-line font-body-md text-body-md whitespace-nowrap transition-colors">Kegiatan</button>
-                <button data-cat="Bantuan Sosial" class="filter-btn px-6 py-2.5 rounded-full bg-surface-2 text-ink hover:text-primary border border-line font-body-md text-body-md whitespace-nowrap transition-colors">Bantuan Sosial</button>
-                <button data-cat="Pertanian" class="filter-btn px-6 py-2.5 rounded-full bg-surface-2 text-ink hover:text-primary border border-line font-body-md text-body-md whitespace-nowrap transition-colors">Pertanian</button>
+                <?php
+                $kategoriList = array_values(array_unique(array_filter(array_map(
+                    static fn(array $item): string => trim((string) ($item['kategori'] ?? '')),
+                    $beritaList
+                ))));
+                sort($kategoriList, SORT_NATURAL | SORT_FLAG_CASE);
+                foreach ($kategoriList as $kategori):
+                ?>
+                <button data-cat="<?= htmlspecialchars($kategori, ENT_QUOTES, 'UTF-8') ?>" class="filter-btn px-6 py-2.5 rounded-full bg-surface-2 text-ink hover:text-primary border border-line font-body-md text-body-md whitespace-nowrap transition-colors"><?= htmlspecialchars($kategori, ENT_QUOTES, 'UTF-8') ?></button>
+                <?php endforeach; ?>
             </div>
             <div class="relative w-full md:w-64">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-dim">search</span>
@@ -138,7 +144,7 @@ require __DIR__ . '/../partials/header.php';
                         <?php if (!empty($foto)): ?>
                             <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                  alt="<?= $judul ?>"
-                                 src="<?= str_starts_with($foto, 'http') ? htmlspecialchars($foto, ENT_QUOTES) : htmlspecialchars($base . '/' . ltrim($foto, '/'), ENT_QUOTES) ?>">
+                                  src="<?= htmlspecialchars(mediaUrl($foto, $base), ENT_QUOTES) ?>">
                         <?php else: ?>
                             <div class="w-full h-full bg-surface-2 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-[64px] text-ink-dim/20">newspaper</span>
