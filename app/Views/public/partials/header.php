@@ -183,10 +183,6 @@ $navLinks = [
             </a>
         <?php endif; ?>
     <?php endforeach; ?>
-    <div class="border-t border-line my-4"></div>
-    <a href="<?= htmlspecialchars($base . '/admin', ENT_QUOTES) ?>" class="font-label-mono text-label-mono text-ink-dim hover:text-gold-soft transition-colors px-6 py-3 border border-gold-soft/30 rounded-full text-center uppercase tracking-widest flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-[16px]">person</span> Admin
-    </a>
 </div>
 
 <header class="fixed top-0 w-full z-50 bg-bg/80 backdrop-blur-xl border-b border-line">
@@ -216,10 +212,7 @@ $navLinks = [
                 <?php endif; ?>
             <?php endforeach; ?>
         </nav>
-        <div class="flex items-center gap-4">
-            <a href="<?= htmlspecialchars($base . '/admin', ENT_QUOTES) ?>" class="w-8 h-8 rounded-full bg-primary flex items-center justify-center" title="Masuk Admin">
-                <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
-            </a>
+        <div class="flex items-center">
             <button class="lg:hidden text-ink" id="mobile-menu-btn" aria-label="Buka menu navigasi">
                 <span class="material-symbols-outlined" id="menu-icon">menu</span>
             </button>

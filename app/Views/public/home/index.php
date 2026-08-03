@@ -1,7 +1,9 @@
 <?php
 $currentPage     = 'beranda';
 $pageTitle       = 'Beranda | Pekon Air Naningan';
-$metaDescription = 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.';
+$homepage        = $homepage ?? [];
+$metaDescription = (string) ($homepage['tagline'] ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.');
+$history         = $homepage['history'] ?? [];
 require __DIR__ . '/../partials/header.php';
 ?>
 
@@ -29,7 +31,7 @@ require __DIR__ . '/../partials/header.php';
                 dan <span class="text-gold-soft italic font-serif">aren di lereng gunung.</span>
             </h1>
             <p class="font-body-lg text-body-lg text-ink-dim max-w-xl mb-12 leading-relaxed">
-                Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.
+                <?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>
             </p>
             <div class="flex flex-wrap items-center gap-4">
                 <a class="inline-flex items-center justify-center bg-primary text-on-primary font-body-md font-medium px-8 py-3.5 rounded-full hover:bg-primary-fixed transition-colors" href="<?= $base ?>/profil">
@@ -51,21 +53,21 @@ require __DIR__ . '/../partials/header.php';
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-line">
                 <div class="p-8 flex flex-col">
                     <span class="font-h2 text-h2 text-primary mb-2 flex items-baseline">
-                        <span class="text-2xl mr-1">±</span>650
+                        <?= number_format((int) ($homepage['elevation'] ?? 0), 0, ',', '.') ?>
                     </span>
-                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">MDPL · SAMPLE</span>
+                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase"><?= htmlspecialchars((string) ($homepage['elevation_unit'] ?? 'Mdpl'), ENT_QUOTES, 'UTF-8') ?></span>
                 </div>
                 <div class="p-8 flex flex-col">
-                    <span class="font-h2 text-h2 text-primary mb-2">4</span>
+                    <span class="font-h2 text-h2 text-primary mb-2"><?= number_format((int) ($homepage['hamlet_count'] ?? 0), 0, ',', '.') ?></span>
                     <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">Dusun</span>
                 </div>
                 <div class="p-8 flex flex-col">
-                    <span class="font-h2 text-h2 text-primary mb-2">1.240</span>
-                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">Jiwa · SAMPLE</span>
+                    <span class="font-h2 text-h2 text-primary mb-2"><?= number_format((int) ($homepage['population'] ?? 0), 0, ',', '.') ?></span>
+                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">Jiwa</span>
                 </div>
                 <div class="p-8 flex flex-col">
-                    <span class="font-h2 text-[28px] font-semibold tracking-tight text-primary mb-2 leading-tight">Kopi · Kakao · Aren</span>
-                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase mt-auto pt-2">Komoditas Utama</span>
+                    <span class="font-h2 text-[28px] font-semibold tracking-tight text-primary mb-2 leading-tight"><?= htmlspecialchars((string) ($homepage['main_livelihood'] ?? 'Pertanian lokal'), ENT_QUOTES, 'UTF-8') ?></span>
+                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase mt-auto pt-2">Mata Pencaharian Utama</span>
                 </div>
             </div>
         </div>
@@ -77,18 +79,13 @@ require __DIR__ . '/../partials/header.php';
             <div class="lg:col-span-7 flex flex-col">
                 <h2 class="font-h2 text-h2 text-ink mb-8">Sekilas sejarah</h2>
                 <div class="prose prose-invert prose-lg text-ink-dim font-body-lg text-body-lg mb-8">
-                    <p class="mb-6">
-                        Pekon Air Naningan berdiri di kaki Gunung Tanggamus, dikelilingi kebun kopi dan pohon aren yang menjadi sumber penghidupan sebagian besar warganya sejak beberapa generasi lalu.
-                    </p>
-                    <p>
-                        Nama "Air Naningan" berasal dari aliran sungai yang membelah wilayah pekon, yang sejak dahulu menjadi sumber air utama bagi pertanian dan kehidupan sehari-hari warga.
-                    </p>
+                    <?php foreach (array_slice($history, 0, 2) as $paragraph): ?>
+                    <p class="mb-6"><?= htmlspecialchars($paragraph, ENT_QUOTES, 'UTF-8') ?></p>
+                    <?php endforeach; ?>
                 </div>
-                <div class="bg-surface-container-high border-l-4 border-danger p-6 rounded-r-lg">
-                    <p class="font-label-mono text-[12px] text-ink-dim leading-relaxed">
-                        *Teks di atas adalah contoh placeholder — ganti dengan sejarah resmi pekon dari sesepuh atau arsip kecamatan sebelum situs ini diluncurkan.
-                    </p>
-                </div>
+                <a class="font-label-mono text-[12px] text-gold-soft uppercase tracking-wider inline-flex items-center gap-2" href="<?= $base ?>/profil">
+                    Baca sejarah lengkap <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
             </div>
             <div class="lg:col-span-5 w-full">
                 <div class="bg-surface-2 p-8 rounded-xl border border-line shadow-lg">
@@ -97,7 +94,7 @@ require __DIR__ . '/../partials/header.php';
                     </div>
                     <h3 class="font-h3 text-h3 text-ink mb-4">Agraris &amp; pegunungan</h3>
                     <p class="text-body-md font-body-md text-ink-dim leading-relaxed">
-                        Topografi berbukit dengan tanah vulkanik subur menjadikan Air Naningan sentra kopi robusta dan gula aren di Kabupaten Tanggamus.
+                        <?= htmlspecialchars((string) ($homepage['vision'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
                     </p>
                 </div>
             </div>
@@ -129,7 +126,7 @@ require __DIR__ . '/../partials/header.php';
                 </div>
                 <h4 class="font-h3 text-xl text-ink mb-3">UMKM</h4>
                 <p class="text-body-md font-body-md text-ink-dim mb-8 flex-grow">
-                    Katalog usaha warga lengkap dengan kontak WhatsApp.
+                    <?= number_format((int) ($homepage['umkm_count'] ?? 0), 0, ',', '.') ?> usaha warga dalam katalog, lengkap dengan kontak WhatsApp.
                 </p>
                 <div class="flex items-center gap-2 text-gold-soft font-label-mono text-[12px] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
                     Lihat katalog <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -143,7 +140,7 @@ require __DIR__ . '/../partials/header.php';
                 </div>
                 <h4 class="font-h3 text-xl text-ink mb-3">Wisata</h4>
                 <p class="text-body-md font-body-md text-ink-dim mb-8 flex-grow">
-                    Titik wisata alam di sekitar lereng Tanggamus.
+                    <?= number_format((int) ($homepage['tourism_count'] ?? 0), 0, ',', '.') ?> titik wisata alam di sekitar lereng Tanggamus.
                 </p>
                 <div class="flex items-center gap-2 text-gold-soft font-label-mono text-[12px] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
                     Jelajahi <span class="material-symbols-outlined text-[16px]">arrow_forward</span>

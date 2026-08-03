@@ -263,8 +263,8 @@ $kategoriList = [
 <!-- Modal preview foto -->
 <div id="modal-preview-foto-wisata" data-modal class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto wisata">
     <div class="absolute inset-0 bg-black/80" id="modal-preview-foto-wisata-backdrop"></div>
-    <div class="relative flex max-h-full max-w-5xl items-center justify-center">
-        <img id="modal-preview-foto-wisata-img" src="" alt="Preview foto wisata" class="max-h-[85vh] max-w-full rounded-2xl border border-line object-contain shadow-2xl">
+    <div class="relative flex h-[88vh] w-[94vw] max-w-[1400px] items-center justify-center">
+        <img id="modal-preview-foto-wisata-img" src="" alt="Preview foto wisata" class="h-full w-full rounded-2xl border border-line bg-black/20 object-contain shadow-2xl">
         <button type="button" id="modal-preview-foto-wisata-close" class="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-lg hover:bg-surface-2" aria-label="Tutup preview foto">
             <span class="material-symbols-outlined">close</span>
         </button>
@@ -341,7 +341,7 @@ $kategoriList = [
         const value = String(path || '').trim();
         if (!value || /^(https?:)?\/\//i.test(value) || value.startsWith('blob:') || value.startsWith('data:')) return value;
         if (value.startsWith(base + '/')) return value;
-        return (value.startsWith('/') ? base : base + '/') + value.replace(/^\/+/, '');
+        return base + '/' + value.replace(/^\/+/, '');
     }
 
     function openPhotoPreview(src) {
