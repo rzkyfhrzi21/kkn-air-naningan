@@ -2,6 +2,7 @@
 $currentPage     = 'wisata';
 $pageTitle       = 'Wisata | Pekon Air Naningan';
 $metaDescription = 'Temukan destinasi wisata alam di Pekon Air Naningan — air terjun, titik pandang pegunungan, dan pesona alam lereng Tanggamus.';
+$base            = $base ?? '';
 require __DIR__ . '/../partials/header.php';
 ?>
 
@@ -26,79 +27,80 @@ require __DIR__ . '/../partials/header.php';
 
     <!-- Destinations Grid Section -->
     <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop -mt-16 relative z-30">
+        <?php if (empty($items)): ?>
+            <div class="flex flex-col items-center justify-center py-24 text-center gap-4">
+                <span class="material-symbols-outlined text-[48px] text-ink-dim/30">landscape</span>
+                <p class="font-body-md text-ink-dim">Belum ada destinasi wisata yang tersedia saat ini.</p>
+                <a href="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/kontak" class="px-6 py-3 rounded-full bg-primary text-on-primary font-label-mono text-label-mono uppercase tracking-wider">
+                    Hubungi Kami
+                </a>
+            </div>
+        <?php else: ?>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-
-            <!-- Card 1: Air Terjun -->
-            <article class="group bg-surface-container rounded-2xl overflow-hidden shadow-xl transition-transform duration-500 hover:-translate-y-2 border border-line flex flex-col h-full">
+            <?php foreach ($items as $item): ?>
+            <?php
+                $slug      = htmlspecialchars($item['slug'] ?? '', ENT_QUOTES, 'UTF-8');
+                $nama      = htmlspecialchars($item['nama'] ?? '', ENT_QUOTES, 'UTF-8');
+                $katLabel  = htmlspecialchars($item['kategori_label'] ?? '', ENT_QUOTES, 'UTF-8');
+                $katIcon   = htmlspecialchars($item['kategori_icon'] ?? 'landscape', ENT_QUOTES, 'UTF-8');
+                $deskripsi = htmlspecialchars($item['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8');
+                $htm       = htmlspecialchars($item['jarak'] ?? '', ENT_QUOTES, 'UTF-8'); // field 'jarak' dipakai sebagai HTM
+                $foto      = htmlspecialchars($item['foto'] ?? '', ENT_QUOTES, 'UTF-8');
+                $mapsUrl   = htmlspecialchars($item['maps_url'] ?? '#', ENT_QUOTES, 'UTF-8');
+                $fasilitas = $item['fasilitas'] ?? [];
+                $offset    = !empty($item['offset']);
+            ?>
+            <article class="group bg-surface-container rounded-2xl overflow-hidden shadow-xl transition-transform duration-500 hover:-translate-y-2 border border-line flex flex-col h-full<?= $offset ? ' lg:translate-y-12' : '' ?>">
                 <div class="relative h-72 w-full overflow-hidden">
+                    <?php if ($foto): ?>
                     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                         alt="Air terjun Curug Tirta Kencana di Air Naningan"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwUA8gwPgZk37dZY0fg2zZyD9x-L261K1EtAmftnqQqyIDrXBOHFIwJf5oIH8BczPJRWpawLhiAWD32M24Y7XHSoV922g8l1KCen88YuZJ3qg9L64uGoev1ohbzUX0q5Gyuq4IUwuhvoYvtWqhUH1wUVp_RE3bQhNka0-IUnxvout-6H7xVZ4KFRcsfcFIdRG_CVERTuFPFZ_cGJ6tpucaWkeawLVkjiHbB6LX6YsfWXg9h00AzUvapA">
+                         alt="<?= $nama ?> di Air Naningan"
+                         src="<?= $foto ?>">
+                    <?php else: ?>
+                    <div class="w-full h-full bg-surface-container-high flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[64px] text-ink-dim/30">landscape</span>
+                    </div>
+                    <?php endif; ?>
                     <div class="absolute top-4 left-4 bg-bg/80 backdrop-blur-md px-3 py-1 rounded-full border border-line">
                         <span class="font-label-mono text-[10px] text-primary uppercase tracking-wider flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[14px]">water_drop</span> Air Terjun
+                            <span class="material-symbols-outlined text-[14px]"><?= $katIcon ?></span>
+                            <?= $katLabel ?>
                         </span>
                     </div>
                 </div>
                 <div class="p-8 flex flex-col flex-grow">
                     <div class="flex justify-between items-start mb-4">
-                        <h2 class="font-h2 text-[28px] text-ink leading-tight">Curug Tirta <br>Kencana</h2>
-                        <span class="flex items-center gap-1 text-ink-dim font-label-mono text-label-mono">
-                            <span class="material-symbols-outlined text-[16px] text-gold-soft">location_on</span> 2.5 km
+                        <h2 class="font-h2 text-[28px] text-ink leading-tight"><?= $nama ?></h2>
+                        <?php if ($htm): ?>
+                        <span class="flex items-center gap-1 text-ink-dim font-label-mono text-label-mono shrink-0 ml-4">
+                            <span class="material-symbols-outlined text-[16px] text-gold-soft">confirmation_number</span>
+                            <?= $htm ?>
                         </span>
+                        <?php endif; ?>
                     </div>
                     <p class="font-body-md text-body-md text-ink-dim mb-6 flex-grow line-clamp-3">
-                        Air terjun tersembunyi dengan debit air stabil sepanjang tahun. Dikelilingi hutan primer yang asri, menawarkan kolam alami untuk berenang dan bersantai menikmati suara gemericik air.
+                        <?= $deskripsi ?>
                     </p>
+                    <?php if (!empty($fasilitas)): ?>
                     <div class="flex flex-wrap gap-2 mb-8">
-                        <span class="px-3 py-1 bg-surface-2 rounded-full text-ink-dim text-xs font-label-mono flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">hiking</span> Akses Sedang</span>
-                        <span class="px-3 py-1 bg-surface-2 rounded-full text-ink-dim text-xs font-label-mono flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">wc</span> Toilet</span>
-                        <span class="px-3 py-1 bg-surface-2 rounded-full text-ink-dim text-xs font-label-mono flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">storefront</span> Warung</span>
+                        <?php foreach ($fasilitas as $fas): ?>
+                        <span class="px-3 py-1 bg-surface-2 rounded-full text-ink-dim text-xs font-label-mono flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]"><?= htmlspecialchars($fas['icon'] ?? 'check', ENT_QUOTES, 'UTF-8') ?></span>
+                            <?= htmlspecialchars($fas['label'] ?? '', ENT_QUOTES, 'UTF-8') ?>
+                        </span>
+                        <?php endforeach; ?>
                     </div>
+                    <?php endif; ?>
                     <a class="inline-flex items-center justify-between w-full px-6 py-4 bg-primary text-on-primary rounded-full font-label-mono text-label-mono uppercase tracking-wider hover:bg-gold-soft transition-colors"
-                       href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
+                       href="<?= $mapsUrl ?>" target="_blank" rel="noopener noreferrer">
                         <span>Buka di Peta</span>
                         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                     </a>
                 </div>
             </article>
-
-            <!-- Card 2: Titik Pandang -->
-            <article class="group bg-surface-container rounded-2xl overflow-hidden shadow-xl transition-transform duration-500 hover:-translate-y-2 border border-line flex flex-col h-full lg:translate-y-12">
-                <div class="relative h-72 w-full overflow-hidden">
-                    <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                         alt="Puncak Bintang titik pandang di Air Naningan"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuATodpjCH4RizqTgSvvyJTRF3HgWV8NkhWHYk8mGmLiJG4j0Of65Iduq9v8i3QPIYKFznyn936zIETy26ljl7urPstshsOWKeDmIS2LhqX3M2cwNHD4B8eZ8YiZJrdJdj_0YbNOJx1q0r_TT_gLve6y_1cBjHwdsaTQl9Q3uy9fhfGyZwupWJuDC8ZLVBKGaEjuWxN3OAbKZq6qmEduUE7_awsv6Lo1OkjvHmFJI6s1czvkX4YbvRjw9w">
-                    <div class="absolute top-4 left-4 bg-bg/80 backdrop-blur-md px-3 py-1 rounded-full border border-line">
-                        <span class="font-label-mono text-[10px] text-primary uppercase tracking-wider flex items-center gap-1.5">
-                            <span class="material-symbols-outlined text-[14px]">landscape</span> Titik Pandang
-                        </span>
-                    </div>
-                </div>
-                <div class="p-8 flex flex-col flex-grow">
-                    <div class="flex justify-between items-start mb-4">
-                        <h2 class="font-h2 text-[28px] text-ink leading-tight">Puncak <br>Bintang</h2>
-                        <span class="flex items-center gap-1 text-ink-dim font-label-mono text-label-mono">
-                            <span class="material-symbols-outlined text-[16px] text-gold-soft">location_on</span> 4.0 km
-                        </span>
-                    </div>
-                    <p class="font-body-md text-body-md text-ink-dim mb-6 flex-grow line-clamp-3">
-                        Titik tertinggi di Air Naningan yang menawarkan pemandangan 360 derajat lanskap pegunungan dan lautan awan di pagi hari. Spot ideal untuk fotografi dan berkemah.
-                    </p>
-                    <div class="flex flex-wrap gap-2 mb-8">
-                        <span class="px-3 py-1 bg-surface-2 rounded-full text-ink-dim text-xs font-label-mono flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">terrain</span> Akses Menantang</span>
-                        <span class="px-3 py-1 bg-surface-2 rounded-full text-ink-dim text-xs font-label-mono flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">camping</span> Area Kemah</span>
-                        <span class="px-3 py-1 bg-surface-2 rounded-full text-ink-dim text-xs font-label-mono flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">local_parking</span> Parkir Motor</span>
-                    </div>
-                    <a class="inline-flex items-center justify-between w-full px-6 py-4 bg-primary text-on-primary rounded-full font-label-mono text-label-mono uppercase tracking-wider hover:bg-gold-soft transition-colors"
-                       href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
-                        <span>Buka di Peta</span>
-                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                    </a>
-                </div>
-            </article>
-
+            <?php endforeach; ?>
         </div>
+        <?php endif; ?>
     </section>
 
     <!-- Info & Map Section -->
@@ -144,7 +146,7 @@ require __DIR__ . '/../partials/header.php';
                 <p class="font-body-md text-body-md text-ink-dim mb-8 max-w-lg">
                     Maksimalkan pengalaman eksplorasi Anda dengan pemandu lokal yang memahami setiap jalur tersembunyi dan cerita di baliknya. Dukung juga perekonomian warga setempat.
                 </p>
-                <a href="<?= $base ?>/kontak" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-ink text-bg rounded-full font-label-mono text-label-mono uppercase tracking-widest hover:bg-white transition-colors group">
+                <a href="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/kontak" class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-ink text-bg rounded-full font-label-mono text-label-mono uppercase tracking-widest hover:bg-white transition-colors group">
                     Hubungi Pemandu
                     <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">chat</span>
                 </a>

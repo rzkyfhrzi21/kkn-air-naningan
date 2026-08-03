@@ -72,11 +72,24 @@ if ($seg0 === 'admin') {
         'pengaturan'     => 'PengaturanController',
     ];
 
+    $seg2 = $segments[2] ?? '';
+
     if ($seg1 === 'login') {
         AuthController::login();
 
     } elseif ($seg1 === 'logout') {
         AuthController::logout();
+
+    } elseif ($seg1 === 'ajax' && $seg2 !== '') {
+        // /admin/ajax/{endpoint} → public/admin/ajax/{endpoint}.php
+        $ajaxFile = BASE_PATH . '/public/admin/ajax/' . basename($seg2) . '.php';
+        if (!is_file($ajaxFile)) {
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Endpoint tidak ditemukan.']);
+            exit;
+        }
+        require $ajaxFile;
 
     } elseif (isset($adminRoutes[$seg1])) {
         $ctrlClass = $adminRoutes[$seg1];
@@ -93,7 +106,14 @@ if ($seg0 === 'admin') {
     // ── Halaman publik ────────────────────────────────────────────────────────
     [$class, $file] = $publicRoutes[$seg0];
     require_once BASE_PATH . '/' . $file;
-    (new $class())->index();
+
+    // /berita/{slug} → detail artikel
+    if ($seg0 === 'berita' && $seg1 !== '') {
+        $GLOBALS['_beritaSlug'] = $seg1;
+        (new $class())->detail();
+    } else {
+        (new $class())->index();
+    }
 
 } else {
 

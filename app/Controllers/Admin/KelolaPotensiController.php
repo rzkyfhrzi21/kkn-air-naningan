@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../Models/Potensi.php';
+
 final class KelolaPotensiController
 {
     public function index(): void

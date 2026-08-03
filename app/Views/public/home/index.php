@@ -106,7 +106,7 @@ require __DIR__ . '/../partials/header.php';
 
     <!-- Quick Links Grid -->
     <section class="pb-section-v-mobile lg:pb-section-v-desktop px-container-pad-mobile lg:px-container-pad-desktop">
-        <div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
 
             <!-- Profil Desa -->
             <a class="group bg-surface-container rounded-xl p-6 border border-line hover:border-gold-soft/50 hover:bg-surface-container-high transition-all duration-300 flex flex-col h-full" href="<?= $base ?>/profil">
@@ -147,20 +147,6 @@ require __DIR__ . '/../partials/header.php';
                 </p>
                 <div class="flex items-center gap-2 text-gold-soft font-label-mono text-[12px] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
                     Jelajahi <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                </div>
-            </a>
-
-            <!-- Potensi Desa -->
-            <a class="group bg-surface-container rounded-xl p-6 border border-line hover:border-gold-soft/50 hover:bg-surface-container-high transition-all duration-300 flex flex-col h-full" href="<?= $base ?>/potensi">
-                <div class="w-10 h-10 rounded border border-line flex items-center justify-center text-gold-soft mb-6 group-hover:bg-gold-soft/10 transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">agriculture</span>
-                </div>
-                <h4 class="font-h3 text-xl text-ink mb-3">Potensi Desa</h4>
-                <p class="text-body-md font-body-md text-ink-dim mb-8 flex-grow">
-                    Kopi, kakao, aren, dan kerajinan warga.
-                </p>
-                <div class="flex items-center gap-2 text-gold-soft font-label-mono text-[12px] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
-                    Lihat potensi <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </div>
             </a>
 

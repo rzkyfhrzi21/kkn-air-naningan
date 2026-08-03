@@ -1,117 +1,108 @@
 <?php
-$pageTitle = 'Kelola Potensi Desa';
+$pageTitle = 'Kelola Potensi';
 $activeNav = 'kelola-potensi';
 require __DIR__ . '/../partials/header.php';
 ?>
-<div class="flex flex-col w-full p-8 space-y-12 pb-24">
+<div class="flex flex-col w-full min-h-full">
 
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 border-b border-line pb-8">
-        <div class="space-y-2 max-w-2xl">
-            <div class="flex items-center gap-3 text-gold-soft font-label-mono uppercase tracking-widest text-[10px]">
-                <span class="w-8 h-px bg-gold-soft/50"></span>
-                Manajemen Potensi
+    <!-- Header -->
+    <div class="px-container-pad-desktop py-8 md:py-12 border-b border-line">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div class="flex flex-col gap-2">
+                <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest">Potensi Unggulan</span>
+                <h1 class="font-h2 text-h2 text-ink">Kelola Potensi</h1>
+                <p class="font-body-md text-body-md text-ink-dim max-w-2xl">Kelola potensi unggulan desa meliputi pertanian, wisata, UMKM, dan peternakan di Pekon Air Naningan.</p>
             </div>
-            <h1 class="font-h1 text-h1 text-ink m-0 p-0 leading-tight">Potensi <span class="italic text-primary">Desa</span></h1>
-            <p class="font-body-md text-ink-dim text-body-lg max-w-xl">Kelola komoditas unggulan dan potensi ekonomi kreatif Pekon Air Naningan. Data ini akan ditampilkan pada halaman publik portal desa.</p>
-        </div>
-        <div class="flex-shrink-0">
-            <button class="bg-primary hover:bg-primary-fixed text-on-primary font-body-md text-[14px] font-medium px-6 py-3 rounded-full flex items-center gap-2 transition-all shadow-lg shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-0.5" onclick="document.getElementById('add-modal').classList.remove('hidden')">
+            <button class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary hover:bg-primary-fixed-dim text-on-primary rounded-full transition-all duration-300 font-label-mono text-label-mono uppercase shadow-lg shadow-primary/20 shrink-0" id="btn-create">
                 <span class="material-symbols-outlined text-[18px]">add</span>
                 Tambah Potensi
             </button>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div class="lg:col-span-1 space-y-6">
-            <div class="bg-surface-container rounded-2xl p-6 border border-line-strong relative overflow-hidden group">
-                <div class="absolute -right-12 -top-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-700"></div>
-                <div class="relative z-10 flex flex-col gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-surface-2 flex items-center justify-center border border-line text-primary">
-                        <span class="material-symbols-outlined text-[24px]">coffee</span>
+    <!-- Main Content -->
+    <div class="flex-1 p-6 md:p-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Sidebar Stats -->
+            <div class="lg:col-span-1 flex flex-col gap-6">
+                <!-- Total Card -->
+                <div class="bg-surface-2 rounded-2xl p-6 border border-line flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <span class="font-label-mono text-label-mono text-ink-dim uppercase">Total Potensi</span>
+                        <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center border border-line">
+                            <span class="material-symbols-outlined text-gold-soft text-[16px]">emoji_objects</span>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-h3 text-[32px] text-ink leading-none mb-1">12</h3>
-                        <p class="font-label-mono text-ink-dim uppercase tracking-wider text-[10px]">Total Komoditas</p>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-surface-container rounded-2xl p-6 border border-line-strong relative overflow-hidden group">
-                <div class="absolute -right-12 -top-12 w-48 h-48 bg-tertiary-container/5 rounded-full blur-3xl group-hover:bg-tertiary-container/10 transition-colors duration-700"></div>
-                <div class="relative z-10 flex flex-col gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-surface-2 flex items-center justify-center border border-line text-tertiary-container">
-                        <span class="material-symbols-outlined text-[24px]">agriculture</span>
-                    </div>
-                    <div>
-                        <h3 class="font-h3 text-[32px] text-ink leading-none mb-1">4</h3>
-                        <p class="font-label-mono text-ink-dim uppercase tracking-wider text-[10px]">Kategori Aktif</p>
+                    <div class="font-h1 text-h1 text-ink" id="total-count">0</div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded bg-surface text-ink-dim font-label-mono text-[10px]">4 Kategori</span>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="lg:col-span-3">
-            <div class="bg-surface-container rounded-2xl border border-line-strong overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-low/50">
-                    <h2 class="font-h3 text-h3 text-ink text-[20px]">Daftar Komoditas</h2>
-                    <div class="relative w-full sm:w-64">
-                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-dim text-[18px]">search</span>
-                        <input class="w-full bg-surface border border-line-strong rounded-lg py-2 pl-10 pr-4 text-[14px] text-ink placeholder:text-ink-dim/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-body-md" placeholder="Cari potensi..." type="text"/>
+                <!-- Filter -->
+                <div class="bg-surface-container rounded-2xl p-6 border border-line flex flex-col gap-4">
+                    <div class="flex items-center gap-3 text-gold-soft">
+                        <span class="material-symbols-outlined">filter_list</span>
+                        <h3 class="font-h3 text-h3">Filter</h3>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <button class="filter-kategori active text-left py-2 px-3 rounded-lg bg-surface-2 text-ink border border-primary text-sm font-label-mono" data-kategori="">Semua</button>
+                        <button class="filter-kategori text-left py-2 px-3 rounded-lg bg-surface text-ink-dim border border-line hover:bg-surface-2 text-sm font-label-mono transition-colors" data-kategori="pertanian">Pertanian</button>
+                        <button class="filter-kategori text-left py-2 px-3 rounded-lg bg-surface text-ink-dim border border-line hover:bg-surface-2 text-sm font-label-mono transition-colors" data-kategori="wisata">Wisata</button>
+                        <button class="filter-kategori text-left py-2 px-3 rounded-lg bg-surface text-ink-dim border border-line hover:bg-surface-2 text-sm font-label-mono transition-colors" data-kategori="umkm">UMKM</button>
+                        <button class="filter-kategori text-left py-2 px-3 rounded-lg bg-surface text-ink-dim border border-line hover:bg-surface-2 text-sm font-label-mono transition-colors" data-kategori="peternakan">Peternakan</button>
                     </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-line text-ink-dim font-label-mono text-[10px] uppercase tracking-wider bg-surface-container/50">
-                                <th class="py-4 px-6 font-medium">Komoditas</th>
-                                <th class="py-4 px-6 font-medium">Kategori</th>
-                                <th class="py-4 px-6 font-medium">Status</th>
-                                <th class="py-4 px-6 font-medium text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="font-body-md text-[14px] text-ink divide-y divide-line/50">
-                            <?php
-                            $items = [
-                                ['Kopi Robusta',  'Produksi tahunan mencapai 50 ton dengan kualitas ekspor.', 'Perkebunan'],
-                                ['Kakao',         'Biji kakao fermentasi standar industri pengolahan cokelat.', 'Perkebunan'],
-                                ['Gula Aren',     'Gula aren organik cetak tradisional tanpa pengawet.', 'Industri Rumahan'],
-                            ];
-                            foreach ($items as [$nama, $desc, $kat]): ?>
-                            <tr class="hover:bg-surface-2/30 transition-colors group">
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-line bg-surface flex items-center justify-center">
-                                            <span class="material-symbols-outlined text-gold-soft text-[20px]">energy_savings_leaf</span>
+            </div>
+
+            <!-- Main Table -->
+            <div class="lg:col-span-3">
+                <div class="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col shadow-md">
+                    
+                    <!-- Search Bar -->
+                    <div class="p-4 border-b border-line flex items-center justify-between bg-surface-container/50">
+                        <div class="relative w-64">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-dim text-[18px]">search</span>
+                            <input id="search-input" class="w-full bg-surface-container-high text-ink font-body-md text-sm rounded-lg pl-10 pr-4 py-2 border border-line focus:outline-none focus:border-gold-soft transition-colors placeholder:text-ink-dim/50" placeholder="Cari potensi..." type="text"/>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-line-strong bg-surface-container/30">
+                                    <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase tracking-wider font-normal">Nama Potensi</th>
+                                    <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase tracking-wider font-normal">Kategori</th>
+                                    <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase tracking-wider font-normal">Kapasitas</th>
+                                    <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase tracking-wider font-normal">Status</th>
+                                    <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase tracking-wider font-normal text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body" class="divide-y divide-line">
+                                <tr>
+                                    <td colspan="5" class="py-20 text-center">
+                                        <div class="flex items-center justify-center">
+                                            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
                                         </div>
-                                        <div>
-                                            <div class="font-medium text-ink group-hover:text-primary transition-colors"><?= htmlspecialchars($nama) ?></div>
-                                            <div class="text-ink-dim text-[12px] line-clamp-1 max-w-[200px]"><?= htmlspecialchars($desc) ?></div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6"><span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium bg-surface text-ink-dim border border-line"><?= htmlspecialchars($kat) ?></span></td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-1.5 text-primary text-[12px]">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>Aktif
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6 text-right">
-                                    <div class="flex items-center justify-end gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
-                                        <button class="p-1.5 rounded-md hover:bg-surface-2 text-ink-dim hover:text-ink transition-colors" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                        <button class="p-1.5 rounded-md hover:bg-error-container hover:text-on-error-container text-ink-dim transition-colors" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="p-4 border-t border-line flex items-center justify-between bg-surface-container-low text-[13px] text-ink-dim">
-                    <span>Menampilkan 1-3 dari 12 komoditas</span>
-                    <div class="flex gap-1">
-                        <button class="px-3 py-1 rounded-md bg-surface border border-line text-ink">1</button>
-                        <button class="px-3 py-1 rounded-md hover:bg-surface border border-transparent hover:border-line transition-all">2</button>
-                        <button class="px-3 py-1 rounded-md hover:bg-surface border border-transparent hover:border-line transition-all">3</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="p-4 border-t border-line flex items-center justify-between bg-surface-container/30">
+                        <span id="pagination-info" class="font-body-md text-[13px] text-ink-dim">Memuat...</span>
+                        <div class="flex items-center gap-1">
+                            <button id="btn-prev" class="w-8 h-8 flex items-center justify-center rounded bg-surface-container border border-line text-ink-dim disabled:opacity-50 disabled:cursor-not-allowed hover:border-gold-soft transition-colors" disabled>
+                                <span class="material-symbols-outlined text-[16px]">chevron_left</span>
+                            </button>
+                            <button id="btn-next" class="w-8 h-8 flex items-center justify-center rounded bg-surface-container border border-line text-ink-dim disabled:opacity-50 disabled:cursor-not-allowed hover:border-gold-soft transition-colors" disabled>
+                                <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -119,46 +110,314 @@ require __DIR__ . '/../partials/header.php';
     </div>
 </div>
 
-<!-- Modal Tambah Potensi -->
-<div class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" id="add-modal">
-    <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" onclick="document.getElementById('add-modal').classList.add('hidden')"></div>
-    <div class="relative bg-surface-container rounded-2xl border border-line-strong shadow-[0_20px_50px_-20px_rgba(0,0,0,0.55)] w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-        <div class="p-6 border-b border-line flex items-center justify-between bg-surface-container-low sticky top-0 z-10">
-            <div>
-                <h2 class="font-h3 text-h3 text-ink text-[22px]">Tambah Potensi Baru</h2>
-                <p class="text-ink-dim text-[13px] mt-1 font-body-md">Lengkapi detail informasi komoditas atau potensi desa.</p>
+<!-- Modal Form -->
+<div class="modal fade" id="modalForm" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-surface border-2 border-line rounded-3xl shadow-2xl overflow-hidden">
+            <div class="modal-header border-b border-line px-8 py-6 bg-surface-container-lowest">
+                <h5 class="modal-title font-h3 text-h3 text-ink" id="modalFormLabel">Tambah Potensi</h5>
+                <button type="button" class="text-ink-dim hover:text-ink transition-colors" data-bs-dismiss="modal" aria-label="Close">
+                    <span class="material-symbols-outlined text-[24px]">close</span>
+                </button>
             </div>
-            <button class="p-2 text-ink-dim hover:text-ink hover:bg-surface-2 rounded-full transition-colors" onclick="document.getElementById('add-modal').classList.add('hidden')">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div class="p-6 overflow-y-auto space-y-8 font-body-md">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="modal-body px-8 py-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                <input type="hidden" id="potensi-id" value="">
+                
                 <div class="space-y-2">
-                    <label class="block text-[13px] text-ink-dim font-medium">Nama Komoditas</label>
-                    <input class="w-full bg-surface border border-line-strong rounded-lg px-4 py-2.5 text-[14px] text-ink placeholder:text-ink-dim/50 focus:outline-none focus:border-primary transition-colors" placeholder="Misal: Kopi Liberika" type="text"/>
+                    <label class="font-body-md text-[13px] text-ink-dim block">Nama Potensi <span class="text-error">*</span></label>
+                    <input id="potensi-nama" class="w-full bg-surface-container border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary transition-colors" type="text" placeholder="Kopi Robusta Air Naningan" required>
                 </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="font-body-md text-[13px] text-ink-dim block">Kategori <span class="text-error">*</span></label>
+                        <select id="potensi-kategori" class="w-full bg-surface-container border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary appearance-none cursor-pointer" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="pertanian">Pertanian</option>
+                            <option value="wisata">Wisata</option>
+                            <option value="umkm">UMKM</option>
+                            <option value="peternakan">Peternakan</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="font-body-md text-[13px] text-ink-dim block">Kapasitas</label>
+                        <input id="potensi-kapasitas" class="w-full bg-surface-container border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary" type="text" placeholder="50 ton/tahun">
+                    </div>
+                </div>
+
                 <div class="space-y-2">
-                    <label class="block text-[13px] text-ink-dim font-medium">Kategori</label>
-                    <select class="w-full bg-surface border border-line-strong rounded-lg px-4 py-2.5 text-[14px] text-ink focus:outline-none focus:border-primary transition-colors appearance-none">
-                        <option value="">Pilih Kategori...</option>
-                        <option value="perkebunan">Perkebunan</option>
-                        <option value="pertanian">Pertanian</option>
-                        <option value="industri">Industri Rumahan</option>
-                        <option value="kerajinan">Kerajinan</option>
+                    <label class="font-body-md text-[13px] text-ink-dim block">Deskripsi <span class="text-error">*</span></label>
+                    <textarea id="potensi-deskripsi" class="w-full bg-surface-container border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary resize-none" rows="4" placeholder="Deskripsikan potensi ini secara detail" required></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="font-body-md text-[13px] text-ink-dim block">URL Foto</label>
+                    <input id="potensi-foto" class="w-full bg-surface-container border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary" type="url" placeholder="https://example.com/foto.jpg">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="font-body-md text-[13px] text-ink-dim block">Status</label>
+                    <select id="potensi-status" class="w-full bg-surface-container border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary appearance-none cursor-pointer">
+                        <option value="aktif">Aktif</option>
+                        <option value="berkembang">Berkembang</option>
+                        <option value="potensial">Potensial</option>
                     </select>
                 </div>
             </div>
-            <div class="space-y-2">
-                <label class="block text-[13px] text-ink-dim font-medium">Deskripsi Produksi &amp; Proses</label>
-                <textarea class="w-full bg-surface border border-line-strong rounded-lg px-4 py-3 text-[14px] text-ink placeholder:text-ink-dim/50 focus:outline-none focus:border-primary transition-colors resize-none" placeholder="Ceritakan detail proses produksi, keunikan, dan nilai jual..." rows="5"></textarea>
+            <div class="modal-footer border-t border-line px-8 py-6 bg-surface-container-lowest flex justify-end gap-3">
+                <button type="button" class="px-6 py-2.5 rounded-full border border-line text-ink hover:bg-surface-2 transition-colors font-label-mono text-[11px] uppercase tracking-widest" data-bs-dismiss="modal">Batal</button>
+                <button type="button" id="btn-save" class="px-6 py-2.5 rounded-full bg-primary text-on-primary hover:bg-primary-fixed transition-colors font-label-mono text-[11px] uppercase tracking-widest shadow-lg shadow-primary/20">
+                    Simpan
+                </button>
             </div>
-        </div>
-        <div class="p-6 border-t border-line bg-surface-container-low flex justify-end gap-3 sticky bottom-0 z-10">
-            <button class="px-6 py-2.5 rounded-full border border-line text-ink hover:bg-surface transition-colors font-body-md text-[14px]" onclick="document.getElementById('add-modal').classList.add('hidden')">Batal</button>
-            <button class="px-6 py-2.5 rounded-full bg-primary hover:bg-primary-fixed text-on-primary font-medium transition-colors font-body-md text-[14px] shadow-sm shadow-primary/20">Simpan Potensi</button>
         </div>
     </div>
 </div>
+
+<!-- Toast -->
+<div class="position-fixed bottom-0 end-0 p-4" style="z-index: 9999">
+    <div id="toast" class="hidden bg-surface border-2 border-line rounded-2xl shadow-2xl overflow-hidden min-w-[320px]">
+        <div class="px-6 py-4 flex items-start gap-4">
+            <span id="toast-icon" class="material-symbols-outlined text-[24px] flex-shrink-0"></span>
+            <div class="flex-1 min-w-0">
+                <p id="toast-message" class="font-body-md text-ink leading-relaxed"></p>
+            </div>
+            <button onclick="hideToast()" class="text-ink-dim hover:text-ink transition-colors flex-shrink-0">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentPage = 1;
+let currentSearch = '';
+let currentKategori = '';
+
+function loadData() {
+    const tableBody = document.getElementById('table-body');
+    tableBody.innerHTML = '<tr><td colspan="5" class="py-20 text-center"><div class="flex items-center justify-center"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div></div></td></tr>';
+
+    const formData = new FormData();
+    formData.append('page', currentPage);
+    formData.append('search', currentSearch);
+    formData.append('kategori', currentKategori);
+
+    fetch('/kkn-air-naningan/admin/ajax/list-potensi.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            renderTable(data.data);
+            updatePagination(data);
+            document.getElementById('total-count').textContent = data.total;
+        }
+    });
+}
+
+function renderTable(items) {
+    const tableBody = document.getElementById('table-body');
+    if (items.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" class="py-20 text-center text-ink-dim font-body-md">Tidak ada potensi ditemukan</td></tr>';
+        return;
+    }
+
+    tableBody.innerHTML = items.map(item => {
+        const kategoriColor = {
+            'pertanian': 'bg-primary',
+            'wisata': 'bg-secondary',
+            'umkm': 'bg-tertiary',
+            'peternakan': 'bg-outline'
+        };
+        const dotColor = kategoriColor[item.kategori] || 'bg-surface-variant';
+        
+        const statusColor = {
+            'aktif': 'bg-surface-2 text-ink',
+            'berkembang': 'bg-secondary-container/20 text-on-secondary-container',
+            'potensial': 'bg-tertiary-container/20 text-tertiary-fixed-dim'
+        };
+        const statusBg = statusColor[item.status] || 'bg-surface-container text-ink-dim';
+        
+        return `
+            <tr class="hover:bg-surface-2 transition-colors group">
+                <td class="py-4 px-6">
+                    <div class="flex flex-col">
+                        <span class="font-body-md text-body-md text-ink font-medium group-hover:text-gold-soft transition-colors">${item.nama}</span>
+                        <span class="font-body-md text-[13px] text-ink-dim line-clamp-1 mt-1">${item.deskripsi || ''}</span>
+                    </div>
+                </td>
+                <td class="py-4 px-6">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container border border-line text-ink-dim font-label-mono text-[10px] uppercase">
+                        <span class="w-1.5 h-1.5 rounded-full ${dotColor}"></span>
+                        ${item.kategori_label || item.kategori}
+                    </span>
+                </td>
+                <td class="py-4 px-6">
+                    <span class="font-body-md text-[13px] text-ink">${item.kapasitas || '-'}</span>
+                </td>
+                <td class="py-4 px-6">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full ${statusBg} border border-line font-label-mono text-[10px] uppercase">${item.status || 'aktif'}</span>
+                </td>
+                <td class="py-4 px-6 text-right">
+                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="editItem('${item.id}')" class="p-1.5 rounded-md hover:bg-surface-container-high text-ink-dim hover:text-primary transition-colors" title="Edit">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                        </button>
+                        <button onclick="deleteItem('${item.id}', '${item.nama.replace(/'/g, "\\'")}')" class="p-1.5 rounded-md hover:bg-surface-container-high text-ink-dim hover:text-danger transition-colors" title="Hapus">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function updatePagination(data) {
+    document.getElementById('pagination-info').textContent = 
+        `Menampilkan ${((data.page - 1) * 10) + 1}-${Math.min(data.page * 10, data.total)} dari ${data.total} potensi`;
+    document.getElementById('btn-prev').disabled = !data.has_prev;
+    document.getElementById('btn-next').disabled = !data.has_next;
+}
+
+function editItem(id) {
+    const formData = new FormData();
+    formData.append('id', id);
+
+    fetch('/kkn-air-naningan/admin/ajax/get-potensi.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const item = data.data;
+            document.getElementById('modalFormLabel').textContent = 'Edit Potensi';
+            document.getElementById('potensi-id').value = item.id;
+            document.getElementById('potensi-nama').value = item.nama;
+            document.getElementById('potensi-kategori').value = item.kategori;
+            document.getElementById('potensi-kapasitas').value = item.kapasitas || '';
+            document.getElementById('potensi-deskripsi').value = item.deskripsi;
+            document.getElementById('potensi-foto').value = item.foto || '';
+            document.getElementById('potensi-status').value = item.status || 'aktif';
+            
+            const modal = new bootstrap.Modal(document.getElementById('modalForm'));
+            modal.show();
+        }
+    });
+}
+
+function deleteItem(id, nama) {
+    if (!confirm(`Yakin ingin menghapus potensi "${nama}"?`)) return;
+
+    const formData = new FormData();
+    formData.append('id', id);
+
+    fetch('/kkn-air-naningan/admin/ajax/delete-potensi.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        showToast(data.message, data.success ? 'success' : 'error');
+        if (data.success) loadData();
+    });
+}
+
+function saveItem() {
+    const formData = new FormData();
+    formData.append('id', document.getElementById('potensi-id').value);
+    formData.append('nama', document.getElementById('potensi-nama').value);
+    formData.append('kategori', document.getElementById('potensi-kategori').value);
+    formData.append('kapasitas', document.getElementById('potensi-kapasitas').value);
+    formData.append('deskripsi', document.getElementById('potensi-deskripsi').value);
+    formData.append('foto', document.getElementById('potensi-foto').value);
+    formData.append('status', document.getElementById('potensi-status').value);
+
+    fetch('/kkn-air-naningan/admin/ajax/store-potensi.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        showToast(data.message, data.success ? 'success' : 'error');
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('modalForm')).hide();
+            loadData();
+        }
+    });
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const icon = document.getElementById('toast-icon');
+    const msg = document.getElementById('toast-message');
+    
+    icon.textContent = type === 'success' ? 'check_circle' : 'error';
+    icon.className = `material-symbols-outlined text-[24px] flex-shrink-0 ${type === 'success' ? 'text-primary' : 'text-error'}`;
+    msg.textContent = message;
+    
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 4000);
+}
+
+function hideToast() {
+    document.getElementById('toast').classList.add('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+
+    document.getElementById('btn-create').addEventListener('click', () => {
+        document.getElementById('modalFormLabel').textContent = 'Tambah Potensi';
+        document.getElementById('potensi-id').value = '';
+        document.getElementById('potensi-nama').value = '';
+        document.getElementById('potensi-kategori').value = '';
+        document.getElementById('potensi-kapasitas').value = '';
+        document.getElementById('potensi-deskripsi').value = '';
+        document.getElementById('potensi-foto').value = '';
+        document.getElementById('potensi-status').value = 'aktif';
+        
+        const modal = new bootstrap.Modal(document.getElementById('modalForm'));
+        modal.show();
+    });
+
+    document.getElementById('btn-save').addEventListener('click', saveItem);
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+        currentSearch = e.target.value;
+        currentPage = 1;
+        loadData();
+    });
+
+    document.querySelectorAll('.filter-kategori').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-kategori').forEach(b => {
+                b.classList.remove('active', 'border-primary', 'bg-surface-2', 'text-ink');
+                b.classList.add('border-line', 'text-ink-dim');
+            });
+            btn.classList.add('active', 'border-primary', 'bg-surface-2', 'text-ink');
+            btn.classList.remove('border-line', 'text-ink-dim');
+            currentKategori = btn.dataset.kategori;
+            currentPage = 1;
+            loadData();
+        });
+    });
+
+    document.getElementById('btn-prev').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            loadData();
+        }
+    });
+
+    document.getElementById('btn-next').addEventListener('click', () => {
+        currentPage++;
+        loadData();
+    });
+});
+</script>
 
 <?php require __DIR__ . '/../partials/footer.php'; ?>

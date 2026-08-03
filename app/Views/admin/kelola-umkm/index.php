@@ -2,184 +2,459 @@
 $pageTitle = 'Kelola UMKM';
 $activeNav = 'kelola-umkm';
 require __DIR__ . '/../partials/header.php';
+
+$kategori = $kategori ?? [];
+$csrf     = (string) ($_SESSION['csrf_token'] ?? '');
+$base     = defined('APP_BASE') ? APP_BASE : '';
 ?>
 <div class="flex flex-col w-full h-full min-h-[calc(100vh-64px)] bg-background">
 
-    <!-- Header Section -->
     <div class="px-container-pad-desktop py-8 md:py-12 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line-strong bg-surface-container-lowest">
         <div class="flex flex-col max-w-2xl">
             <h1 class="font-h2 text-h2 text-ink mb-2">Kelola UMKM</h1>
-            <p class="font-body-md text-body-md text-ink-dim">Direktori Usaha Mikro Kecil dan Menengah Pekon Air Naningan. Kelola data pelaku usaha untuk mendukung pengembangan ekonomi lokal.</p>
+            <p class="font-body-md text-body-md text-ink-dim">Data mengikuti katalog publik <code class="text-gold-soft">/umkm</code>. Tambah, edit, hapus produk usaha warga.</p>
         </div>
         <div class="flex shrink-0">
-            <button class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-on-primary font-body-md text-body-md font-medium hover:bg-primary-fixed transition-colors shadow-lg shadow-primary/10">
+            <button type="button" id="btn-tambah-umkm"
+                    class="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary text-on-primary font-body-md text-body-md font-medium hover:bg-primary-fixed transition-colors shadow-lg shadow-primary/10">
                 <span class="material-symbols-outlined text-[20px]">add</span>
                 Tambah UMKM
             </button>
         </div>
     </div>
 
-    <!-- Main Content Area -->
+    <div id="umkm-toast" class="hidden fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm" role="status"></div>
+
     <div class="flex-1 p-container-pad-desktop">
         <div class="max-w-container-max mx-auto flex flex-col gap-6">
 
-            <!-- Filters and Search -->
             <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-surface p-4 rounded-xl border border-line">
                 <div class="relative w-full md:w-96">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <span class="material-symbols-outlined text-ink-dim text-[20px]">search</span>
                     </div>
-                    <input class="w-full bg-surface-container-high border-none text-ink text-body-md font-body-md rounded-lg pl-10 pr-4 py-2.5 focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-ink-dim/50 transition-shadow" placeholder="Cari nama usaha atau pemilik..." type="text"/>
+                    <input id="search-umkm" class="w-full bg-surface-container-high border-none text-ink text-body-md font-body-md rounded-lg pl-10 pr-4 py-2.5 focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-ink-dim/50" placeholder="Cari nama usaha atau pemilik..." type="text"/>
                 </div>
-                <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-                    <button class="px-4 py-2 rounded-full bg-surface-2 text-ink border border-line-strong font-label-mono text-label-mono whitespace-nowrap hover:border-primary/50 transition-colors">Semua Kategori</button>
-                    <button class="px-4 py-2 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-label-mono whitespace-nowrap hover:bg-surface-2 transition-colors">Kuliner</button>
-                    <button class="px-4 py-2 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-label-mono whitespace-nowrap hover:bg-surface-2 transition-colors">Kopi</button>
-                    <button class="px-4 py-2 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-label-mono whitespace-nowrap hover:bg-surface-2 transition-colors">Kriya</button>
-                    <button class="px-4 py-2 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-label-mono whitespace-nowrap hover:bg-surface-2 transition-colors">Jasa</button>
+                <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0" id="filter-umkm">
+                    <button type="button" data-kat="all" class="kat-btn px-4 py-2 rounded-full bg-surface-2 text-ink border border-line-strong font-label-mono text-label-mono whitespace-nowrap">Semua</button>
+                    <?php foreach ($kategori as $key => $label): ?>
+                    <button type="button" data-kat="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>"
+                            class="kat-btn px-4 py-2 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-label-mono whitespace-nowrap hover:bg-surface-2 transition-colors">
+                        <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
+                    </button>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
-            <!-- Data Table -->
             <div class="bg-surface rounded-2xl border border-line overflow-hidden flex flex-col shadow-sm">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr class="border-b border-line-strong bg-surface-container/50">
-                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase bg-surface-container/90 backdrop-blur z-10 w-16">No</th>
-                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase bg-surface-container/90 backdrop-blur z-10">Nama Usaha</th>
-                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase bg-surface-container/90 backdrop-blur z-10 w-32">Kategori</th>
-                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase bg-surface-container/90 backdrop-blur z-10 w-48">Dusun</th>
-                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase bg-surface-container/90 backdrop-blur z-10 w-32">Status</th>
-                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase bg-surface-container/90 backdrop-blur z-10 w-24 text-right">Aksi</th>
+                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase w-16">No</th>
+                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase">Nama Produk</th>
+                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase w-40">Kategori</th>
+                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase w-40">Dusun</th>
+                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase w-28">Status</th>
+                                <th class="py-4 px-6 font-label-mono text-label-mono text-ink-dim uppercase w-24 text-right">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="font-body-md text-body-md text-ink">
-                            <tr class="border-b border-line/50 hover:bg-surface-2 transition-colors group cursor-pointer">
-                                <td class="py-4 px-6 text-ink-dim font-label-mono text-label-mono">01</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0 border border-line">
-                                            <span class="material-symbols-outlined text-gold-soft text-[20px]">local_cafe</span>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-ink">Kopi Robusta Sinar Mas</div>
-                                            <div class="text-[13px] text-ink-dim mt-0.5">Bpk. Haryanto</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6"><span class="inline-flex px-2.5 py-1 rounded-md bg-surface-container-high text-gold-soft text-[12px] font-medium border border-gold-soft/20">Kopi</span></td>
-                                <td class="py-4 px-6 text-ink-dim">Sinar Naningan</td>
-                                <td class="py-4 px-6">
-                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-[12px] font-medium">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>Aktif
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-ink transition-colors" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                        <button class="w-8 h-8 rounded-full hover:bg-error-container/30 flex items-center justify-center text-ink-dim hover:text-error transition-colors" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-line/50 hover:bg-surface-2 transition-colors group cursor-pointer">
-                                <td class="py-4 px-6 text-ink-dim font-label-mono text-label-mono">02</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0 border border-line">
-                                            <span class="material-symbols-outlined text-gold-soft text-[20px]">restaurant</span>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-ink">Keripik Pisang Mpok Nur</div>
-                                            <div class="text-[13px] text-ink-dim mt-0.5">Ibu Nurhayati</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6"><span class="inline-flex px-2.5 py-1 rounded-md bg-surface-container-high text-gold-soft text-[12px] font-medium border border-gold-soft/20">Kuliner</span></td>
-                                <td class="py-4 px-6 text-ink-dim">Batu Tegi</td>
-                                <td class="py-4 px-6">
-                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-[12px] font-medium">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>Aktif
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-ink transition-colors" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                        <button class="w-8 h-8 rounded-full hover:bg-error-container/30 flex items-center justify-center text-ink-dim hover:text-error transition-colors" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-line/50 hover:bg-surface-2 transition-colors group cursor-pointer">
-                                <td class="py-4 px-6 text-ink-dim font-label-mono text-label-mono">03</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0 border border-line">
-                                            <span class="material-symbols-outlined text-gold-soft text-[20px]">handyman</span>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-ink">Anyaman Bambu Lestari</div>
-                                            <div class="text-[13px] text-ink-dim mt-0.5">Bpk. Sudirman</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6"><span class="inline-flex px-2.5 py-1 rounded-md bg-surface-container-high text-gold-soft text-[12px] font-medium border border-gold-soft/20">Kriya</span></td>
-                                <td class="py-4 px-6 text-ink-dim">Sinar Petir</td>
-                                <td class="py-4 px-6">
-                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-highest text-ink-dim border border-line-strong text-[12px] font-medium">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-ink-dim/50"></div>Non-aktif
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-ink transition-colors" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                        <button class="w-8 h-8 rounded-full hover:bg-error-container/30 flex items-center justify-center text-ink-dim hover:text-error transition-colors" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class="border-b border-line/50 hover:bg-surface-2 transition-colors group cursor-pointer">
-                                <td class="py-4 px-6 text-ink-dim font-label-mono text-label-mono">04</td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0 border border-line">
-                                            <span class="material-symbols-outlined text-gold-soft text-[20px]">agriculture</span>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium text-ink">Pembibitan Pala Jaya</div>
-                                            <div class="text-[13px] text-ink-dim mt-0.5">Kelompok Tani Mekar</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6"><span class="inline-flex px-2.5 py-1 rounded-md bg-surface-container-high text-gold-soft text-[12px] font-medium border border-gold-soft/20">Agrikultur</span></td>
-                                <td class="py-4 px-6 text-ink-dim">Air Naningan Induk</td>
-                                <td class="py-4 px-6">
-                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-[12px] font-medium">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-primary"></div>Aktif
-                                    </div>
-                                </td>
-                                <td class="py-4 px-6">
-                                    <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-ink transition-colors" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                                        <button class="w-8 h-8 rounded-full hover:bg-error-container/30 flex items-center justify-center text-ink-dim hover:text-error transition-colors" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
-                                    </div>
+                        <tbody id="umkm-tbody" class="font-body-md text-body-md text-ink">
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-ink-dim">
+                                    <span class="inline-block w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <!-- Pagination Footer -->
-                <div class="px-6 py-4 border-t border-line bg-surface-container/30 flex items-center justify-between">
-                    <span class="text-[13px] text-ink-dim">Menampilkan 1-4 dari 42 UMKM</span>
-                    <div class="flex items-center gap-1">
-                        <button class="w-8 h-8 rounded-md flex items-center justify-center text-ink-dim hover:bg-surface-2 transition-colors disabled:opacity-30" disabled><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
-                        <button class="w-8 h-8 rounded-md flex items-center justify-center bg-primary/20 text-primary font-medium text-[13px] border border-primary/30">1</button>
-                        <button class="w-8 h-8 rounded-md flex items-center justify-center text-ink hover:bg-surface-2 transition-colors font-medium text-[13px]">2</button>
-                        <button class="w-8 h-8 rounded-md flex items-center justify-center text-ink hover:bg-surface-2 transition-colors font-medium text-[13px]">3</button>
-                        <button class="w-8 h-8 rounded-md flex items-center justify-center text-ink-dim hover:bg-surface-2 transition-colors"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
+                <div class="flex items-center justify-between px-6 py-4 border-t border-line bg-surface-container/30">
+                    <span id="umkm-meta" class="font-label-mono text-label-mono text-ink-dim text-xs">—</span>
+                    <div class="flex gap-2">
+                        <button type="button" id="btn-prev" disabled class="px-4 py-2 rounded-full border border-line text-ink-dim font-label-mono text-xs uppercase disabled:opacity-40">Prev</button>
+                        <button type="button" id="btn-next" disabled class="px-4 py-2 rounded-full border border-line text-ink-dim font-label-mono text-xs uppercase disabled:opacity-40">Next</button>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
+
+<!-- Modal form -->
+<div id="modal-umkm" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60" id="modal-umkm-backdrop"></div>
+    <div class="relative w-full max-w-2xl bg-surface border border-line rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-line sticky top-0 bg-surface z-10">
+            <h2 id="modal-umkm-title" class="font-h3 text-h3 text-ink">Tambah UMKM</h2>
+            <button type="button" id="modal-umkm-close" class="w-9 h-9 rounded-full hover:bg-surface-2 flex items-center justify-center text-ink-dim hover:text-ink" aria-label="Tutup">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="form-umkm" class="p-6 flex flex-col gap-4">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="id" id="umkm-id" value="">
+
+            <label class="flex flex-col gap-1.5">
+                <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Nama Produk *</span>
+                <input name="nama" id="umkm-nama" required type="text" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Kopi Bubuk Robusta...">
+            </label>
+            <label class="flex flex-col gap-1.5">
+                <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Nama Usaha</span>
+                <input name="usaha" id="umkm-usaha" type="text" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Kopi Naningan Jaya Raya">
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+                <label class="flex flex-col gap-1.5">
+                    <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Kategori</span>
+                    <select name="kategori" id="umkm-kategori" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+                        <?php foreach ($kategori as $key => $label): ?>
+                        <option value="<?= htmlspecialchars($key, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <label class="flex flex-col gap-1.5">
+                    <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Status</span>
+                    <select name="status" id="umkm-status" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+                        <option value="aktif">Aktif</option>
+                        <option value="nonaktif">Nonaktif</option>
+                    </select>
+                </label>
+            </div>
+            <label class="flex flex-col gap-1.5">
+                <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Deskripsi</span>
+                <textarea name="deskripsi" id="umkm-deskripsi" rows="3" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary resize-y" placeholder="Deskripsi produk..."></textarea>
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+                <label class="flex flex-col gap-1.5">
+                    <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Pemilik</span>
+                    <input name="pemilik" id="umkm-pemilik" type="text" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Bpk. Suherman">
+                </label>
+                <label class="flex flex-col gap-1.5">
+                    <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Dusun</span>
+                    <input name="dusun" id="umkm-dusun" type="text" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Dusun Sinar Jaya">
+                </label>
+            </div>
+            <label class="flex flex-col gap-1.5">
+                <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">No. WhatsApp (62...)</span>
+                <input name="no_wa" id="umkm-wa" type="text" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="6281234567890">
+            </label>
+            <!-- Foto Upload -->
+            <div class="flex flex-col gap-1.5">
+                <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Foto</span>
+                <!-- Preview foto lama (mode edit) -->
+                <div id="umkm-foto-preview" class="hidden items-center gap-3 p-3 bg-surface-container-high rounded-xl border border-line">
+                    <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-line-strong bg-surface-container">
+                        <img id="umkm-foto-preview-img" src="" alt="Foto saat ini" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex flex-col gap-0.5 min-w-0">
+                        <span class="font-label-mono text-[10px] text-ink-dim uppercase tracking-wider">Foto saat ini</span>
+                        <p class="text-[11px] text-ink-dim/70 truncate" id="umkm-foto-preview-url"></p>
+                        <span class="text-[11px] text-ink-dim/50">Unggah file baru untuk menggantinya</span>
+                    </div>
+                </div>
+                <!-- File picker -->
+                <label for="umkm-foto-file" class="cursor-pointer flex items-center gap-3 p-3 bg-surface-2 border-2 border-dashed border-line-strong rounded-xl hover:border-primary transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center shrink-0 group-hover:bg-primary/10">
+                        <span class="material-symbols-outlined text-ink-dim group-hover:text-primary text-[20px]">upload</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="block font-body-md text-sm text-ink" id="umkm-foto-label">Klik untuk pilih foto</span>
+                        <span class="block text-[11px] text-ink-dim mt-0.5">Maks 2MB &middot; JPG, PNG, GIF, WebP</span>
+                    </div>
+                </label>
+                <input type="file" name="foto_file" id="umkm-foto-file" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only">
+                <!-- Preview file baru -->
+                <div id="umkm-foto-new-preview" class="hidden flex-col gap-2">
+                    <img id="umkm-foto-new-img" src="" alt="Preview" class="w-full max-h-40 object-cover rounded-xl border border-line-strong">
+                    <button type="button" id="umkm-foto-clear" class="self-start flex items-center gap-1 text-[11px] text-ink-dim hover:text-danger font-label-mono">
+                        <span class="material-symbols-outlined text-[14px]">close</span> Hapus pilihan
+                    </button>
+                </div>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+                <input name="is_featured" id="umkm-featured" type="checkbox" value="1" class="rounded border-line-strong text-primary focus:ring-primary">
+                <span class="font-body-md text-sm text-ink">Tampilkan di beranda (featured)</span>
+            </label>
+
+            <div class="flex justify-end gap-3 pt-2 border-t border-line mt-2">
+                <button type="button" id="modal-umkm-batal" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase tracking-wider text-ink bg-surface-2 hover:bg-surface-container-highest">Batal</button>
+                <button type="submit" id="btn-simpan-umkm" class="px-6 py-2.5 rounded-full font-label-mono text-[11px] uppercase tracking-wider bg-primary text-on-primary hover:bg-primary-fixed flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">save</span> Simpan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal hapus -->
+<div id="modal-hapus" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60" id="modal-hapus-backdrop"></div>
+    <div class="relative w-full max-w-sm bg-surface border border-line rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
+        <h2 class="font-h3 text-h3 text-ink">Hapus UMKM?</h2>
+        <p class="font-body-md text-ink-dim text-sm">Yakin hapus <strong id="hapus-nama" class="text-ink"></strong>? Tindakan ini tidak bisa dibatalkan.</p>
+        <div class="flex justify-end gap-3">
+            <button type="button" id="hapus-batal" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
+            <button type="button" id="hapus-ya" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-danger text-white">Hapus</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const base = <?= json_encode($base, JSON_UNESCAPED_SLASHES) ?>;
+    const csrf = <?= json_encode($csrf) ?>;
+    let page = 1, search = '', kategori = 'all', hasNext = false, hasPrev = false;
+    let deleteId = null, searchTimer = null;
+
+    const tbody = document.getElementById('umkm-tbody');
+    const meta = document.getElementById('umkm-meta');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const toastEl = document.getElementById('umkm-toast');
+    const modal = document.getElementById('modal-umkm');
+    const modalHapus = document.getElementById('modal-hapus');
+    const form = document.getElementById('form-umkm');
+
+    function toast(msg, ok) {
+        toastEl.textContent = msg;
+        toastEl.className = 'fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm '
+            + (ok ? 'bg-surface-2 border-primary text-ink' : 'bg-surface-2 border-danger text-ink');
+        toastEl.classList.remove('hidden');
+        clearTimeout(toastEl._t);
+        toastEl._t = setTimeout(() => toastEl.classList.add('hidden'), 4000);
+    }
+
+    function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = s ?? '';
+        return d.innerHTML;
+    }
+
+    async function loadList() {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center"><span class="inline-block w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></span></td></tr>';
+        const fd = new FormData();
+        fd.append('page', page);
+        fd.append('search', search);
+        fd.append('kategori', kategori);
+        try {
+            const res = await fetch(base + '/admin/ajax/list-umkm', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const json = await res.json();
+            if (!json.success) { toast(json.message || 'Gagal memuat.', false); return; }
+            hasNext = json.has_next; hasPrev = json.has_prev;
+            btnPrev.disabled = !hasPrev; btnNext.disabled = !hasNext;
+            meta.textContent = json.total + ' data · halaman ' + json.page;
+            if (!json.data.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-ink-dim">Belum ada data UMKM.</td></tr>';
+                return;
+            }
+            const start = (json.page - 1) * 10;
+            tbody.innerHTML = json.data.map((row, i) => {
+                const no = String(start + i + 1).padStart(2, '0');
+                const aktif = (row.status || 'aktif') === 'aktif';
+                return `<tr class="border-b border-line/50 hover:bg-surface-2 transition-colors group">
+                    <td class="py-4 px-6 text-ink-dim font-label-mono text-label-mono">${no}</td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden shrink-0 border border-line">
+                                ${row.foto ? `<img src="${esc(row.foto)}" alt="" class="w-full h-full object-cover">` : `<span class="material-symbols-outlined text-gold-soft text-[20px] flex items-center justify-center w-full h-full">storefront</span>`}
+                            </div>
+                            <div>
+                                <div class="font-medium text-ink">${esc(row.nama)}</div>
+                                <div class="text-[13px] text-ink-dim mt-0.5">${esc(row.pemilik || row.usaha || '—')}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6"><span class="inline-flex px-2.5 py-1 rounded-md bg-surface-container-high text-gold-soft text-[12px] font-medium border border-gold-soft/20">${esc(row.kategori_label || row.kategori)}</span></td>
+                    <td class="py-4 px-6 text-ink-dim">${esc(row.dusun || '—')}</td>
+                    <td class="py-4 px-6">
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium ${aktif ? 'bg-primary/10 text-primary border border-primary/20' : 'bg-surface-container text-ink-dim border border-line'}">
+                            <div class="w-1.5 h-1.5 rounded-full ${aktif ? 'bg-primary' : 'bg-ink-dim'}"></div>${aktif ? 'Aktif' : 'Nonaktif'}
+                        </div>
+                    </td>
+                    <td class="py-4 px-6">
+                        <div class="flex items-center justify-end gap-1">
+                            <button type="button" data-edit="${esc(row.id)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-ink" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                            <button type="button" data-del="${esc(row.id)}" data-nama="${esc(row.nama)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-danger" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        } catch (e) {
+            toast('Gagal menghubungi server.', false);
+            tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-danger">Error memuat data.</td></tr>';
+        }
+    }
+
+    function openModal(title) {
+        document.getElementById('modal-umkm-title').textContent = title;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+    function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        form.reset();
+        document.getElementById('umkm-id').value = '';
+        const fi = document.getElementById('umkm-foto-file');
+        if (fi) fi.value = '';
+        document.getElementById('umkm-foto-label').textContent = 'Klik untuk pilih foto';
+        document.getElementById('umkm-foto-preview')?.classList.replace('flex', 'hidden');
+        document.getElementById('umkm-foto-preview')?.classList.add('hidden');
+        document.getElementById('umkm-foto-new-preview')?.classList.replace('flex', 'hidden');
+        document.getElementById('umkm-foto-new-preview')?.classList.add('hidden');
+    }
+    function closeHapus() { modalHapus.classList.add('hidden'); modalHapus.classList.remove('flex'); deleteId = null; }
+
+    document.getElementById('btn-tambah-umkm')?.addEventListener('click', () => {
+        form.reset();
+        document.getElementById('umkm-id').value = '';
+        openModal('Tambah UMKM');
+    });
+    document.getElementById('modal-umkm-close')?.addEventListener('click', closeModal);
+    document.getElementById('modal-umkm-batal')?.addEventListener('click', closeModal);
+    document.getElementById('modal-umkm-backdrop')?.addEventListener('click', closeModal);
+    document.getElementById('hapus-batal')?.addEventListener('click', closeHapus);
+    document.getElementById('modal-hapus-backdrop')?.addEventListener('click', closeHapus);
+
+    tbody?.addEventListener('click', async (e) => {
+        const editBtn = e.target.closest('[data-edit]');
+        const delBtn = e.target.closest('[data-del]');
+        if (editBtn) {
+            const id = editBtn.dataset.edit;
+            const fd = new FormData();
+            fd.append('id', id);
+            try {
+                const res = await fetch(base + '/admin/ajax/get-umkm', { method: 'POST', body: fd, credentials: 'same-origin' });
+                if (res.status === 401) {
+                    toast('Sesi habis. Mengalihkan ke halaman login…', false);
+                    setTimeout(() => { window.location.href = base + '/admin/login'; }, 1800);
+                    return;
+                }
+                const json = await res.json();
+                if (!json.success) { toast(json.message || 'Gagal memuat data.', false); return; }
+                const d = json.data;
+                document.getElementById('umkm-id').value = d.id || '';
+                document.getElementById('umkm-nama').value = d.nama || '';
+                document.getElementById('umkm-usaha').value = d.usaha || '';
+                document.getElementById('umkm-kategori').value = d.kategori || 'kopi';
+                document.getElementById('umkm-status').value = d.status || 'aktif';
+                document.getElementById('umkm-deskripsi').value = d.deskripsi || '';
+                document.getElementById('umkm-pemilik').value = d.pemilik || '';
+                document.getElementById('umkm-dusun').value = d.dusun || '';
+                document.getElementById('umkm-wa').value = d.no_wa || '';
+                document.getElementById('umkm-featured').checked = !!d.is_featured;
+                // Reset file input — foto lama ditampilkan di preview di bawah
+                const fi = document.getElementById('umkm-foto-file');
+                if (fi) fi.value = '';
+                document.getElementById('umkm-foto-label').textContent = 'Klik untuk pilih foto';
+                document.getElementById('umkm-foto-new-preview')?.classList.replace('flex', 'hidden');
+                document.getElementById('umkm-foto-new-preview')?.classList.add('hidden');
+                // Preview foto lama
+                const previewBox = document.getElementById('umkm-foto-preview');
+                const previewImg = document.getElementById('umkm-foto-preview-img');
+                const previewUrl = document.getElementById('umkm-foto-preview-url');
+                if (d.foto) {
+                    previewImg.src = d.foto;
+                    previewUrl.textContent = d.foto;
+                    previewBox.classList.remove('hidden');
+                    previewBox.classList.add('flex');
+                } else {
+                    previewBox.classList.add('hidden');
+                    previewBox.classList.remove('flex');
+                }
+                openModal('Edit UMKM');
+            } catch (err) { console.error('get-umkm error:', err); toast('Gagal memuat data.', false); }
+        }
+        if (delBtn) {
+            deleteId = delBtn.dataset.del;
+            document.getElementById('hapus-nama').textContent = delBtn.dataset.nama || '';
+            modalHapus.classList.remove('hidden');
+            modalHapus.classList.add('flex');
+        }
+    });
+
+    document.getElementById('hapus-ya')?.addEventListener('click', async () => {
+        if (!deleteId) return;
+        const fd = new FormData();
+        fd.append('csrf_token', csrf);
+        fd.append('id', deleteId);
+        try {
+            const res = await fetch(base + '/admin/ajax/delete-umkm', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const json = await res.json();
+            toast(json.message || (json.success ? 'Dihapus.' : 'Gagal.'), !!json.success);
+            if (json.success) { closeHapus(); loadList(); }
+        } catch (err) { toast('Gagal menghubungi server.', false); }
+    });
+
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-simpan-umkm');
+        btn.disabled = true;
+        try {
+            const fd = new FormData(form);
+            if (!document.getElementById('umkm-featured').checked) fd.delete('is_featured');
+            const res = await fetch(base + '/admin/ajax/store-umkm', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const json = await res.json();
+            toast(json.message || (json.success ? 'Tersimpan.' : 'Gagal.'), !!json.success);
+            if (json.success) { closeModal(); loadList(); }
+        } catch (err) { toast('Gagal menghubungi server.', false); }
+        finally { btn.disabled = false; }
+    });
+
+    document.getElementById('search-umkm')?.addEventListener('input', (e) => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => { search = e.target.value.trim(); page = 1; loadList(); }, 300);
+    });
+
+    document.getElementById('filter-umkm')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.kat-btn');
+        if (!btn) return;
+        document.querySelectorAll('.kat-btn').forEach(b => {
+            b.classList.remove('bg-surface-2', 'text-ink', 'border-line-strong');
+            b.classList.add('bg-transparent', 'text-ink-dim', 'border-transparent');
+        });
+        btn.classList.remove('bg-transparent', 'text-ink-dim', 'border-transparent');
+        btn.classList.add('bg-surface-2', 'text-ink', 'border-line-strong');
+        kategori = btn.dataset.kat;
+        page = 1;
+        loadList();
+    });
+
+    btnPrev?.addEventListener('click', () => { if (hasPrev) { page--; loadList(); } });
+    btnNext?.addEventListener('click', () => { if (hasNext) { page++; loadList(); } });
+
+    /* ── File input foto ── */
+    document.getElementById('umkm-foto-file')?.addEventListener('change', (e) => {
+        const file       = e.target.files[0];
+        const label      = document.getElementById('umkm-foto-label');
+        const newPreview = document.getElementById('umkm-foto-new-preview');
+        const newImg     = document.getElementById('umkm-foto-new-img');
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                toast('Ukuran foto maks 2MB.', false);
+                e.target.value = '';
+                label.textContent = 'Klik untuk pilih foto';
+                return;
+            }
+            label.textContent = file.name;
+            newImg.src = URL.createObjectURL(file);
+            newPreview.classList.remove('hidden');
+            newPreview.classList.add('flex');
+        } else {
+            label.textContent = 'Klik untuk pilih foto';
+            newPreview.classList.add('hidden');
+            newPreview.classList.remove('flex');
+        }
+    });
+    document.getElementById('umkm-foto-clear')?.addEventListener('click', () => {
+        const fi = document.getElementById('umkm-foto-file');
+        if (fi) fi.value = '';
+        document.getElementById('umkm-foto-label').textContent = 'Klik untuk pilih foto';
+        const np = document.getElementById('umkm-foto-new-preview');
+        np?.classList.add('hidden');
+        np?.classList.remove('flex');
+    });
+
+    loadList();
+})();
+</script>
 <?php require __DIR__ . '/../partials/footer.php'; ?>

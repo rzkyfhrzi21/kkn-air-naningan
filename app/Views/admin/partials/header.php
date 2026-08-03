@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Admin layout header — sidebar kiri + topbar atas.
  * Variabel yang harus diset oleh view:
@@ -14,7 +15,6 @@ $navItems = [
     ['kelola-profil', 'info',               'Kelola Profil'],
     ['kelola-umkm',   'storefront',         'Kelola UMKM'],
     ['kelola-wisata', 'landscape',          'Kelola Wisata'],
-    ['kelola-potensi','energy_savings_leaf','Kelola Potensi'],
     ['kelola-berita', 'newspaper',          'Kelola Berita'],
     ['kelola-galeri', 'photo_library',      'Kelola Galeri'],
     ['pesan-masuk',   'mail',               'Pesan Masuk'],
@@ -23,6 +23,7 @@ $navItems = [
 ?>
 <!doctype html>
 <html class="dark" lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -116,75 +117,76 @@ $navItems = [
         body { background-color: var(--color-bg); color: var(--color-ink); font-family: var(--font-family-body-md); }
     </style>
 </head>
+
 <body class="bg-bg text-ink font-body-md">
 
-<!-- ── Sidebar ──────────────────────────────────────────────────────── -->
-<aside class="fixed left-0 top-0 h-full w-[280px] bg-surface-container border-r border-line z-50 flex flex-col">
-    <!-- Logo -->
-    <div class="p-8 flex items-center gap-3 border-b border-line">
-        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-on-primary text-[18px]">park</span>
-        </div>
-        <div class="flex flex-col">
-            <span class="font-h3 text-lg text-ink">Air Naningan</span>
-            <span class="font-label-mono text-[9px] text-gold-soft tracking-widest uppercase">Admin Panel</span>
-        </div>
-    </div>
-
-    <!-- Nav -->
-    <nav class="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
-        <?php foreach ($navItems as [$slug, $icon, $label]): ?>
-            <?php $isActive = ($activeNav === $slug); ?>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= $isActive
-                ? 'bg-primary text-on-primary shadow-lg shadow-primary/20'
-                : 'text-ink-dim hover:bg-surface-container-high hover:text-ink' ?>"
-               <?= $isActive ? 'aria-current="page"' : '' ?>
-               data-path="<?= $slug ?>"
-               href="<?= $base ?>/admin/<?= $slug === 'overview' ? '' : $slug ?>">
-                <span class="material-symbols-outlined text-[20px]"><?= $icon ?></span>
-                <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
-            </a>
-        <?php endforeach; ?>
-    </nav>
-
-    <!-- Logout -->
-    <div class="p-6 border-t border-line">
-        <a class="flex items-center gap-3 w-full px-4 py-3 text-ink-dim hover:text-danger transition-colors rounded-xl hover:bg-surface-container-high"
-           href="<?= $base ?>/admin/logout">
-            <span class="material-symbols-outlined">logout</span>
-            Keluar
-        </a>
-    </div>
-</aside>
-
-<!-- ── Content Wrapper ────────────────────────────────────────────── -->
-<div class="pl-[280px]">
-
-    <!-- Topbar -->
-    <header class="fixed top-0 left-[280px] right-0 h-16 bg-bg/80 backdrop-blur-xl border-b border-line z-40 flex items-center justify-between px-8">
-        <div class="flex items-center gap-2 text-ink-dim font-label-mono text-label-mono">
-            <a class="hover:text-primary transition-colors" href="<?= $base ?>/admin">Admin</a>
-            <span class="material-symbols-outlined text-sm">chevron_right</span>
-            <span class="text-ink"><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></span>
-        </div>
-        <div class="flex items-center gap-4">
-            <a class="p-2 text-ink-dim hover:text-ink transition-colors" href="<?= $base ?>/" title="Lihat situs publik" target="_blank">
-                <span class="material-symbols-outlined">open_in_new</span>
-            </a>
-            <div class="h-8 w-px bg-line"></div>
-            <div class="flex items-center gap-3">
-                <div class="flex flex-col items-end">
-                    <span class="text-[13px] font-bold text-ink">
-                        <?= htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator', ENT_QUOTES, 'UTF-8') ?>
-                    </span>
-                    <span class="text-[11px] text-ink-dim">Super Admin</span>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                    <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                </div>
+    <!-- ── Sidebar ──────────────────────────────────────────────────────── -->
+    <aside class="fixed left-0 top-0 h-full w-[280px] bg-surface-container border-r border-line z-50 flex flex-col">
+        <!-- Logo -->
+        <div class="p-8 flex items-center gap-3 border-b border-line">
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-on-primary text-[18px]">park</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="font-h3 text-lg text-ink">Air Naningan</span>
+                <span class="font-label-mono text-[9px] text-gold-soft tracking-widest uppercase">Admin Panel</span>
             </div>
         </div>
-    </header>
 
-    <!-- Main content -->
-    <main class="pt-16 min-h-screen">
+        <!-- Nav -->
+        <nav class="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
+            <?php foreach ($navItems as [$slug, $icon, $label]): ?>
+                <?php $isActive = ($activeNav === $slug); ?>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= $isActive
+                                                                                            ? 'bg-primary text-on-primary shadow-lg shadow-primary/20'
+                                                                                            : 'text-ink-dim hover:bg-surface-container-high hover:text-ink' ?>"
+                    <?= $isActive ? 'aria-current="page"' : '' ?>
+                    data-path="<?= $slug ?>"
+                    href="<?= $base ?>/admin/<?= $slug === 'overview' ? '' : $slug ?>">
+                    <span class="material-symbols-outlined text-[20px]"><?= $icon ?></span>
+                    <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
+                </a>
+            <?php endforeach; ?>
+        </nav>
+
+        <!-- Logout -->
+        <div class="p-6 border-t border-line">
+            <a class="flex items-center gap-3 w-full px-4 py-3 text-ink-dim hover:text-danger transition-colors rounded-xl hover:bg-surface-container-high"
+                href="<?= $base ?>/admin/logout">
+                <span class="material-symbols-outlined">logout</span>
+                Keluar
+            </a>
+        </div>
+    </aside>
+
+    <!-- ── Content Wrapper ────────────────────────────────────────────── -->
+    <div class="pl-[280px]">
+
+        <!-- Topbar -->
+        <header class="fixed top-0 left-[280px] right-0 h-16 bg-bg/80 backdrop-blur-xl border-b border-line z-40 flex items-center justify-between px-8">
+            <div class="flex items-center gap-2 text-ink-dim font-label-mono text-label-mono">
+                <a class="hover:text-primary transition-colors" href="<?= $base ?>/admin">Admin</a>
+                <span class="material-symbols-outlined text-sm">chevron_right</span>
+                <span class="text-ink"><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a class="p-2 text-ink-dim hover:text-ink transition-colors" href="<?= $base ?>/" title="Lihat situs publik" target="_blank">
+                    <span class="material-symbols-outlined">open_in_new</span>
+                </a>
+                <div class="h-8 w-px bg-line"></div>
+                <div class="flex items-center gap-3">
+                    <div class="flex flex-col items-end">
+                        <span class="text-[13px] font-bold text-ink">
+                            <?= htmlspecialchars($_SESSION['admin_username'] ?? 'Administrator', ENT_QUOTES, 'UTF-8') ?>
+                        </span>
+                        <span class="text-[11px] text-ink-dim">Super Admin</span>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="pt-16 min-h-screen">

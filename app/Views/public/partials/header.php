@@ -13,7 +13,6 @@ $navLinks = [
     ['profil-desa','Profil Desa',$base . '/profil'],
     ['umkm',       'UMKM',      $base . '/umkm'],
     ['wisata',     'Wisata',    $base . '/wisata'],
-    ['potensi',    'Potensi',   $base . '/potensi'],
     ['berita',     'Berita',    $base . '/berita'],
     ['galeri',     'Galeri',    $base . '/galeri'],
     ['kontak',     'Kontak',    $base . '/kontak'],

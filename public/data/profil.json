@@ -1,0 +1,97 @@
+{
+    "tahun_berdiri": 1982,
+    "tagline": "Mengenal lebih dekat identitas, arah juang, dan tata kelola masyarakat agraris di jantung Tanggamus.",
+    "visi": "Mewujudkan Pekon Air Naningan yang Mandiri, Sejahtera, dan Berbudaya melalui Optimalisasi Potensi Pertanian Kopi.",
+    "misi": [
+        "Meningkatkan kualitas tata kelola pemerintahan pekon yang transparan dan akuntabel.",
+        "Mendorong hilirisasi produk unggulan komoditas kopi robusta lokal.",
+        "Meningkatkan kesadaran masyarakat akan kelestarian lingkungan dan budaya gotong royong.",
+        "Membangun infrastruktur dasar yang mendukung akses ekonomi dan sosial kemasyarakatan."
+    ],
+    "masa_bakti": "2022 - 2028",
+    "struktur": [
+        {
+            "nama": "Budi Santoso",
+            "jabatan": "Kepala Pekon",
+            "foto": "https://lh3.googleusercontent.com/aida-public/AB6AXuClOPTvSysQaxfaVtjru7aFRFRvPIihT_jSx0qHiRl-ICk63YCzmSzISkUxoM0oVYuIu59WxgzGwnsjY1sQoGUOv5khXTgnvwKsTB3xSarrUJWy8-CunOT1SQdCNY6DjZSJfPF5tSbvcVoXjXVuEP3vS6XG8ZYbqJjSkpLWXEMEfXvP4U7gnWPQPybSjBZIKTKycoaymdP1imoWJ9te-00J7L2IiiQMNfYRsPoe28psu4qe5X9mcvMG9A",
+            "level": 0
+        },
+        {
+            "nama": "Ahmad Fauzan",
+            "jabatan": "Sekretaris Pekon",
+            "foto": "https://lh3.googleusercontent.com/aida-public/AB6AXuCoa8AKBIj44m8tTq_MCk6Co_50_UxHKRUmpa8yTF-NUvqcWEL-J8iKJpHrY2_3lGHHQ5iOrLevVKt_4TCuaMbsNgRDVgnKGiFmFyoIu70_KXjNvAhobUlD_EGtp3SdnAYOl20F1ucqKt13XegeZZPJRexSUdtv5OQowI2dN4wbk5SWRolBN2r4_phCg9PCSLtv4BB_k2thbK8-ZsNbVGr93CpU1EFttZbiUYisHEVmPcEJPvbcWX9R-Q",
+            "level": 1
+        },
+        {
+            "nama": "Siti Aminah",
+            "jabatan": "Kaur Keuangan",
+            "foto": "",
+            "level": 2
+        },
+        {
+            "nama": "Rahmat Hidayat",
+            "jabatan": "Kasi Pemerintahan",
+            "foto": "",
+            "level": 2
+        }
+    ],
+    "demografi": {
+        "total_jiwa": 3245,
+        "kepala_keluarga": 842,
+        "luas_wilayah": 45,
+        "luas_satuan": "km²",
+        "ketinggian": 850,
+        "ketinggian_satuan": "mdpl",
+        "per_dusun": [
+            { "nama": "Dusun 1", "jumlah": 810 },
+            { "nama": "Dusun 2", "jumlah": 825 },
+            { "nama": "Dusun 3", "jumlah": 790 },
+            { "nama": "Dusun 4", "jumlah": 820 }
+        ]
+    },
+    "mata_pencaharian": [
+        { "jenis": "Petani Kopi & Kebun", "persen": 75 },
+        { "jenis": "Pedagang / Wiraswasta", "persen": 12 },
+        { "jenis": "Buruh Harian Lepas", "persen": 8 },
+        { "jenis": "PNS / TNI / Polri", "persen": 5 }
+    ],
+    "apbdes": {
+        "tahun": 2024,
+        "items": [
+            {
+                "nama": "Penyelenggaraan Pemerintahan",
+                "jumlah": "Rp 420.5M",
+                "persen": 35,
+                "icon": "account_balance"
+            },
+            {
+                "nama": "Pelaksanaan Pembangunan",
+                "jumlah": "Rp 510.2M",
+                "persen": 42,
+                "icon": "construction"
+            },
+            {
+                "nama": "Pembinaan Kemasyarakatan",
+                "jumlah": "Rp 180.0M",
+                "persen": 15,
+                "icon": "group"
+            },
+            {
+                "nama": "Pemberdayaan Masyarakat",
+                "jumlah": "Rp 95.8M",
+                "persen": 8,
+                "icon": "trending_up"
+            }
+        ],
+        "laporan_url": ""
+    },
+    "sejarah": {
+        "paragraf": [
+            "Pekon Air Naningan terbentuk pada tahun 1982 melalui program transmigrasi lokal yang diprakarsai oleh pemerintah daerah. Para pendahulu membuka hutan kawasan ini dengan semangat gotong royong yang tinggi, mengubah lahan rimbun menjadi lumbung pertanian yang subur, khususnya untuk komoditas kopi robusta.",
+            "Seiring berjalannya waktu, Air Naningan berkembang tidak hanya sebagai pusat produksi kopi berkualitas, tetapi juga mulai merintis potensi ekowisata berbasis komunitas. Karakter masyarakatnya yang terbuka namun tetap memegang teguh adat istiadat menjadi pondasi kuat dalam menyongsong era modernisasi pedesaan.",
+            "Kini, di bawah kepemimpinan yang progresif, Air Naningan berupaya memadukan tradisi bertani dengan teknologi tepat guna guna mewujudkan kesejahteraan yang merata bagi seluruh lapisan warganya."
+        ],
+        "quote": "Tanah ini bukan warisan nenek moyang semata, melainkan titipan untuk dijaga kelestariannya bagi generasi mendatang."
+    },
+    "updated_at": "2024-10-08T10:00:00+07:00"
+}

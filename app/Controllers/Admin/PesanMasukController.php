@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../Models/Pesan.php';
+
 final class PesanMasukController
 {
     public function index(): void

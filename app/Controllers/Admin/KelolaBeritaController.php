@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../Models/Berita.php';
+
 final class KelolaBeritaController
 {
     public function index(): void

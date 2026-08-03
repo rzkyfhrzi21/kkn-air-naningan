@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../Models/Galeri.php';
+
 final class KelolaGaleriController
 {
     public function index(): void

@@ -1,0 +1,54 @@
+[
+    {
+        "id": "potensi-1",
+        "nama": "Kopi Robusta Air Naningan",
+        "kategori": "pertanian",
+        "kategori_label": "Pertanian",
+        "kategori_icon": "coffee",
+        "deskripsi": "Kopi Robusta berkualitas premium dengan cita rasa khas pegunungan. Ditanam pada ketinggian ideal dengan teknik organik, menghasilkan biji kopi dengan body kuat dan aroma natural yang unik.",
+        "foto": "https://lh3.googleusercontent.com/aida-public/AB6AXuDK8g2I6lYCIDFHprnzr3hQ04OcUTRwNQHFB2Yp77GuR8mDTqVPIcOT32wJ3Mw-3qrzrFZIeuIviKr2dcC81Ui7ywupx7eIaqdKbXC22KmUbs60Y8QBfdpbVwmHF6Lmehgy2T-u2AbbMQms-lkPRKwSiRFkXW7ERYsqPAnsw0E4lv7b5dc6WzEFuwRu_ePbxoK2YpfrZa5In5CVs1EMUGbDoKvlDQvbUYTJBsT-J40AL9OIr1ecc64F2Q",
+        "kapasitas": "50 ton/tahun",
+        "status": "aktif",
+        "created_at": "2024-10-08T10:00:00+07:00",
+        "updated_at": "2024-10-08T10:00:00+07:00"
+    },
+    {
+        "id": "potensi-2",
+        "nama": "Wisata Alam Pegunungan",
+        "kategori": "wisata",
+        "kategori_label": "Wisata",
+        "kategori_icon": "landscape",
+        "deskripsi": "Destinasi wisata alam yang menampilkan keindahan pegunungan, air terjun, dan titik pandang spektakuler. Cocok untuk trekking, fotografi, dan camping di alam terbuka.",
+        "foto": "https://lh3.googleusercontent.com/aida-public/AB6AXuCwUA8gwPgZk37dZY0fg2zZyD9x-L261K1EtAmftnqQqyIDrXBOHFIwJf5oIH8BczPJRWpawLhiAWD32M24Y7XHSoV922g8l1KCen88YuZJ3qg9L64uGoev1ohbzUX0q5Gyuq4IUwuhvoYvtWqhUH1wUVp_RE3bQhNka0-IUnxvout-6H7xVZ4KFRcsfcFIdRG_CVERTuFPFZ_cGJ6tpucaWkeawLVkjiHbB6LX6YsfWXg9h00AzUvapA",
+        "kapasitas": "100 pengunjung/hari",
+        "status": "aktif",
+        "created_at": "2024-10-08T10:00:00+07:00",
+        "updated_at": "2024-10-08T10:00:00+07:00"
+    },
+    {
+        "id": "potensi-3",
+        "nama": "Kerajinan Anyaman Bambu",
+        "kategori": "umkm",
+        "kategori_label": "UMKM",
+        "kategori_icon": "shopping_bag",
+        "deskripsi": "Produk kerajinan tangan berbahan bambu lokal, menghasilkan berbagai peralatan rumah tangga dan dekorasi dengan teknik anyaman tradisional yang turun-temurun.",
+        "foto": "",
+        "kapasitas": "200 unit/bulan",
+        "status": "aktif",
+        "created_at": "2024-10-08T10:00:00+07:00",
+        "updated_at": "2024-10-08T10:00:00+07:00"
+    },
+    {
+        "id": "potensi-4",
+        "nama": "Ternak Sapi Perah",
+        "kategori": "peternakan",
+        "kategori_label": "Peternakan",
+        "kategori_icon": "pets",
+        "deskripsi": "Usaha peternakan sapi perah dengan produksi susu segar harian. Dikelola secara berkelompok dengan sistem kandang kolektif dan pakan organik dari hasil pertanian lokal.",
+        "foto": "",
+        "kapasitas": "500 liter/hari",
+        "status": "berkembang",
+        "created_at": "2024-10-08T10:00:00+07:00",
+        "updated_at": "2024-10-08T10:00:00+07:00"
+    }
+]
