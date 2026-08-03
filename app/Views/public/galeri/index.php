@@ -89,9 +89,9 @@ require __DIR__ . '/../partials/header.php';
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-        <div class="flex-1 flex items-center justify-center p-4 lg:p-12">
-            <div class="relative max-w-5xl w-full h-full flex flex-col md:flex-row items-center gap-8">
-                <div class="flex-1 w-full h-[512px] md:h-[819px] relative flex items-center justify-center">
+        <div class="flex-1 flex items-center justify-center p-4 lg:p-8">
+            <div class="relative max-w-[96rem] w-full h-full flex flex-col md:flex-row items-center gap-6 lg:gap-8">
+                <div class="flex-1 min-w-0 w-full h-[60vh] md:h-[88vh] relative flex items-center justify-center">
                     <img alt="Enlarged view" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" id="lightbox-img" src="">
                     <video class="max-w-full max-h-full object-contain rounded-lg shadow-2xl hidden" id="lightbox-video" src="" controls playsinline></video>
                 </div>
