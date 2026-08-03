@@ -11,7 +11,7 @@ require __DIR__ . '/../partials/header.php';
     <!-- Hero Section -->
     <section class="relative w-full h-[614px] min-h-[500px] flex items-center justify-center -mt-20 pt-20">
         <div class="absolute inset-0 bg-cover bg-center z-0"
-             style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCFRHoh3JG1xbhX1MNkU8-Z41W68Koz9Il7gtIQCQ9-YdFxs1r6C6d4jddxoBgMtNuyxjpEhC_sALVaWRKlYL6jld6V19_5PlQwzUy4ual9tmz-xc2B2-Mb4BYSrdPPteDPTyk6tKzC5mL9v0fMeSy5stt5JulthWRFhgy19zCktL3Kr1uSdb92ERmkRJJl-qwZ90481PybLnSaG8caeJCec0wI0NglmDKo9lr9VTmVIFHS0glBONNO-A')">
+             style="background-image: url('<?= htmlspecialchars($base . '/uploads/konten/wisata-hero.jpg', ENT_QUOTES, 'UTF-8') ?>')">
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent z-10"></div>
         <div class="relative z-20 w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop text-center flex flex-col items-center">
@@ -55,6 +55,8 @@ require __DIR__ . '/../partials/header.php';
                     <?php if ($foto): ?>
                     <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                          alt="<?= $nama ?> di Air Naningan"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';"
                          src="<?= $foto ?>">
                     <?php else: ?>
                     <div class="w-full h-full bg-surface-container-high flex items-center justify-center">
@@ -128,7 +130,7 @@ require __DIR__ . '/../partials/header.php';
             <div class="w-full lg:w-2/3">
                 <div class="relative w-full h-[400px] rounded-2xl overflow-hidden border border-line-strong shadow-2xl">
                     <div class="w-full h-full bg-cover bg-center"
-                         style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQXDRR1NJGJPorwslAdBElThlZXeI9wXaEtkK-_BTsgW4wz1b6JPfGvdl5TVVN2DJasMUynFc-bM95Yr9cE2x-9RTUlb23xkJ-OTOUWKRec2-FvZW5sbTQGmJURWTAwbTXbatQSWMLS0ov-uC--ZWpehX8kjDAhqLxd2FFW-4R_laMOP2QGJPeaqL9_NN76Cdc4AJ9KqCDqfx4TLL9jqGnT2tgmvbZwYRyTGTXE-Tdy3J_N7mia6SO6g')">
+                         style="background-image: url('<?= htmlspecialchars($base . '/uploads/konten/wisata-pemandangan.png', ENT_QUOTES, 'UTF-8') ?>')">
                     </div>
                     <div class="absolute inset-0 bg-surface/10 pointer-events-none"></div>
                 </div>
@@ -155,7 +157,9 @@ require __DIR__ . '/../partials/header.php';
                 <div class="relative w-full aspect-square rounded-full overflow-hidden border-4 border-surface shadow-2xl mx-auto max-w-[250px]">
                     <img class="w-full h-full object-cover"
                          alt="Pemandu lokal wisata Air Naningan"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeXhQYS78zOWJiEJMEbUbwAgUPnbDq1BTtjYkd_XPecO5F6nUkhkFkFYZ_kFHkVv-uQFRYI4RqkUKRcTFBi03FlMxvC8oy08mOJ0DvzE5HZ_ibogU0kB4pmahkTx3AAVlmSCWGCGX78b6KSMoKrBSzDKN7vMx3UNhEPIR2n1dhe6QcJtnccvmj831Ztb6BSaE7ZVp5mMFnQx8AXil_4VD099Fa4mc0bNonJ8zrUj18XtAtnyxvU-R7Xg">
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';"
+                         src="<?= htmlspecialchars($base . '/uploads/konten/pemandu-lokal.jpg', ENT_QUOTES, 'UTF-8') ?>">
                 </div>
             </div>
         </div>

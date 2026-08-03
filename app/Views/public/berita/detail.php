@@ -78,6 +78,7 @@ require __DIR__ . '/../partials/header.php';
         <div class="w-full h-[340px] md:h-[520px] rounded-xl overflow-hidden relative shadow-2xl bg-surface-container-highest">
             <?php if (!empty($berita['foto_sampul'])): ?>
                 <img class="w-full h-full object-cover"
+                     onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';"
                      src="<?= htmlspecialchars(mediaUrl($berita['foto_sampul'], $base), ENT_QUOTES) ?>"
                      alt="<?= htmlspecialchars($berita['judul'], ENT_QUOTES) ?>">
             <?php else: ?>
@@ -168,6 +169,8 @@ require __DIR__ . '/../partials/header.php';
                         <div class="w-20 h-20 shrink-0 rounded-lg overflow-hidden bg-surface-2 border border-line flex items-center justify-center">
                             <?php if (!empty($item['foto_sampul'])): ?>
                                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';"
                                      src="<?= htmlspecialchars(mediaUrl($item['foto_sampul'], $base), ENT_QUOTES) ?>"
                                      alt="<?= htmlspecialchars($item['judul'] ?? '', ENT_QUOTES) ?>">
                             <?php else: ?>

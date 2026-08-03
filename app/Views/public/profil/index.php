@@ -83,7 +83,8 @@ require __DIR__ . '/../partials/header.php';
                         <article class="bg-surface-2 rounded-xl border border-line overflow-hidden <?= (int) ($aparatur['level'] ?? 0) === 0 ? 'sm:col-span-2 lg:col-span-4 lg:max-w-sm lg:mx-auto lg:w-full border-primary' : '' ?>">
                             <?php if ($foto !== ''): ?>
                                 <button type="button" class="block w-full aspect-[4/3] overflow-hidden cursor-zoom-in" data-profile-photo="<?= $escape($foto) ?>" data-profile-name="<?= $escape($aparatur['nama'] ?? '') ?>">
-                                    <img src="<?= $escape($foto) ?>" alt="Foto <?= $escape($aparatur['nama'] ?? 'aparatur pekon') ?>" class="w-full h-full object-cover" loading="lazy">
+                                    <img src="<?= $escape($foto) ?>" alt="Foto <?= $escape($aparatur['nama'] ?? 'aparatur pekon') ?>" class="w-full h-full object-cover" loading="lazy"
+                                         onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                                 </button>
                             <?php endif; ?>
                             <div class="px-5 py-4 text-center">
@@ -217,7 +218,7 @@ require __DIR__ . '/../partials/header.php';
     </section>
 </div>
 
-<div id="profile-photo-modal" class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto aparatur">
+<div id="profile-photo-modal" data-modal class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto aparatur">
     <button type="button" class="absolute inset-0 bg-black/80" data-profile-close aria-label="Tutup preview"></button>
     <div class="relative z-10 max-w-4xl"><img id="profile-photo-modal-img" src="" alt="" class="max-h-[85vh] max-w-full rounded-2xl border border-line object-contain shadow-2xl"><button type="button" data-profile-close class="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-lg" aria-label="Tutup preview foto"><span class="material-symbols-outlined">close</span></button></div>
 </div>

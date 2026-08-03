@@ -673,7 +673,7 @@ if ($apbItems === []) {
             const json = await res.json();
             showToast(json.message || (json.success ? 'Tersimpan.' : 'Gagal.'), !!json.success);
         } catch (err) {
-            showToast('Gagal menghubungi server.', false);
+            showToast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false);
         } finally {
             btn.disabled = false;
             btn.classList.remove('opacity-60');

@@ -23,7 +23,7 @@ if (empty($beritaList)) {
             'ringkasan' => 'Warga Pekon Air Naningan antusias mengikuti kegiatan gotong royong massal untuk membersihkan dan memperbaiki saluran irigasi utama menjelang musim tanam padi tahun ini.',
             'tanggal_terbit' => '2023-10-24',
             'penulis' => 'Admin Pekon',
-            'foto_sampul' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuD9kE9jWIMsc6-HOx33QjvqNAdY-X1TCLDmii6rwAs5yBIj6YAbfROhp5uNMn3O3v48eRTi1sDQqnsJJ9YItVgUPaCP9YEY6UPVLlapvr9LHX-HYg2YISOFjsiHWjEFTduWwMVsUk5wZjSeuulwtxk8LoJu9d_xkEkdqsLb_E6dCkOMb7lOLQCD8FsRRpUhqpeVgOSaJlbm-9JvlwjSDUFUuQHwGYV3JEetPeCXd3iWswMbHoQIntGMTg'
+            'foto_sampul' => '/uploads/konten/berita-irigasi.jpg'
         ],
         [
             'id' => 'berita-2',
@@ -33,7 +33,7 @@ if (empty($beritaList)) {
             'ringkasan' => 'Pemerintah Pekon Air Naningan secara resmi membuka pendaftaran verifikasi penerima BLT Dana Desa untuk tahap keempat. Warga yang memenuhi kriteria diimbau segera melapor ke aparatur pekon.',
             'tanggal_terbit' => '2023-10-20',
             'penulis' => 'Sekretaris Desa',
-            'foto_sampul' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuCsB7MEgtG2hLcI0zAk3K_UIP8C66Il2m_qGEOuUKJv5rFFdq1fnMRgs_xtkPSnSicW34DNWZZF8swOHKCCO36yemc3o1X9hPYfXX0XMAzSJRV8GPqfq2CVh7JlAgzB06n9DvJcE_OyldgltHJPbBKVRTtiBrCbbQrqJd-tvUkJ_LjbYjwnu29-NKYCpEly8XnMOoHgyO-crF5OHfYa0Kc8Bk4KMvzr4mV8HcVdhLnRQHFq_QBxod18qg'
+            'foto_sampul' => '/uploads/konten/berita-blt.jpg'
         ],
         [
             'id' => 'berita-3',
@@ -43,7 +43,7 @@ if (empty($beritaList)) {
             'ringkasan' => 'Penyaluran program bantuan sembako bulanan untuk keluarga prasejahtera di Pekon Air Naningan telah selesai dilaksanakan. Proses distribusi dipusatkan di Balai Pekon dan berjalan tertib.',
             'tanggal_terbit' => '2023-10-15',
             'penulis' => 'Kasi Kesejahteraan',
-            'foto_sampul' => 'https://lh3.googleusercontent.com/aida-public/AB6AXuDZkPEhv1Qyx8La-o4CZXahp1KjR3X0bIcdySq3LEZkNwfxMdWsMSXirx0U6llACc5z4kJ1NGSFW2D-zJteyZUxXPhI8ltcGa-xLSRSVk8qIW8x-5IGYcT2bcfXrI7_E4pH6n5rF58zEUO8p6cOy1nAu0QdxnbYFXSpidl066BM-Whpz-rYZB8B7Zi6ODUGzBGmCrO6UsR3J-j7oOXFuz3aCCfJAB9YT4uvJ4hEuQe1C8wLNP5D5GUC4g'
+            'foto_sampul' => '/uploads/konten/berita-sembako.jpg'
         ],
         [
             'id' => 'berita-4',
@@ -144,6 +144,8 @@ require __DIR__ . '/../partials/header.php';
                         <?php if (!empty($foto)): ?>
                             <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                  alt="<?= $judul ?>"
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';"
                                   src="<?= htmlspecialchars(mediaUrl($foto, $base), ENT_QUOTES) ?>">
                         <?php else: ?>
                             <div class="w-full h-full bg-surface-2 flex items-center justify-center">

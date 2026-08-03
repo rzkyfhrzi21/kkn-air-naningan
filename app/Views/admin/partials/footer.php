@@ -24,6 +24,7 @@
 <?php $base = defined('APP_BASE') ? APP_BASE : ''; ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmPM3LzGm/0+bMq+Cw/0m5DxNh" crossorigin="anonymous"></script>
 <script src="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/security-warning.js"></script>
+<script src="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/assets/js/modal-focus.js"></script>
 <script>
     const sidebarToggle  = document.getElementById('sidebar-toggle');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -136,15 +137,19 @@
     @keyframes at-bar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 </style>
 <script>
+    const SESSION_TIMEOUT_MSG = 'Sesi login Anda telah berakhir. Silakan login kembali.';
+    const LOGIN_URL = '<?= htmlspecialchars($base . '/admin/login', ENT_QUOTES) ?>';
+
     function showAdminToast(message, ok = true) {
         const wrap = document.getElementById('admin-toast-wrap');
         if (!wrap) return;
         const toast = document.createElement('div');
         toast.className = 'admin-toast ' + (ok ? 'success' : 'error');
         toast.setAttribute('role', 'status');
+        const bar = ok ? '<div class="at-bar"></div>' : '';
         toast.innerHTML =
             '<span class="at-icon"><span class="material-symbols-outlined">' + (ok ? 'check_circle' : 'error') + '</span></span>'
-            + '<div class="at-msg"><p class="font-body-md text-sm text-ink leading-snug"></p><div class="at-bar"></div></div>'
+            + '<div class="at-msg"><p class="font-body-md text-sm text-ink leading-snug"></p>' + bar + '</div>'
             + '<button type="button" class="at-close" aria-label="Tutup notifikasi"><span class="material-symbols-outlined text-[18px]">close</span></button>';
         toast.querySelector('p').textContent = String(message ?? '');
         wrap.appendChild(toast);
@@ -157,9 +162,28 @@
             setTimeout(() => toast.remove(), 300);
         };
         toast.querySelector('.at-close').addEventListener('click', close);
-        toast._t = setTimeout(close, 2000);
+        if (ok) toast._t = setTimeout(close, 2000);
     }
     window.showAdminToast = showAdminToast;
+
+    /* ── §12.3: interceptor global — sesi habis → toast + redirect 2 detik ── */
+    const _origFetch = window.fetch;
+    window.fetch = function (...args) {
+        return _origFetch.apply(this, args).then(resp => {
+            if (resp.status === 401) {
+                resp.clone().json()
+                    .then(data => {
+                        showAdminToast(data.message || SESSION_TIMEOUT_MSG, false);
+                        setTimeout(() => { window.location.href = LOGIN_URL; }, 2000);
+                    })
+                    .catch(() => {
+                        showAdminToast(SESSION_TIMEOUT_MSG, false);
+                        setTimeout(() => { window.location.href = LOGIN_URL; }, 2000);
+                    });
+            }
+            return resp;
+        });
+    };
 </script>
 </body>
 </html>

@@ -9,9 +9,17 @@ loadEnv(dirname(__DIR__, 4) . '/.env');
 $pageTitle       = $pageTitle       ?? 'Pekon Air Naningan';
 $currentPage     = $currentPage     ?? 'beranda';
 $metaDescription = $metaDescription ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.';
+$metaKeywords    = $metaKeywords    ?? 'Pekon Air Naningan, profil desa, UMKM, wisata, galeri, berita desa, Pesisir Barat';
+$metaImage       = $metaImage       ?? '';
 
 // Deteksi base path (kosong jika di root, '/kkn-air-naningan2' jika subdirektori)
 $base = defined('APP_BASE') ? APP_BASE : '';
+
+// §10.1: URL absolut untuk og:url & canonical (dukung http & https)
+$scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host     = $_SERVER['HTTP_HOST'] ?? '';
+$reqUri   = $_SERVER['REQUEST_URI'] ?? '/';
+$metaImageUrl = $metaImage !== '' ? $metaImage : $base . '/assets/images/logo.jpg';
 
 if (!function_exists('mediaUrl')) {
     function mediaUrl(string $path, string $basePath): string {
@@ -40,9 +48,15 @@ $navLinks = [
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
     <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="keywords" content="<?= htmlspecialchars($metaKeywords, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image" content="<?= htmlspecialchars($metaImageUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:url" content="<?= htmlspecialchars($scheme . '://' . $host . $reqUri, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="id_ID">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="<?= htmlspecialchars($scheme . '://' . $host . $reqUri, ENT_QUOTES, 'UTF-8') ?>">
     <style>
         @layer base {
             html, body { margin: 0; padding: 0; }
@@ -180,7 +194,7 @@ $navLinks = [
         <a href="<?= htmlspecialchars($base ?: '/', ENT_QUOTES) ?>" class="flex items-center gap-4">
             <img alt="Logo Pekon Air Naningan"
                  class="h-10 w-auto object-contain"
-                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK8H8Se06RoiwH3wJUlg_WHE-OgxxczJXVk5QpS3z5Nrh9E-j4DWfOQGQdYjrZ_4qD0b0knh3Lh9z4-Br0W2p7XHqFOeTE-coRDtrzlAeBSeX1RxZH9ViZAjV2cFI4G7ELLcfStWHI4FnE7oINSXOgQPfezfdHZoTBjjUgsqfBaXdugJDSTO1KXsNlpryA9s7n8dKAynQE5letH5Wym17CkRm5ou_ywSF0k0_ETyMzzyqNSuTW_EDbWw">
+                 src="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES) ?>">
             <div class="flex flex-col">
                 <span class="font-h3 text-h3 text-ink leading-none">Air Naningan</span>
                 <span class="font-label-mono text-label-mono text-gold-soft tracking-widest uppercase">Pekon Mandiri</span>

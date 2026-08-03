@@ -131,7 +131,7 @@ require __DIR__ . '/../partials/header.php';
 <!-- Toast -->
 
 <!-- Modal Hapus -->
-<div id="modal-hapus" class="fixed inset-0 z-[80] hidden items-center justify-center">
+<div id="modal-hapus" data-modal class="fixed inset-0 z-[80] hidden items-center justify-center">
     <div id="modal-hapus-backdrop" class="absolute inset-0 bg-scrim/40 backdrop-blur-sm"></div>
     <div class="relative bg-surface rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-scale-in">
         <div class="p-6">
@@ -141,7 +141,7 @@ require __DIR__ . '/../partials/header.php';
             <h3 class="font-h3 text-h3 text-ink mb-2">Hapus Berita?</h3>
             <p class="font-body-md text-body-md text-ink-dim mb-6">Tindakan ini tidak dapat dibatalkan. Berita "<span id="hapus-nama" class="font-medium text-ink"></span>" akan dihapus permanen.</p>
             <div class="flex justify-end gap-3">
-                <button type="button" id="hapus-batal" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
+                <button type="button" id="hapus-batal" data-modal-close class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
                 <button type="button" id="hapus-ya" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-danger text-white">Hapus</button>
             </div>
         </div>
@@ -149,7 +149,7 @@ require __DIR__ . '/../partials/header.php';
 </div>
 
 <!-- Modal Editor (Tambah / Edit) -->
-<div id="modal-editor" class="fixed inset-0 z-[70] hidden items-center justify-center">
+<div id="modal-editor" data-modal class="fixed inset-0 z-[70] hidden items-center justify-center">
     <div id="modal-editor-backdrop" class="absolute inset-0 bg-scrim/40 backdrop-blur-sm"></div>
     <div class="relative bg-surface rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] mx-4 flex flex-col overflow-hidden animate-scale-in">
         <form id="form-berita" autocomplete="off" class="flex flex-col min-h-0">
@@ -263,7 +263,7 @@ require __DIR__ . '/../partials/header.php';
 </div>
 
 <!-- Modal Preview -->
-<div id="modal-preview" class="fixed inset-0 z-[70] hidden items-center justify-center">
+<div id="modal-preview" data-modal class="fixed inset-0 z-[70] hidden items-center justify-center">
     <div id="modal-preview-backdrop" class="absolute inset-0 bg-scrim/40 backdrop-blur-sm"></div>
     <div class="relative bg-surface rounded-2xl shadow-2xl w-full max-w-3xl max-h-[92vh] mx-4 flex flex-col overflow-hidden animate-scale-in">
         <div class="px-6 py-4 border-b border-line flex items-center justify-between bg-surface/80 shrink-0">
@@ -722,7 +722,7 @@ require __DIR__ . '/../partials/header.php';
                 loadList();
                 loadChart();
             }
-        } catch (err) { toast('Gagal menghubungi server.', false); }
+        } catch (err) { toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false); }
     });
 
     // ── File input preview ───────────────────────────────────────────────────

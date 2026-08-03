@@ -31,6 +31,7 @@ $navItems = [
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="noindex, nofollow" name="robots">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
@@ -145,6 +146,10 @@ $navItems = [
 </head>
 
 <body class="bg-bg text-ink font-body-md">
+    <!-- §8.2 Anti-FOUC: terapkan state sidebar sebelum layout dirender -->
+    <script>
+        document.body.classList.toggle('sidebar-collapsed', localStorage.getItem('admin-sidebar-collapsed') === '1');
+    </script>
 
     <!-- ── Sidebar ──────────────────────────────────────────────────────── -->
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-[280px] bg-surface-container border-r border-line z-50 flex flex-col">

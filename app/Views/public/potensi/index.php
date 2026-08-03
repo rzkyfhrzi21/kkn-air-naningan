@@ -10,7 +10,7 @@ require __DIR__ . '/../partials/header.php';
     <!-- Hero Section -->
     <section class="relative w-full h-[614px] md:h-[716px] flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 bg-cover bg-center w-full h-full scale-105 transition-transform duration-1000 ease-out" id="hero-bg"
-             style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA6rrwAreD_ZtWoU-ZO2t8A3CD0oOG2iUiamGU9B6Rr3Q4xRjEJDOdrn2J607fzy6SQ5eBHY5YjXaf0oNhSfa9je3GlCdXeBD7-dvnEzk3ELdnAHn8IS0RZU5M9HOJUL5ocyP3Vc1B-M26lL2H4Kd3RRLrcGjIbsr2M6XzIoaTZyZ6AQy1hia8sqNlBq1m0RD1HpCrxb1jkJdadMxZkyp-VFBcrugJBJPekYXP_F7OZBJ2laKD15Al4Cg')">
+             style="background-image: url('<?= htmlspecialchars($base . '/uploads/konten/potensi-hero.jpg', ENT_QUOTES, 'UTF-8') ?>')">
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent"></div>
         <div class="relative z-10 max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop text-center mt-12 flex flex-col items-center">
@@ -52,7 +52,7 @@ require __DIR__ . '/../partials/header.php';
                 <div class="relative w-full h-[400px] rounded-xl overflow-hidden shadow-xl group">
                     <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                          alt="Petani memetik ceri kopi robusta merah"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuCo5hmjlP_1RSK_IV2ekVx2BS4DP7XI7UmoWoNumRVvA9V0qnHUllPOCaXkQZWT4w82b8WbyiS0jsEFCSi8xmxmnd1DoO_-IG1PEz7-655wLv-sytNUIc9rMQnImLf4Pb7uFhyNY0IwuOAZC3zZHbK71TQ8QGu84wsg1IIjhYs1rdMIFhgS1yYK2jmjezam2vMjZo7ddmj--4sXh7l2a0oGSDmEljfq3dxtamQ7R16dmHZvW31JVACDJw">
+                         src="<?= htmlspecialchars($base . '/uploads/konten/kopi-pemetik.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6">
                         <h3 class="font-h3 text-h3 text-ink mb-1">Panen Selektif</h3>
@@ -63,7 +63,7 @@ require __DIR__ . '/../partials/header.php';
                     <div class="relative w-full h-[250px] rounded-xl overflow-hidden shadow-lg group">
                         <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                              alt="Biji kopi dijemur dengan proses natural"
-                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7_jCCqAZ3g2YDtBUkTzWyuiLTM2IHlFBsc0IE7mcLe-cPrdB-tG_XSmwLXito9DM6577sVpMsVIE7MbLYt05lHgzRsCJEoGhl3ba6iJFOJWLu0wpj6FmzPaexeAZ0QMpQpMkZpn5Omx3YTRsoL0K7jSW_3nWr4Jmyic-NBhWDcLpS2-loBob31jwqFMfQ0wDT1UossmM4QTHntFXfzaTVrbrnzHLaedhJFfLXHTLm04VOnceKe2oEnw">
+                             src="<?= htmlspecialchars($base . '/uploads/konten/kopi-dijemur.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <span class="font-label-mono text-label-mono text-primary block mb-1">Proses Natural</span>
@@ -73,7 +73,7 @@ require __DIR__ . '/../partials/header.php';
                     <div class="relative w-full h-[250px] rounded-xl overflow-hidden shadow-lg group">
                         <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                              alt="Biji kopi hijau siap distribusi"
-                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYjLReCh9XrzJ3laEhQB65_D2f9fe2zXpWaNTdOc5rZgyD6hiS2Iueb5INWLBBfWE6qItnFr3yOcrnMLtzyzTzijm7L9Z4d7q42rMoNI4QZ511BibM3AKp2MNni57lZFiMFu4c6ieZCZjOUqNgXkhLlETPxIapnpI2tyXSX5OLmoTOou35L-DsR6SdFuR67ux3rIstRUJFD9ScXpIAcyMQvXrGQRg85BYIpjVnI4OSqse1hCEMqYij0Q">
+                             src="<?= htmlspecialchars($base . '/uploads/konten/kopi-hijau.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                         <div class="absolute bottom-4 left-4 right-4">
                             <span class="font-label-mono text-label-mono text-primary block mb-1">Penyortiran Mutu</span>
@@ -91,7 +91,7 @@ require __DIR__ . '/../partials/header.php';
                 <div class="relative w-full h-[350px] rounded-xl overflow-hidden mb-8 shadow-xl">
                     <img class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                          alt="Buah kakao kuning di pohon"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfx54K9NajUbSmDHaOBCKVw4DEihpJvmW8AxKT5sUIMuxltGbzO2dCCeVFr3AnZ1aKdAko3YwidteLEEhSdEBMsmF8Zf2SumOjRLflQ1pTjbkkKuv3AZn-FnoKkjU3cQqdmXTDuoFRMUa_ZsPh0B1oJOLYtnryOpF5AqIlSxVQogfuWosaGmNYnS16N2jHKp6t_QQIbzzGrrzgQ2A4VKGiTjtpl4p7N6Fzt0JOmaQcXbW9ka4riu6Rog">
+                         src="<?= htmlspecialchars($base . '/uploads/konten/kakao-buah.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                 </div>
                 <span class="font-label-mono text-label-mono text-gold-soft mb-2 block">02 / Komoditas Pendukung</span>
                 <h3 class="font-h3 text-h3 text-ink mb-4">Kakao Berkualitas</h3>
@@ -119,7 +119,7 @@ require __DIR__ . '/../partials/header.php';
                 <div class="relative w-full h-[350px] rounded-xl overflow-hidden mb-8 shadow-xl">
                     <img class="absolute inset-0 w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                          alt="Proses pembuatan gula aren tradisional"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOd8SWiBJmwf5U575vlamSppIo_7sCDLigzwv8UcB5IJReJNx4mge-8Md6RHo0LQlQdoG-7L8XKHwNGURbgRjLgvfHiLDWiLe6m8G6pghxkcmpeb-KVXgmEyfqWA8Nvj2QUoHZf2kE38iNWUhTzaKIwqhUznNMbTFXH3tVg2Whw-vAtItZm1RjfFzGAwztbryd5dtdY5pJqDeetqb59EOadQvNQ-SjC9UpTb0sdyGgRCXZMN_olGegFQ">
+                         src="<?= htmlspecialchars($base . '/uploads/konten/gula-aren.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                 </div>
                 <span class="font-label-mono text-label-mono text-gold-soft mb-2 block">03 / Produk Olahan Tradisional</span>
                 <h3 class="font-h3 text-h3 text-ink mb-4">Gula Aren Organik</h3>
@@ -198,23 +198,23 @@ require __DIR__ . '/../partials/header.php';
             <div class="col-span-2 row-span-2 relative rounded-xl overflow-hidden group">
                 <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                      alt="Panorama luas kebun kopi berteras di Air Naningan"
-                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ux8w6aCD2ggat7ZGdODBG_rBa6JWFPSbkQnKJ90w2coV4mrN94leUwqTqaOwsr2fVQECVeHl6Z6C3Qa-7RTV-NDuMjFkwnv6kEyBM9ednsaEnHd4uP4Ie9-YhUhr2Sx1SVo1TMts9pghdAmT-67SdWV624ig0hSIlr7XyCRP3CwruiBWW2Fv8BC2bjfMCN5QjfL1enK685rZcH--ZAFpdXYz6Y8g59MsUnc-sdwz0YZI-fmaJyiMDw">
+                     src="<?= htmlspecialchars($base . '/uploads/konten/panorama-kebun.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                 <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
             </div>
             <div class="col-span-1 row-span-1 relative rounded-xl overflow-hidden group">
                 <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                      alt="Petani memanen ceri kopi merah"
-                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuClOkBgoOXDxPI5S8RGVF1qlz46RAqUrJ_Lv_nTxjaGHMp6wRjfIxGNV9q-X5fbudJ7ija2mnbV5tREhI-1cBLuK0vmdP-Rxk7WeShjSvtBbhsO-JdO0aj0MH_sif_8_maLYdwPPGbtBLL0kNxwuWZ0s5fTILjvdMmyN_XVNdaPCmn2NSiXMWiu5uF_84qe0gf591f9PnXj8ooYIfEPYnn9KdO8Lyy1fIDdVvZaqqjSAvVNkEDnEsKOHw">
+                     src="<?= htmlspecialchars($base . '/uploads/konten/kopi-memanen.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
             </div>
             <div class="col-span-1 row-span-1 relative rounded-xl overflow-hidden group">
                 <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                      alt="Fermentasi biji kakao dalam kotak kayu"
-                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuBokr1nwfD6BUNgS2xvVPKy-WTA5xXzkzIi-lK-_VLQX4NuFHo_6yE9IhICOFlQbIF8VZvmz6aAYDu2rNSjpoYcL5AS3AaRdbgJUdva6RI_u8BgDnteeszDe2pXlgfre2VeYcsQ0uAyJBLZr6NkrABQjW28on4RfEEPLNj3UPEWl816vCZlT0QC2olVbdtRPhNWizWoB3kblT7czrIKZHgR6_Eh1zZ08ewCm7AAGP393qSqPe8VhgK-vA">
+                     src="<?= htmlspecialchars($base . '/uploads/konten/kakao-fermentasi.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
             </div>
             <div class="col-span-2 row-span-1 relative rounded-xl overflow-hidden group">
                 <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                      alt="Kawasan hutan pohon aren"
-                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuAScqQrHyaM6PNQZqmR_aM3q17zfX3Yd7ZnO_Sx28sCV7jOUIM-PQlzRxQWjKstiRcQZVIIfxbKZZYmOyEYmi9WqNQteBHUaw78MrwvcFSdkBxMzv76FlCG2E1depmTdU88BnTVsVy3vdwOZzCD0pLdbg8nEQUPY2mv8FX_tulaaG2dm3Y0r7GVYvCr4h8mp7XS02FizDGuoqNQjuKiX6lYMLEpjz130QFgotsHiu1Yrwv1NotsdM11lA">
+                     src="<?= htmlspecialchars($base . '/uploads/konten/aren-hutan.jpg', ENT_QUOTES, 'UTF-8') ?>" loading="lazy" onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
                 <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                     <span class="font-body-md text-ink block">Kawasan Hutan Aren</span>
                 </div>

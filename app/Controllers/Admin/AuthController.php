@@ -60,10 +60,16 @@ final class AuthController
                     $_SESSION['admin_username'] = $username;
                     $_SESSION['admin_nama_lengkap'] = (string) ($creds['nama_lengkap'] ?? '');
                     $_SESSION['login_at']       = $now;
+                    $_SESSION['admin_last_activity'] = $now;
                     unset($_SESSION[$key], $_SESSION[$key . '_ts']);
+
+                    require_once __DIR__ . '/../../../includes/logger.php';
+                    writeLog('login_success', 'Login berhasil untuk username: ' . $username);
 
                     self::redirectDashboard();
                 } else {
+                    require_once __DIR__ . '/../../../includes/logger.php';
+                    writeLog('login_failed', 'Percobaan login gagal untuk username: ' . ($username !== '' ? $username : '(kosong)'));
                     $error = 'Username atau kata sandi salah.';
                 }
             }
@@ -76,6 +82,9 @@ final class AuthController
     /** Hapus sesi dan redirect ke halaman login. */
     public static function logout(): void
     {
+        require_once __DIR__ . '/../../../includes/logger.php';
+        writeLog('logout', 'Admin keluar dari panel.');
+
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $p = session_get_cookie_params();

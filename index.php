@@ -79,6 +79,25 @@ if ($seg0 === 'admin') {
 
     $seg2 = $segments[2] ?? '';
 
+    // ── §12.3 Auto timeout sesi admin (60 menit inaktivitas) ──────────────
+    require_once BASE_PATH . '/includes/logger.php';
+    if (!empty($_SESSION['admin'])) {
+        $lastActivity = (int) ($_SESSION['admin_last_activity'] ?? 0);
+        if ($lastActivity > 0 && (time() - $lastActivity) > 3600) {
+            unset($_SESSION['admin'], $_SESSION['admin_username'], $_SESSION['admin_nama_lengkap'], $_SESSION['admin_last_activity']);
+            session_regenerate_id(true);
+            if ($seg1 === 'ajax' && $seg2 !== '') {
+                http_response_code(401);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Sesi login Anda telah berakhir. Silakan login kembali.']);
+                exit;
+            }
+            header('Location: ' . APP_BASE . '/admin/login');
+            exit;
+        }
+        $_SESSION['admin_last_activity'] = time();
+    }
+
     if ($seg1 === 'login') {
         AuthController::login();
 
@@ -86,13 +105,17 @@ if ($seg0 === 'admin') {
         AuthController::logout();
 
     } elseif ($seg1 === 'ajax' && $seg2 !== '') {
-        // /admin/ajax/{endpoint} → public/admin/ajax/{endpoint}.php
+        // /admin/ajax/{endpoint}  public/admin/ajax/{endpoint}.php
         $ajaxFile = BASE_PATH . '/public/admin/ajax/' . basename($seg2) . '.php';
         if (!is_file($ajaxFile)) {
             http_response_code(404);
             header('Content-Type: application/json');
             echo json_encode(['success' => false, 'message' => 'Endpoint tidak ditemukan.']);
             exit;
+        }
+        // ── A09: catat aktivitas penting perubahan data ──
+        if (str_starts_with($seg2, 'store-') || str_starts_with($seg2, 'delete-')) {
+            writeLog('admin_write', 'POST /admin/ajax/' . $seg2);
         }
         require $ajaxFile;
 

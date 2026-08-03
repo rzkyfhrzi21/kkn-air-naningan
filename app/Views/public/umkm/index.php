@@ -62,6 +62,8 @@ $kategori = $kategori ?? [];
                     <?php if ($foto !== ''): ?>
                     <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                          alt="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8') ?>"
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';"
                          src="<?= htmlspecialchars(mediaUrl($foto, $base), ENT_QUOTES, 'UTF-8') ?>">
                     <?php else: ?>
                     <div class="w-full h-full flex items-center justify-center">

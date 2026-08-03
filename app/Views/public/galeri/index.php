@@ -57,6 +57,7 @@ require __DIR__ . '/../partials/header.php';
                     <?php else: ?>
                     <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                          loading="lazy" alt="<?= $judul ?> — <?= $katLabel ?>"
+                         onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';"
                          src="<?= $file ?>">
                     <?php endif; ?>
                 </div>
@@ -83,9 +84,9 @@ require __DIR__ . '/../partials/header.php';
     </section>
 
     <!-- Lightbox Modal -->
-    <div class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300 flex flex-col" id="lightbox">
+    <div data-modal class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300 flex flex-col" id="lightbox">
         <div class="w-full p-6 flex justify-end absolute top-0 left-0 z-10">
-            <button class="w-12 h-12 rounded-full bg-surface-2/50 hover:bg-surface-2 border border-line flex items-center justify-center text-ink transition-colors" onclick="closeLightbox()">
+            <button data-modal-close class="w-12 h-12 rounded-full bg-surface-2/50 hover:bg-surface-2 border border-line flex items-center justify-center text-ink transition-colors" onclick="closeLightbox()">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>

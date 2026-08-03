@@ -198,7 +198,7 @@ $waVal = preg_replace('/^(62|0)/', '', (string) ($akun['whatsapp'] ?? ''));
                 hapusFotoInput.value = '0';
             }
         } catch (err) {
-            toast('Gagal menghubungi server.', false);
+            toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false);
         } finally {
             btn.disabled = false;
             btn.classList.remove('opacity-60');

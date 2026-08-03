@@ -11,7 +11,7 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
                 <div class="flex items-center gap-3">
                     <img class="h-8 w-auto"
                          alt="Logo Pekon Air Naningan"
-                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK8H8Se06RoiwH3wJUlg_WHE-OgxxczJXVk5QpS3z5Nrh9E-j4DWfOQGQdYjrZ_4qD0b0knh3Lh9z4-Br0W2p7XHqFOeTE-coRDtrzlAeBSeX1RxZH9ViZAjV2cFI4G7ELLcfStWHI4FnE7oINSXOgQPfezfdHZoTBjjUgsqfBaXdugJDSTO1KXsNlpryA9s7n8dKAynQE5letH5Wym17CkRm5ou_ywSF0k0_ETyMzzyqNSuTW_EDbWw">
+                         src="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES) ?>">
                     <span class="font-h3 text-h3 text-ink">Air Naningan</span>
                 </div>
                 <p class="text-ink-dim text-body-md max-w-xs">
@@ -87,5 +87,6 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
 </script>
 
 <script src="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/security-warning.js"></script>
+<script src="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/assets/js/modal-focus.js"></script>
 </body>
 </html>

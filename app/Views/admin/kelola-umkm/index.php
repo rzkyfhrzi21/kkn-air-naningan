@@ -117,7 +117,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
 </div>
 
 <!-- Modal form -->
-<div id="modal-umkm" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
+<div id="modal-umkm" data-modal class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60" id="modal-umkm-backdrop"></div>
     <div class="relative w-full max-w-2xl bg-surface border border-line rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between p-6 border-b border-line sticky top-0 bg-surface z-10">
@@ -224,7 +224,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
 </div>
 
 <!-- Modal preview foto -->
-<div id="modal-preview-foto-umkm" class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto UMKM">
+<div id="modal-preview-foto-umkm" data-modal class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto UMKM">
     <div class="absolute inset-0 bg-black/80" id="modal-preview-foto-umkm-backdrop"></div>
     <div class="relative flex max-h-full max-w-5xl items-center justify-center">
         <img id="modal-preview-foto-umkm-img" src="" alt="Preview foto UMKM" class="max-h-[85vh] max-w-full rounded-2xl border border-line object-contain shadow-2xl">
@@ -235,13 +235,13 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
 </div>
 
 <!-- Modal hapus -->
-<div id="modal-hapus" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
+<div id="modal-hapus" data-modal class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60" id="modal-hapus-backdrop"></div>
     <div class="relative w-full max-w-sm bg-surface border border-line rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
         <h2 class="font-h3 text-h3 text-ink">Hapus UMKM?</h2>
         <p class="font-body-md text-ink-dim text-sm">Yakin hapus <strong id="hapus-nama" class="text-ink"></strong>? Tindakan ini tidak bisa dibatalkan.</p>
         <div class="flex justify-end gap-3">
-            <button type="button" id="hapus-batal" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
+            <button type="button" id="hapus-batal" data-modal-close class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
             <button type="button" id="hapus-ya" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-danger text-white">Hapus</button>
         </div>
     </div>
@@ -398,7 +398,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                 </tr>`;
             }).join('');
         } catch (e) {
-            toast('Gagal menghubungi server.', false);
+            toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false);
             tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-danger">Error memuat data.</td></tr>';
         }
     }
@@ -513,7 +513,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
             const json = await res.json();
             toast(json.message || (json.success ? 'Dihapus.' : 'Gagal.'), !!json.success);
             if (json.success) { closeHapus(); loadList(); }
-        } catch (err) { toast('Gagal menghubungi server.', false); }
+        } catch (err) { toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false); }
     });
 
     form?.addEventListener('submit', async (e) => {
@@ -527,7 +527,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
             const json = await res.json();
             toast(json.message || (json.success ? 'Tersimpan.' : 'Gagal.'), !!json.success);
             if (json.success) { closeModal(); loadList(); }
-        } catch (err) { toast('Gagal menghubungi server.', false); }
+        } catch (err) { toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false); }
         finally { btn.disabled = false; }
     });
 

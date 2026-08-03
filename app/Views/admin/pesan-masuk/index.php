@@ -153,13 +153,13 @@ $base = defined('APP_BASE') ? APP_BASE : '';
 </div>
 
 <!-- Modal hapus -->
-<div id="modal-hapus-pesan" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
+<div id="modal-hapus-pesan" data-modal class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60" id="modal-hapus-pesan-backdrop"></div>
     <div class="relative w-full max-w-sm bg-surface border border-line rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
         <h2 class="font-h3 text-h3 text-ink">Hapus Pesan?</h2>
         <p class="font-body-md text-ink-dim text-sm">Yakin hapus pesan dari <strong id="hapus-pesan-nama" class="text-ink"></strong>? Tindakan ini tidak bisa dibatalkan.</p>
         <div class="flex justify-end gap-3">
-            <button type="button" id="hapus-pesan-batal" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
+            <button type="button" id="hapus-pesan-batal" data-modal-close class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-surface-2 text-ink">Batal</button>
             <button type="button" id="hapus-pesan-ya" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase bg-danger text-white">Hapus</button>
         </div>
     </div>
@@ -383,7 +383,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
             // Re-open to refresh detail
             openPesan(id);
         } catch {
-            toast('Gagal menghubungi server.', false);
+            toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false);
         }
     });
 
@@ -434,7 +434,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
             page = 1;
             loadList();
         } catch {
-            toast('Gagal menghubungi server.', false);
+            toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false);
         } finally {
             btn.disabled = false;
         }

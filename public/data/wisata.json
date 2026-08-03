@@ -8,7 +8,7 @@
         "kategori_icon": "water_drop",
         "deskripsi": "Air terjun tersembunyi dengan debit air stabil sepanjang tahun. Dikelilingi hutan primer yang asri, menawarkan kolam alami untuk berenang dan bersantai menikmati suara gemericik air.",
         "jarak": "2.5 km",
-        "foto": "https:\/\/lh3.googleusercontent.com\/aida-public\/AB6AXuCwUA8gwPgZk37dZY0fg2zZyD9x-L261K1EtAmftnqQqyIDrXBOHFIwJf5oIH8BczPJRWpawLhiAWD32M24Y7XHSoV922g8l1KCen88YuZJ3qg9L64uGoev1ohbzUX0q5Gyuq4IUwuhvoYvtWqhUH1wUVp_RE3bQhNka0-IUnxvout-6H7xVZ4KFRcsfcFIdRG_CVERTuFPFZ_cGJ6tpucaWkeawLVkjiHbB6LX6YsfWXg9h00AzUvapA",
+        "foto": "/uploads/konten/potensi-wisata-alam.jpg",
         "fasilitas": [
             {
                 "icon": "hiking",
@@ -23,7 +23,7 @@
                 "label": "Warung"
             }
         ],
-        "maps_url": "https:\/\/maps.google.com",
+        "maps_url": "https://maps.google.com",
         "offset": false,
         "status": "buka",
         "created_at": "2024-10-08T10:00:00+07:00",
@@ -38,7 +38,7 @@
         "kategori_icon": "landscape",
         "deskripsi": "Titik tertinggi di Air Naningan yang menawarkan pemandangan 360 derajat lanskap pegunungan dan lautan awan di pagi hari. Spot ideal untuk fotografi dan berkemah.",
         "jarak": "4.0 km",
-        "foto": "https:\/\/lh3.googleusercontent.com\/aida-public\/AB6AXuATodpjCH4RizqTgSvvyJTRF3HgWV8NkhWHYk8mGmLiJG4j0Of65Iduq9v8i3QPIYKFznyn936zIETy26ljl7urPstshsOWKeDmIS2LhqX3M2cwNHD4B8eZ8YiZJrdJdj_0YbNOJx1q0r_TT_gLve6y_1cBjHwdsaTQl9Q3uy9fhfGyZwupWJuDC8ZLVBKGaEjuWxN3OAbKZq6qmEduUE7_awsv6Lo1OkjvHmFJI6s1czvkX4YbvRjw9w",
+        "foto": "/uploads/konten/wisata-puncak-bintang.jpg",
         "fasilitas": [
             {
                 "icon": "terrain",
@@ -53,7 +53,7 @@
                 "label": "Parkir Motor"
             }
         ],
-        "maps_url": "https:\/\/maps.google.com",
+        "maps_url": "https://maps.google.com",
         "offset": true,
         "status": "buka",
         "created_at": "2024-10-08T10:00:00+07:00",
@@ -68,7 +68,7 @@
         "kategori_icon": "agriculture",
         "deskripsi": "tes",
         "jarak": "10000",
-        "foto": "\\\/uploads\/wisata\/9903bb3f2eceace9919d3267630744ae.jpg",
+        "foto": "/uploads/wisata/9903bb3f2eceace9919d3267630744ae.jpg",
         "fasilitas": [
             {
                 "icon": "hiking",
@@ -79,7 +79,7 @@
                 "label": "hiking"
             }
         ],
-        "maps_url": "https:\/\/www.google.com\/maps\/place\/PT+Microdata+Indonesia+%7C+Software+Developer+%7C+IT+Consultant,+Jalan+Endro+Suratmin,+Way+Dadi,+Kota+Bandar+Lampung,+Lampung\/@-5.375879,105.3014113,15z\/data=!4m5!3m4!1s0x2e40dac03d097843:0x6bb59f4ba9a84e8c!8m2!3d-5.3837086!4d105.2959402?entry=ttu&g_ep=EgoyMDI2MDcyOS4wIKXMDSoASAFQAw%3D%3D",
+        "maps_url": "https://www.google.com/maps/place/PT+Microdata+Indonesia+%7C+Software+Developer+%7C+IT+Consultant,+Jalan+Endro+Suratmin,+Way+Dadi,+Kota+Bandar+Lampung,+Lampung/@-5.375879,105.3014113,15z/data=!4m5!3m4!1s0x2e40dac03d097843:0x6bb59f4ba9a84e8c!8m2!3d-5.3837086!4d105.2959402?entry=ttu&g_ep=EgoyMDI2MDcyOS4wIKXMDSoASAFQAw%3D%3D",
         "offset": false,
         "status": "buka",
         "created_at": "2026-08-03T05:48:32+00:00",
