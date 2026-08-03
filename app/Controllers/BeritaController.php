@@ -36,14 +36,18 @@ final class BeritaController
             return;
         }
 
-        // Berita terpopuler (4 berita terbit terbaru, kecuali yang sedang dibaca)
-        $terkait = array_values(
-            array_filter(
-                Berita::latest(5),
-                static fn(array $b): bool => ($b['id'] ?? '') !== ($berita['id'] ?? '')
-            )
-        );
-        $terkait = array_slice($terkait, 0, 4);
+        // Berita terbaru: 1 dari masing-masing kategori (kecuali yang sedang dibaca)
+        $terkait = [];
+        $kategoriSeen = [];
+        foreach (Berita::published() as $b) {
+            if (($b['id'] ?? '') === ($berita['id'] ?? '')) continue;
+            $kat = $b['kategori'] ?? '';
+            if (!isset($kategoriSeen[$kat])) {
+                $kategoriSeen[$kat] = true;
+                $terkait[] = $b;
+            }
+            if (count($terkait) >= 4) break;
+        }
 
         require __DIR__ . '/../Views/public/berita/detail.php';
     }

@@ -183,10 +183,6 @@ require __DIR__ . '/../partials/header.php';
                             class="w-9 h-9 rounded-full bg-surface-2 border border-line flex items-center justify-center text-ink hover:text-primary hover:border-primary transition-colors">
                         <span class="material-symbols-outlined text-[18px]">share</span>
                     </button>
-                    <button title="Tandai artikel"
-                            class="w-9 h-9 rounded-full bg-surface-2 border border-line flex items-center justify-center text-ink hover:text-gold-soft hover:border-gold-soft transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">bookmark</span>
-                    </button>
                 </div>
             </div>
 
@@ -206,8 +202,8 @@ require __DIR__ . '/../partials/header.php';
             <!-- Berita Terpopuler -->
             <div class="bg-surface-container rounded-xl p-6 border border-line shadow-sm">
                 <h3 class="text-h3 font-h3 text-gold-soft mb-6 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary text-[22px]">trending_up</span>
-                    Berita Terpopuler
+                    <span class="material-symbols-outlined text-primary text-[22px]">newspaper</span>
+                    Berita Terbaru
                 </h3>
 
                 <?php if (!empty($terkait)): ?>
@@ -244,26 +240,6 @@ require __DIR__ . '/../partials/header.php';
                 <?php else: ?>
                 <p class="text-ink-dim font-body-md text-sm">Belum ada berita lain.</p>
                 <?php endif; ?>
-            </div>
-
-            <!-- Form Langganan Info -->
-            <div class="bg-gradient-to-br from-surface-2 to-surface rounded-xl p-6 border border-line-strong text-center flex flex-col items-center shadow-sm">
-                <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-                    <span class="material-symbols-outlined text-primary text-[26px]">mail_lock</span>
-                </div>
-                <h4 class="text-h3 font-h3 text-ink mb-2">Berlangganan Info</h4>
-                <p class="font-body-md text-body-md text-ink-dim mb-5 text-sm">
-                    Dapatkan update berita dan pengumuman terbaru langsung ke email Anda.
-                </p>
-                <div class="w-full flex flex-col gap-3">
-                    <input type="email"
-                           class="w-full bg-surface-container-lowest border border-line rounded-lg px-4 py-2.5 text-ink placeholder:text-ink-dim/40 focus:outline-none focus:border-primary transition-colors font-body-md text-sm"
-                           placeholder="Alamat email Anda">
-                    <button type="button"
-                            class="w-full bg-primary hover:bg-primary-fixed text-on-primary rounded-full py-2.5 font-body-md text-sm font-medium transition-colors shadow-sm shadow-primary/20">
-                        Langganan
-                    </button>
-                </div>
             </div>
 
         </aside>
