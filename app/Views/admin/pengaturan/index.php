@@ -7,7 +7,7 @@ require __DIR__ . '/../partials/header.php';
 
     <div class="flex flex-col gap-2">
         <h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-ink">Pengaturan Sistem</h1>
-        <p class="font-body-lg text-body-lg text-ink-dim max-w-2xl">Kelola informasi dasar desa, pengaturan keamanan akun administrator, dan optimasi mesin pencari untuk portal publik Air Naningan.</p>
+        <p class="font-body-lg text-body-lg text-ink-dim max-w-2xl">Kelola informasi dasar desa dan pengaturan keamanan akun administrator untuk panel Air Naningan.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
@@ -21,10 +21,6 @@ require __DIR__ . '/../partials/header.php';
             <a href="#akun-admin" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container-high text-ink-dim hover:text-ink text-left transition-all">
                 <span class="material-symbols-outlined text-[20px]">manage_accounts</span>
                 <span class="font-body-md text-body-md">Akun Admin</span>
-            </a>
-            <a href="#seo-meta" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container-high text-ink-dim hover:text-ink text-left transition-all">
-                <span class="material-symbols-outlined text-[20px]">troubleshoot</span>
-                <span class="font-body-md text-body-md">SEO &amp; Meta</span>
             </a>
         </div>
 
@@ -121,49 +117,7 @@ require __DIR__ . '/../partials/header.php';
                 </div>
             </section>
 
-            <!-- SEO -->
-            <section class="flex flex-col gap-6 scroll-mt-24" id="seo-meta">
-                <div class="flex flex-col gap-1 border-b border-line pb-4">
-                    <h2 class="font-h3 text-h3 text-ink">Optimasi Mesin Pencari (SEO)</h2>
-                    <p class="font-body-md text-body-md text-ink-dim">Konfigurasi bagaimana situs desa muncul di hasil pencarian Google.</p>
-                </div>
-                <div class="bg-surface-container rounded-2xl p-6 md:p-8 flex flex-col gap-8 shadow-sm">
-                    <div class="bg-surface rounded-xl p-5 border border-line flex flex-col gap-1">
-                        <span class="font-body-md text-xs text-ink-dim uppercase tracking-wider mb-2">Pratinjau Pencarian Google</span>
-                        <div class="flex items-center gap-2 text-sm">
-                            <div class="w-6 h-6 rounded-full bg-surface-2 border border-line flex items-center justify-center text-[10px] text-ink">AN</div>
-                            <div class="flex flex-col leading-tight">
-                                <span class="text-ink">Pekon Air Naningan</span>
-                                <span class="text-ink-dim text-xs">https://airnaningan.desa.id</span>
-                            </div>
-                        </div>
-                        <h3 class="text-tertiary-fixed text-lg font-medium mt-2 hover:underline cursor-pointer">Pekon Air Naningan - Potensi Agraria &amp; Wisata Tanggamus</h3>
-                        <p class="text-ink-dim text-sm line-clamp-2">Website resmi Pekon Air Naningan. Temukan informasi terkini seputar pemerintahan, potensi UMKM, hasil bumi unggulan, dan destinasi wisata alam yang asri.</p>
-                    </div>
-                    <div class="flex flex-col gap-6">
-                        <div class="flex flex-col gap-2">
-                            <div class="flex justify-between items-end">
-                                <label class="font-body-md text-[13px] text-ink-dim ml-1">Meta Title (Judul Situs)</label>
-                                <span class="font-label-mono text-[10px] text-ink-dim">60 Karakter Max</span>
-                            </div>
-                            <input class="w-full bg-surface border border-line rounded-lg px-4 py-3 font-body-md text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" type="text" value="Pekon Air Naningan - Potensi Agraria &amp; Wisata Tanggamus"/>
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <div class="flex justify-between items-end">
-                                <label class="font-body-md text-[13px] text-ink-dim ml-1">Meta Description (Deskripsi Singkat)</label>
-                                <span class="font-label-mono text-[10px] text-ink-dim">160 Karakter Max</span>
-                            </div>
-                            <textarea class="w-full bg-surface border border-line rounded-lg px-4 py-3 font-body-md text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none" rows="3">Website resmi Pekon Air Naningan. Temukan informasi terkini seputar pemerintahan, potensi UMKM, hasil bumi unggulan, dan destinasi wisata alam yang asri.</textarea>
-                        </div>
-                    </div>
-                    <div class="flex justify-end pt-4 border-t border-line">
-                        <button class="bg-primary hover:bg-primary-fixed text-on-primary font-body-md font-medium px-6 py-2.5 rounded-full transition-colors flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">save</span>
-                            Simpan SEO
-                        </button>
-                    </div>
-                </div>
-            </section>
+            <!-- SEO section dihapus sesuai permintaan -->
 
         </div>
     </div>

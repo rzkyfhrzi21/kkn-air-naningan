@@ -20,6 +20,8 @@ final class KelolaWisataController
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
+        $wisataAll = Wisata::all();
+
         require __DIR__ . '/../../Views/admin/kelola-wisata/index.php';
     }
 }

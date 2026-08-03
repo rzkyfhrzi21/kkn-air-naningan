@@ -67,6 +67,20 @@ $kategoriList = [
                 </div>
             </div>
 
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <section class="lg:col-span-2 bg-surface rounded-2xl border border-line p-5 md:p-6" aria-labelledby="wisata-category-chart-title">
+                    <div class="flex items-start justify-between gap-4 mb-2">
+                        <div><h2 id="wisata-category-chart-title" class="font-h3 text-h3 text-ink">Sebaran Kategori</h2><p class="text-sm text-ink-dim mt-1">Jumlah destinasi pada setiap kategori wisata.</p></div>
+                        <span class="font-label-mono text-[10px] uppercase tracking-widest text-gold-soft">Data Live</span>
+                    </div>
+                    <div id="wisata-category-chart" class="min-h-[280px]"></div>
+                </section>
+                <section class="bg-surface rounded-2xl border border-line p-5 md:p-6" aria-labelledby="wisata-status-chart-title">
+                    <div><h2 id="wisata-status-chart-title" class="font-h3 text-h3 text-ink">Status Destinasi</h2><p class="text-sm text-ink-dim mt-1">Perbandingan destinasi buka dan tutup.</p></div>
+                    <div id="wisata-status-chart" class="min-h-[280px]"></div>
+                </section>
+            </div>
+
             <!-- Filter Bar -->
             <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-surface p-4 rounded-xl border border-line">
                 <div class="relative w-full md:w-96">
@@ -179,9 +193,9 @@ $kategoriList = [
                 <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Foto</span>
                 <!-- Preview foto lama (mode edit) -->
                 <div id="wisata-foto-preview" class="hidden items-center gap-3 p-3 bg-surface-container-high rounded-xl border border-line">
-                    <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-line-strong bg-surface-container">
+                    <button type="button" class="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-line-strong bg-surface-container cursor-zoom-in" data-photo-preview aria-label="Perbesar foto saat ini">
                         <img id="wisata-foto-preview-img" src="" alt="Foto saat ini" class="w-full h-full object-cover">
-                    </div>
+                    </button>
                     <div class="flex flex-col gap-0.5 min-w-0">
                         <span class="font-label-mono text-[10px] text-ink-dim uppercase tracking-wider">Foto saat ini</span>
                         <p class="text-[11px] text-ink-dim/70 truncate" id="wisata-foto-preview-url"></p>
@@ -201,7 +215,9 @@ $kategoriList = [
                 <input type="file" name="foto_file" id="wisata-foto-file" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only">
                 <!-- Preview file baru -->
                 <div id="wisata-foto-new-preview" class="hidden flex-col gap-2">
-                    <img id="wisata-foto-new-img" src="" alt="Preview" class="w-full max-h-40 object-cover rounded-xl border border-line-strong">
+                    <button type="button" class="w-full rounded-xl overflow-hidden border border-line-strong cursor-zoom-in" data-photo-preview aria-label="Perbesar foto yang dipilih">
+                        <img id="wisata-foto-new-img" src="" alt="Preview foto yang dipilih" class="w-full max-h-40 object-cover">
+                    </button>
                     <button type="button" id="wisata-foto-clear" class="self-start flex items-center gap-1 text-[11px] text-ink-dim hover:text-danger font-label-mono">
                         <span class="material-symbols-outlined text-[14px]">close</span> Hapus pilihan
                     </button>
@@ -211,11 +227,12 @@ $kategoriList = [
             <label class="flex flex-col gap-1.5">
                 <div class="flex items-center gap-1.5">
                     <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Fasilitas</span>
-                    <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer"
-                       title="Cari nama ikon Material Symbols di Google Fonts"
+                    <button type="button" id="btn-bantuan-ikon"
+                       title="Cara mencari nama ikon Material Symbols"
+                       aria-label="Cara mencari nama ikon Material Symbols"
                        class="w-4 h-4 rounded-full bg-surface-container border border-line flex items-center justify-center text-ink-dim hover:text-primary hover:border-primary transition-colors">
                         <span class="material-symbols-outlined text-[11px]">help</span>
-                    </a>
+                    </button>
                 </div>
                 <div id="fasilitas-list" class="flex flex-col gap-2 min-h-[36px]"></div>
                 <button type="button" id="btn-add-fasilitas"
@@ -240,6 +257,39 @@ $kategoriList = [
     </div>
 </div>
 
+<!-- Modal preview foto -->
+<div id="modal-preview-foto-wisata" class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto wisata">
+    <div class="absolute inset-0 bg-black/80" id="modal-preview-foto-wisata-backdrop"></div>
+    <div class="relative flex max-h-full max-w-5xl items-center justify-center">
+        <img id="modal-preview-foto-wisata-img" src="" alt="Preview foto wisata" class="max-h-[85vh] max-w-full rounded-2xl border border-line object-contain shadow-2xl">
+        <button type="button" id="modal-preview-foto-wisata-close" class="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-lg hover:bg-surface-2" aria-label="Tutup preview foto">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+</div>
+
+<!-- Modal Bantuan Ikon -->
+<div id="modal-bantuan-ikon" class="hidden fixed inset-0 z-[130] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-bantuan-ikon-title">
+    <div class="absolute inset-0 bg-black/60" id="modal-bantuan-ikon-backdrop"></div>
+    <div class="relative w-full max-w-md bg-surface border border-line rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
+        <div class="flex items-start justify-between gap-4">
+            <div>
+                <span class="font-label-mono text-[10px] uppercase tracking-widest text-gold-soft">Referensi ikon</span>
+                <h2 id="modal-bantuan-ikon-title" class="font-h3 text-h3 text-ink mt-1">Cari nama ikon Material Symbols</h2>
+            </div>
+            <button type="button" id="modal-bantuan-ikon-close" class="w-9 h-9 rounded-full hover:bg-surface-2 flex items-center justify-center text-ink-dim hover:text-ink shrink-0" aria-label="Tutup bantuan ikon">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <p class="font-body-md text-sm leading-6 text-ink-dim">Gunakan halaman Google Fonts Icons untuk mencari ikon yang sesuai. Salin nama ikon yang dipilih, lalu tempelkan ke kolom <strong class="text-ink">Icon</strong> pada fasilitas.</p>
+        <a href="https://fonts.google.com/icons" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary hover:bg-primary/15 transition-colors">
+            <span class="font-label-mono">fonts.google.com/icons</span>
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+        </a>
+        <p class="text-[11px] text-ink-dim/60">Contoh nama ikon: <code>hiking</code>, <code>wc</code>, <code>terrain</code>, <code>camping</code>.</p>
+    </div>
+</div>
+
 <!-- Modal Hapus -->
 <div id="modal-hapus-wisata" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60" id="modal-hapus-wisata-backdrop"></div>
@@ -253,6 +303,7 @@ $kategoriList = [
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 (function () {
     const base = <?= json_encode($base, JSON_UNESCAPED_SLASHES) ?>;
@@ -267,7 +318,11 @@ $kategoriList = [
     const toastEl  = document.getElementById('wisata-toast');
     const modal    = document.getElementById('modal-wisata');
     const modalDel = document.getElementById('modal-hapus-wisata');
+    const modalIcon = document.getElementById('modal-bantuan-ikon');
+    const photoModal = document.getElementById('modal-preview-foto-wisata');
+    const photoModalImg = document.getElementById('modal-preview-foto-wisata-img');
     const form     = document.getElementById('form-wisata');
+    let categoryChart = null, statusChart = null;
 
     /* ── Toast ── */
     function toast(msg, ok) {
@@ -283,6 +338,74 @@ $kategoriList = [
         const d = document.createElement('div');
         d.textContent = s ?? '';
         return d.innerHTML;
+    }
+
+    function mediaUrl(path) {
+        const value = String(path || '').trim();
+        if (!value || /^(https?:)?\/\//i.test(value) || value.startsWith('blob:') || value.startsWith('data:')) return value;
+        if (value.startsWith(base + '/')) return value;
+        return (value.startsWith('/') ? base : base + '/') + value.replace(/^\/+/, '');
+    }
+
+    function openPhotoPreview(src) {
+        if (!src) return;
+        photoModalImg.src = src;
+        photoModal.classList.remove('hidden');
+        photoModal.classList.add('flex');
+    }
+
+    function closePhotoPreview() {
+        photoModal.classList.add('hidden');
+        photoModal.classList.remove('flex');
+        photoModalImg.src = '';
+    }
+
+    function chartColors() {
+        const styles = getComputedStyle(document.documentElement);
+        return {
+            primary: styles.getPropertyValue('--color-primary').trim(),
+            tertiary: styles.getPropertyValue('--color-tertiary-fixed-dim').trim(),
+            ink: styles.getPropertyValue('--color-ink').trim(),
+            inkDim: styles.getPropertyValue('--color-ink-dim').trim(),
+            line: styles.getPropertyValue('--color-line').trim(),
+        };
+    }
+
+    function updateCharts(stats) {
+        if (typeof ApexCharts === 'undefined') return;
+        const colors = chartColors();
+        const categories = Object.keys(stats.stat_kategori || {});
+        const categoryValues = Object.values(stats.stat_kategori || {}).map(Number);
+        if (!categoryChart) {
+            categoryChart = new ApexCharts(document.querySelector('#wisata-category-chart'), {
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'Public Sans, sans-serif' },
+                series: [{ name: 'Destinasi', data: categoryValues }], colors: [colors.primary],
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '42%', distributed: true } },
+                dataLabels: { enabled: false }, legend: { show: false },
+                xaxis: { categories, labels: { style: { colors: colors.inkDim, fontSize: '11px' } }, axisBorder: { color: colors.line }, axisTicks: { color: colors.line } },
+                yaxis: { min: 0, forceNiceScale: true, labels: { style: { colors: colors.inkDim }, formatter: value => Number.isInteger(value) ? value : '' } },
+                grid: { borderColor: colors.line, strokeDashArray: 4 }, tooltip: { theme: 'dark' }
+            });
+            categoryChart.render();
+        } else {
+            categoryChart.updateOptions({ xaxis: { categories } });
+            categoryChart.updateSeries([{ name: 'Destinasi', data: categoryValues }]);
+        }
+        const statusValues = [Number(stats.stat_buka || 0), Number(stats.stat_tutup || 0)];
+        if (!statusChart) {
+            statusChart = new ApexCharts(document.querySelector('#wisata-status-chart'), {
+                chart: { type: 'donut', height: 280, background: 'transparent', fontFamily: 'Public Sans, sans-serif' },
+                series: statusValues, labels: ['Buka', 'Tutup'], colors: [colors.primary, colors.tertiary],
+                stroke: { width: 2, colors: [colors.line] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: colors.inkDim } },
+                plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: 'Total', color: colors.inkDim, formatter: () => String(stats.total || 0) }, value: { color: colors.ink } } } } },
+                tooltip: { theme: 'dark' }
+            });
+            statusChart.render();
+        } else {
+            statusChart.updateSeries(statusValues);
+            statusChart.updateOptions({ plotOptions: { pie: { donut: { labels: { total: { formatter: () => String(stats.total || 0) } } } } } });
+        }
     }
 
     /* ── Load tabel dari AJAX ── */
@@ -303,6 +426,7 @@ $kategoriList = [
             document.getElementById('stat-total').textContent = json.total;
             if (json.stat_buka  !== undefined) document.getElementById('stat-buka').textContent  = json.stat_buka;
             if (json.stat_tutup !== undefined) document.getElementById('stat-tutup').textContent = json.stat_tutup;
+            updateCharts(json);
             if (!json.data.length) {
                 tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-ink-dim">Belum ada data wisata.</td></tr>';
                 return;
@@ -316,9 +440,7 @@ $kategoriList = [
                     <td class="py-4 px-6 text-ink-dim font-label-mono text-label-mono">${no}</td>
                     <td class="py-4 px-6">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden shrink-0 border border-line">
-                                ${row.foto ? `<img src="${esc(row.foto)}" alt="" class="w-full h-full object-cover">` : `<span class="material-symbols-outlined text-gold-soft text-[20px] flex items-center justify-center w-full h-full">landscape</span>`}
-                            </div>
+                            ${row.foto ? `<button type="button" data-photo-src="${esc(mediaUrl(row.foto))}" class="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden shrink-0 border border-line cursor-zoom-in" aria-label="Perbesar foto ${esc(row.nama)}"><img src="${esc(mediaUrl(row.foto))}" alt="Foto ${esc(row.nama)}" class="w-full h-full object-cover"></button>` : `<div class="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden shrink-0 border border-line"><span class="material-symbols-outlined text-gold-soft text-[20px] flex items-center justify-center w-full h-full">landscape</span></div>`}
                             <div>
                                 <div class="font-medium text-ink">${esc(row.nama)}</div>
                                 <div class="text-[12px] text-ink-dim mt-0.5 line-clamp-1">${esc(row.deskripsi || '—')}</div>
@@ -379,6 +501,14 @@ $kategoriList = [
         modalDel.classList.remove('flex');
         deleteId = null;
     }
+    function openIconHelp() {
+        modalIcon.classList.remove('hidden');
+        modalIcon.classList.add('flex');
+    }
+    function closeIconHelp() {
+        modalIcon.classList.add('hidden');
+        modalIcon.classList.remove('flex');
+    }
 
     /* ── Tombol Tambah ── */
     document.getElementById('btn-tambah-wisata')?.addEventListener('click', () => {
@@ -393,6 +523,16 @@ $kategoriList = [
     document.getElementById('modal-wisata-backdrop')?.addEventListener('click', closeModal);
     document.getElementById('hapus-wisata-batal')?.addEventListener('click', closeDel);
     document.getElementById('modal-hapus-wisata-backdrop')?.addEventListener('click', closeDel);
+    document.getElementById('btn-bantuan-ikon')?.addEventListener('click', openIconHelp);
+    document.getElementById('modal-bantuan-ikon-close')?.addEventListener('click', closeIconHelp);
+    document.getElementById('modal-bantuan-ikon-backdrop')?.addEventListener('click', closeIconHelp);
+    document.getElementById('modal-preview-foto-wisata-close')?.addEventListener('click', closePhotoPreview);
+    document.getElementById('modal-preview-foto-wisata-backdrop')?.addEventListener('click', closePhotoPreview);
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-photo-preview]');
+        if (!trigger) return;
+        openPhotoPreview(trigger.querySelector('img')?.src || '');
+    });
 
     /* ── Fasilitas dynamic builder ── */
     let fasCounter = 0;
@@ -446,8 +586,14 @@ $kategoriList = [
     document.getElementById('btn-add-fasilitas')?.addEventListener('click', () => addFasilitasRow());
 
     tbody?.addEventListener('click', async (e) => {
+        const photoBtn = e.target.closest('[data-photo-src]');
         const editBtn = e.target.closest('[data-edit]');
         const delBtn  = e.target.closest('[data-del]');
+
+        if (photoBtn) {
+            openPhotoPreview(photoBtn.dataset.photoSrc);
+            return;
+        }
 
         if (editBtn) {
             const id = editBtn.dataset.edit;
@@ -484,7 +630,7 @@ $kategoriList = [
                 const previewImg = document.getElementById('wisata-foto-preview-img');
                 const previewUrl = document.getElementById('wisata-foto-preview-url');
                 if (d.foto) {
-                    previewImg.src         = d.foto;
+                     previewImg.src         = mediaUrl(d.foto);
                     previewUrl.textContent = d.foto;
                     previewBox.classList.remove('hidden');
                     previewBox.classList.add('flex');

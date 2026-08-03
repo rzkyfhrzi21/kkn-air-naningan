@@ -28,6 +28,39 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
     <div class="flex-1 p-container-pad-desktop">
         <div class="max-w-container-max mx-auto flex flex-col gap-6">
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary text-[22px]">storefront</span></div>
+                    <div><div class="font-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Total UMKM</div><div class="font-h2 text-h2 text-ink leading-none" id="stat-total">—</div></div>
+                </div>
+                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary text-[22px]">check_circle</span></div>
+                    <div><div class="font-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Status Aktif</div><div class="font-h2 text-h2 text-ink leading-none" id="stat-aktif">—</div></div>
+                </div>
+                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-surface-container border border-line flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-ink-dim text-[22px]">cancel</span></div>
+                    <div><div class="font-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Nonaktif</div><div class="font-h2 text-h2 text-ink-dim leading-none" id="stat-nonaktif">—</div></div>
+                </div>
+                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-tertiary-fixed-dim/10 border border-tertiary-fixed-dim/20 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-tertiary-fixed-dim text-[22px]">stars</span></div>
+                    <div><div class="font-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Tampil di Beranda</div><div class="font-h2 text-h2 text-ink leading-none" id="stat-featured">—</div></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <section class="lg:col-span-2 bg-surface rounded-2xl border border-line p-5 md:p-6" aria-labelledby="umkm-category-chart-title">
+                    <div class="flex items-start justify-between gap-4 mb-2">
+                        <div><h2 id="umkm-category-chart-title" class="font-h3 text-h3 text-ink">Sebaran Kategori</h2><p class="text-sm text-ink-dim mt-1">Jumlah UMKM pada setiap kategori.</p></div>
+                        <span class="font-label-mono text-[10px] uppercase tracking-widest text-gold-soft">Data Live</span>
+                    </div>
+                    <div id="umkm-category-chart" class="min-h-[280px]"></div>
+                </section>
+                <section class="bg-surface rounded-2xl border border-line p-5 md:p-6" aria-labelledby="umkm-status-chart-title">
+                    <div><h2 id="umkm-status-chart-title" class="font-h3 text-h3 text-ink">Status Publikasi</h2><p class="text-sm text-ink-dim mt-1">Perbandingan data aktif dan nonaktif.</p></div>
+                    <div id="umkm-status-chart" class="min-h-[280px]"></div>
+                </section>
+            </div>
+
             <div class="flex flex-col md:flex-row items-center justify-between gap-4 bg-surface p-4 rounded-xl border border-line">
                 <div class="relative w-full md:w-96">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -142,9 +175,9 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                 <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Foto</span>
                 <!-- Preview foto lama (mode edit) -->
                 <div id="umkm-foto-preview" class="hidden items-center gap-3 p-3 bg-surface-container-high rounded-xl border border-line">
-                    <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-line-strong bg-surface-container">
+                    <button type="button" class="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-line-strong bg-surface-container cursor-zoom-in" data-photo-preview aria-label="Perbesar foto saat ini">
                         <img id="umkm-foto-preview-img" src="" alt="Foto saat ini" class="w-full h-full object-cover">
-                    </div>
+                    </button>
                     <div class="flex flex-col gap-0.5 min-w-0">
                         <span class="font-label-mono text-[10px] text-ink-dim uppercase tracking-wider">Foto saat ini</span>
                         <p class="text-[11px] text-ink-dim/70 truncate" id="umkm-foto-preview-url"></p>
@@ -164,7 +197,9 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                 <input type="file" name="foto_file" id="umkm-foto-file" accept="image/jpeg,image/png,image/gif,image/webp" class="sr-only">
                 <!-- Preview file baru -->
                 <div id="umkm-foto-new-preview" class="hidden flex-col gap-2">
-                    <img id="umkm-foto-new-img" src="" alt="Preview" class="w-full max-h-40 object-cover rounded-xl border border-line-strong">
+                    <button type="button" class="w-full rounded-xl overflow-hidden border border-line-strong cursor-zoom-in" data-photo-preview aria-label="Perbesar foto yang dipilih">
+                        <img id="umkm-foto-new-img" src="" alt="Preview foto yang dipilih" class="w-full max-h-40 object-cover">
+                    </button>
                     <button type="button" id="umkm-foto-clear" class="self-start flex items-center gap-1 text-[11px] text-ink-dim hover:text-danger font-label-mono">
                         <span class="material-symbols-outlined text-[14px]">close</span> Hapus pilihan
                     </button>
@@ -185,6 +220,17 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
     </div>
 </div>
 
+<!-- Modal preview foto -->
+<div id="modal-preview-foto-umkm" class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto UMKM">
+    <div class="absolute inset-0 bg-black/80" id="modal-preview-foto-umkm-backdrop"></div>
+    <div class="relative flex max-h-full max-w-5xl items-center justify-center">
+        <img id="modal-preview-foto-umkm-img" src="" alt="Preview foto UMKM" class="max-h-[85vh] max-w-full rounded-2xl border border-line object-contain shadow-2xl">
+        <button type="button" id="modal-preview-foto-umkm-close" class="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-lg hover:bg-surface-2" aria-label="Tutup preview foto">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+</div>
+
 <!-- Modal hapus -->
 <div id="modal-hapus" class="hidden fixed inset-0 z-[110] items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60" id="modal-hapus-backdrop"></div>
@@ -198,6 +244,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 (function () {
     const base = <?= json_encode($base, JSON_UNESCAPED_SLASHES) ?>;
@@ -212,7 +259,10 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
     const toastEl = document.getElementById('umkm-toast');
     const modal = document.getElementById('modal-umkm');
     const modalHapus = document.getElementById('modal-hapus');
+    const photoModal = document.getElementById('modal-preview-foto-umkm');
+    const photoModalImg = document.getElementById('modal-preview-foto-umkm-img');
     const form = document.getElementById('form-umkm');
+    let categoryChart = null, statusChart = null;
 
     function toast(msg, ok) {
         toastEl.textContent = msg;
@@ -229,6 +279,75 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
         return d.innerHTML;
     }
 
+    function mediaUrl(path) {
+        const value = String(path || '').trim();
+        if (!value || /^(https?:)?\/\//i.test(value) || value.startsWith('blob:') || value.startsWith('data:')) return value;
+        if (value.startsWith(base + '/')) return value;
+        return (value.startsWith('/') ? base : base + '/') + value.replace(/^\/+/, '');
+    }
+
+    function openPhotoPreview(src) {
+        if (!src) return;
+        photoModalImg.src = src;
+        photoModal.classList.remove('hidden');
+        photoModal.classList.add('flex');
+    }
+
+    function closePhotoPreview() {
+        photoModal.classList.add('hidden');
+        photoModal.classList.remove('flex');
+        photoModalImg.src = '';
+    }
+
+    function chartColors() {
+        const styles = getComputedStyle(document.documentElement);
+        return {
+            primary: styles.getPropertyValue('--color-primary').trim(),
+            tertiary: styles.getPropertyValue('--color-tertiary-fixed-dim').trim(),
+            ink: styles.getPropertyValue('--color-ink').trim(),
+            inkDim: styles.getPropertyValue('--color-ink-dim').trim(),
+            line: styles.getPropertyValue('--color-line').trim(),
+        };
+    }
+
+    function updateCharts(stats) {
+        if (typeof ApexCharts === 'undefined') return;
+        const colors = chartColors();
+        const categories = Object.keys(stats.stat_kategori || {});
+        const categoryValues = Object.values(stats.stat_kategori || {}).map(Number);
+        if (!categoryChart) {
+            categoryChart = new ApexCharts(document.querySelector('#umkm-category-chart'), {
+                chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent', fontFamily: 'Public Sans, sans-serif' },
+                series: [{ name: 'UMKM', data: categoryValues }],
+                colors: [colors.primary],
+                plotOptions: { bar: { borderRadius: 6, columnWidth: '42%', distributed: true } },
+                dataLabels: { enabled: false }, legend: { show: false },
+                xaxis: { categories, labels: { style: { colors: colors.inkDim, fontSize: '11px' } }, axisBorder: { color: colors.line }, axisTicks: { color: colors.line } },
+                yaxis: { min: 0, forceNiceScale: true, labels: { style: { colors: colors.inkDim }, formatter: value => Number.isInteger(value) ? value : '' } },
+                grid: { borderColor: colors.line, strokeDashArray: 4 }, tooltip: { theme: 'dark' }
+            });
+            categoryChart.render();
+        } else {
+            categoryChart.updateOptions({ xaxis: { categories } });
+            categoryChart.updateSeries([{ name: 'UMKM', data: categoryValues }]);
+        }
+        const statusValues = [Number(stats.stat_aktif || 0), Number(stats.stat_nonaktif || 0)];
+        if (!statusChart) {
+            statusChart = new ApexCharts(document.querySelector('#umkm-status-chart'), {
+                chart: { type: 'donut', height: 280, background: 'transparent', fontFamily: 'Public Sans, sans-serif' },
+                series: statusValues, labels: ['Aktif', 'Nonaktif'], colors: [colors.primary, colors.tertiary],
+                stroke: { width: 2, colors: [colors.line] }, dataLabels: { enabled: false },
+                legend: { position: 'bottom', labels: { colors: colors.inkDim } },
+                plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: 'Total', color: colors.inkDim, formatter: () => String(stats.total || 0) }, value: { color: colors.ink } } } } },
+                tooltip: { theme: 'dark' }
+            });
+            statusChart.render();
+        } else {
+            statusChart.updateSeries(statusValues);
+            statusChart.updateOptions({ plotOptions: { pie: { donut: { labels: { total: { formatter: () => String(stats.total || 0) } } } } } });
+        }
+    }
+
     async function loadList() {
         tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center"><span class="inline-block w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></span></td></tr>';
         const fd = new FormData();
@@ -242,6 +361,11 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
             hasNext = json.has_next; hasPrev = json.has_prev;
             btnPrev.disabled = !hasPrev; btnNext.disabled = !hasNext;
             meta.textContent = json.total + ' data · halaman ' + json.page;
+            document.getElementById('stat-total').textContent = json.total;
+            document.getElementById('stat-aktif').textContent = json.stat_aktif;
+            document.getElementById('stat-nonaktif').textContent = json.stat_nonaktif;
+            document.getElementById('stat-featured').textContent = json.stat_featured;
+            updateCharts(json);
             if (!json.data.length) {
                 tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-ink-dim">Belum ada data UMKM.</td></tr>';
                 return;
@@ -254,9 +378,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                     <td class="py-4 px-6 text-ink-dim font-label-mono text-label-mono">${no}</td>
                     <td class="py-4 px-6">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden shrink-0 border border-line">
-                                ${row.foto ? `<img src="${esc(row.foto)}" alt="" class="w-full h-full object-cover">` : `<span class="material-symbols-outlined text-gold-soft text-[20px] flex items-center justify-center w-full h-full">storefront</span>`}
-                            </div>
+                            ${row.foto ? `<button type="button" data-photo-src="${esc(mediaUrl(row.foto))}" class="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden shrink-0 border border-line cursor-zoom-in" aria-label="Perbesar foto ${esc(row.nama)}"><img src="${esc(mediaUrl(row.foto))}" alt="Foto ${esc(row.nama)}" class="w-full h-full object-cover"></button>` : `<div class="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden shrink-0 border border-line"><span class="material-symbols-outlined text-gold-soft text-[20px] flex items-center justify-center w-full h-full">storefront</span></div>`}
                             <div>
                                 <div class="font-medium text-ink">${esc(row.nama)}</div>
                                 <div class="text-[13px] text-ink-dim mt-0.5">${esc(row.pemilik || row.usaha || '—')}</div>
@@ -314,10 +436,22 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
     document.getElementById('modal-umkm-backdrop')?.addEventListener('click', closeModal);
     document.getElementById('hapus-batal')?.addEventListener('click', closeHapus);
     document.getElementById('modal-hapus-backdrop')?.addEventListener('click', closeHapus);
+    document.getElementById('modal-preview-foto-umkm-close')?.addEventListener('click', closePhotoPreview);
+    document.getElementById('modal-preview-foto-umkm-backdrop')?.addEventListener('click', closePhotoPreview);
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-photo-preview]');
+        if (!trigger) return;
+        openPhotoPreview(trigger.querySelector('img')?.src || '');
+    });
 
     tbody?.addEventListener('click', async (e) => {
+        const photoBtn = e.target.closest('[data-photo-src]');
         const editBtn = e.target.closest('[data-edit]');
         const delBtn = e.target.closest('[data-del]');
+        if (photoBtn) {
+            openPhotoPreview(photoBtn.dataset.photoSrc);
+            return;
+        }
         if (editBtn) {
             const id = editBtn.dataset.edit;
             const fd = new FormData();
@@ -353,7 +487,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                 const previewImg = document.getElementById('umkm-foto-preview-img');
                 const previewUrl = document.getElementById('umkm-foto-preview-url');
                 if (d.foto) {
-                    previewImg.src = d.foto;
+                    previewImg.src = mediaUrl(d.foto);
                     previewUrl.textContent = d.foto;
                     previewBox.classList.remove('hidden');
                     previewBox.classList.add('flex');

@@ -2,179 +2,407 @@
 $pageTitle = 'Pesan Masuk';
 $activeNav = 'pesan-masuk';
 require __DIR__ . '/../partials/header.php';
+
+$csrf = (string) ($_SESSION['csrf_token'] ?? '');
+$base = defined('APP_BASE') ? APP_BASE : '';
 ?>
-<div class="flex flex-col w-full px-container-pad-mobile md:px-container-pad-desktop py-8 md:py-12 gap-8">
+<div class="flex flex-col w-full min-h-[calc(100vh-64px)] bg-background">
 
     <!-- Page Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b border-line pb-6">
-        <div class="flex flex-col gap-2">
-            <h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-ink">Pesan Masuk</h1>
-            <p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">
-                Kelola dan balas pertanyaan, masukan, atau keluhan dari masyarakat yang dikirim melalui formulir kontak.
-            </p>
-        </div>
-        <div class="flex items-center gap-3">
-            <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-ink font-body-md text-[14px] transition-colors border border-line">
-                <span class="material-symbols-outlined text-[20px]">filter_list</span>
-                <span>Filter</span>
-            </button>
-            <button class="flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container hover:bg-surface-container-high text-ink font-body-md text-[14px] transition-colors border border-line">
-                <span class="material-symbols-outlined text-[20px]">archive</span>
-                <span>Arsip</span>
-            </button>
+    <div class="px-container-pad-desktop py-8 md:py-10 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-line-strong bg-surface-container-lowest">
+        <div class="flex flex-col max-w-2xl">
+            <h1 class="font-h2 text-h2 text-ink mb-2">Pesan Masuk</h1>
+            <p class="font-body-md text-body-md text-ink-dim">Pesan yang dikirim pengunjung melalui halaman <code class="text-gold-soft">/kontak</code>. Mode hanya baca.</p>
         </div>
     </div>
 
-    <!-- Split View: Message List + Detail -->
-    <div class="flex flex-col lg:flex-row gap-6 h-[calc(100vh-280px)] min-h-[600px]">
+    <!-- Toast -->
+    <div id="pesan-toast" class="hidden fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm" role="status"></div>
 
-        <!-- Left: Message List -->
-        <div class="w-full lg:w-[400px] xl:w-[450px] flex flex-col bg-surface rounded-xl border border-line overflow-hidden shadow-sm shrink-0">
+    <div class="flex-1 p-container-pad-desktop">
+        <div class="max-w-container-max mx-auto flex flex-col gap-6">
 
-            <!-- Search -->
-            <div class="p-4 border-b border-line flex items-center justify-between bg-surface-container-lowest">
-                <div class="relative w-full">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-                    <input id="search-pesan" class="w-full bg-surface-container text-ink font-body-md text-[14px] rounded-lg pl-10 pr-4 py-2.5 outline-none focus:ring-1 focus:ring-primary/50 transition-all border border-transparent focus:border-line placeholder:text-on-surface-variant/50" placeholder="Cari pesan..." type="text"/>
+            <!-- Stat Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-primary text-[22px]">mail</span>
+                    </div>
+                    <div>
+                        <div class="font-label-mono text-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Total Pesan</div>
+                        <div class="font-h2 text-h2 text-ink leading-none" id="stat-total">—</div>
+                    </div>
+                </div>
+                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-amber-400 text-[22px]">mark_email_unread</span>
+                    </div>
+                    <div>
+                        <div class="font-label-mono text-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Belum Dibaca</div>
+                        <div class="font-h2 text-h2 text-ink leading-none" id="stat-baru">—</div>
+                    </div>
+                </div>
+                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-surface-container border border-line flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-ink-dim text-[22px]">drafts</span>
+                    </div>
+                    <div>
+                        <div class="font-label-mono text-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Sudah Dibaca</div>
+                        <div class="font-h2 text-h2 text-ink-dim leading-none" id="stat-dibaca">—</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Message Items -->
-            <div class="flex-1 overflow-y-auto" id="message-list">
+            <!-- Split View -->
+            <div class="flex flex-col lg:flex-row gap-0 bg-surface rounded-2xl border border-line overflow-hidden shadow-sm min-h-[600px]">
 
-                <!-- Pesan 1: Aktif/Baru -->
-                <button class="w-full text-left p-4 border-l-4 border-primary bg-surface-container-low hover:bg-surface-container transition-colors group flex flex-col gap-2 relative border-b border-line">
-                    <div class="flex justify-between items-start w-full">
-                        <span class="font-h3 text-[16px] text-ink truncate pr-4">Budi Santoso</span>
-                        <span class="font-label-mono text-label-mono text-primary shrink-0 pt-1">BARU</span>
+                <!-- Left: List Panel -->
+                <div class="w-full lg:w-[360px] shrink-0 border-b lg:border-b-0 lg:border-r border-line flex flex-col">
+                    <!-- Search + Filter -->
+                    <div class="p-4 border-b border-line flex flex-col gap-3">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="material-symbols-outlined text-ink-dim text-[18px]">search</span>
+                            </div>
+                            <input id="search-pesan"
+                                   class="w-full bg-surface-container-high border-none text-ink text-body-md font-body-md rounded-lg pl-9 pr-4 py-2 focus:ring-1 focus:ring-primary focus:outline-none placeholder:text-ink-dim/50"
+                                   placeholder="Cari nama atau pesan..."
+                                   type="text"/>
+                        </div>
+                        <div class="flex gap-2" id="filter-pesan">
+                            <button type="button" data-filter="all"    class="filter-btn px-3 py-1.5 rounded-full bg-surface-2 text-ink border border-line-strong font-label-mono text-[11px] whitespace-nowrap">Semua</button>
+                            <button type="button" data-filter="baru"   class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Belum Dibaca</button>
+                            <button type="button" data-filter="dibaca" class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Sudah Dibaca</button>
+                        </div>
                     </div>
-                    <span class="font-body-md text-[14px] text-on-surface-variant truncate w-full group-hover:text-ink transition-colors">Tanya Jadwal Wisata Air Terjun</span>
-                    <div class="flex items-center justify-between w-full mt-1">
-                        <span class="font-body-md text-[12px] text-on-surface-variant/70">Hari ini, 09:42 WIB</span>
-                        <span class="material-symbols-outlined text-primary text-[16px]">fiber_manual_record</span>
-                    </div>
-                </button>
 
-                <!-- Pesan 2 -->
-                <button class="w-full text-left p-4 border-l-4 border-transparent hover:bg-surface-container-low transition-colors group flex flex-col gap-2 relative border-b border-line">
-                    <div class="flex justify-between items-start w-full">
-                        <span class="font-h3 text-[16px] text-on-surface-variant group-hover:text-ink truncate pr-4 transition-colors">Siti Aminah</span>
-                        <span class="font-label-mono text-label-mono text-on-surface-variant/50 shrink-0 pt-1">KEMARIN</span>
+                    <!-- Message List -->
+                    <div id="pesan-list" class="flex-1 overflow-y-auto">
+                        <div class="py-12 flex items-center justify-center">
+                            <span class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                        </div>
                     </div>
-                    <span class="font-body-md text-[14px] text-on-surface-variant/70 truncate w-full group-hover:text-on-surface-variant transition-colors">Laporan Infrastruktur Jalan Rusak di Dusun 3</span>
-                    <div class="flex items-center justify-between w-full mt-1">
-                        <span class="font-body-md text-[12px] text-on-surface-variant/50">Kemarin, 15:20 WIB</span>
-                    </div>
-                </button>
 
-                <!-- Pesan 3 -->
-                <button class="w-full text-left p-4 border-l-4 border-transparent hover:bg-surface-container-low transition-colors group flex flex-col gap-2 relative border-b border-line">
-                    <div class="flex justify-between items-start w-full">
-                        <span class="font-h3 text-[16px] text-on-surface-variant group-hover:text-ink truncate pr-4 transition-colors">Komunitas Kopi Lampung</span>
-                        <span class="font-label-mono text-label-mono text-on-surface-variant/50 shrink-0 pt-1">12 OKT</span>
-                    </div>
-                    <span class="font-body-md text-[14px] text-on-surface-variant/70 truncate w-full group-hover:text-on-surface-variant transition-colors">Undangan Kolaborasi Festival Kopi</span>
-                    <div class="flex items-center justify-between w-full mt-1">
-                        <span class="font-body-md text-[12px] text-on-surface-variant/50">12 Okt 2023, 10:05 WIB</span>
-                    </div>
-                </button>
-
-                <!-- Pesan 4 -->
-                <button class="w-full text-left p-4 border-l-4 border-transparent hover:bg-surface-container-low transition-colors group flex flex-col gap-2 relative border-b border-line">
-                    <div class="flex justify-between items-start w-full">
-                        <span class="font-h3 text-[16px] text-on-surface-variant group-hover:text-ink truncate pr-4 transition-colors">Agus Pratama</span>
-                        <span class="font-label-mono text-label-mono text-on-surface-variant/50 shrink-0 pt-1">10 OKT</span>
-                    </div>
-                    <span class="font-body-md text-[14px] text-on-surface-variant/70 truncate w-full group-hover:text-on-surface-variant transition-colors">Kendala Registrasi UMKM</span>
-                    <div class="flex items-center justify-between w-full mt-1">
-                        <span class="font-body-md text-[12px] text-on-surface-variant/50">10 Okt 2023, 08:30 WIB</span>
-                    </div>
-                </button>
-
-            </div>
-        </div>
-
-        <!-- Right: Message Detail -->
-        <div class="flex-1 bg-surface-2 rounded-xl border border-line flex flex-col overflow-hidden shadow-md relative">
-
-            <!-- Detail Header -->
-            <div class="p-6 border-b border-line/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-lowest/50 backdrop-blur-sm z-10 sticky top-0">
-                <div class="flex items-start gap-4">
-                    <div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-h3 text-xl shrink-0 uppercase">
-                        BS
-                    </div>
-                    <div class="flex flex-col">
-                        <h2 class="font-h3 text-xl text-ink">Budi Santoso</h2>
-                        <div class="flex items-center gap-2 text-on-surface-variant font-body-md text-[14px]">
-                            <a class="hover:text-primary transition-colors" href="mailto:budi.s@example.com">budi.s@example.com</a>
-                            <span class="w-1 h-1 rounded-full bg-line-strong"></span>
-                            <span>0812-3456-7890</span>
+                    <!-- Pagination -->
+                    <div class="flex items-center justify-between px-4 py-3 border-t border-line bg-surface-container/30">
+                        <span id="pesan-meta" class="font-label-mono text-[11px] text-ink-dim">—</span>
+                        <div class="flex gap-2">
+                            <button type="button" id="btn-prev" disabled class="px-3 py-1.5 rounded-full border border-line text-ink-dim font-label-mono text-[11px] uppercase disabled:opacity-40">Prev</button>
+                            <button type="button" id="btn-next" disabled class="px-3 py-1.5 rounded-full border border-line text-ink-dim font-label-mono text-[11px] uppercase disabled:opacity-40">Next</button>
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 shrink-0">
-                    <button aria-label="Tandai belum dibaca" class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors">
-                        <span class="material-symbols-outlined text-[22px]">mark_as_unread</span>
-                    </button>
-                    <button aria-label="Arsipkan" class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-ink transition-colors">
-                        <span class="material-symbols-outlined text-[22px]">archive</span>
-                    </button>
-                    <button aria-label="Hapus" class="p-2 rounded-full hover:bg-error-container/20 text-on-surface-variant hover:text-error transition-colors">
-                        <span class="material-symbols-outlined text-[22px]">delete</span>
-                    </button>
-                </div>
-            </div>
 
-            <!-- Message Body -->
-            <div class="flex-1 overflow-y-auto p-6 md:p-8">
-                <div class="max-w-3xl mx-auto">
-
-                    <!-- Subject -->
-                    <div class="mb-8">
-                        <span class="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary font-label-mono text-[10px] mb-4 border border-primary/20">PERTANYAAN UMUM</span>
-                        <h3 class="font-h2 text-2xl md:text-3xl text-ink leading-tight mb-2">Tanya Jadwal Wisata Air Terjun</h3>
-                        <p class="font-body-md text-[14px] text-on-surface-variant/70">Diterima pada 14 Oktober 2023, pukul 09:42 WIB</p>
+                <!-- Right: Detail Panel -->
+                <div id="pesan-detail" class="flex-1 flex flex-col">
+                    <!-- Empty state (default) -->
+                    <div id="detail-empty" class="flex-1 flex flex-col items-center justify-center gap-4 p-8 text-center">
+                        <span class="material-symbols-outlined text-5xl text-ink-dim/20">inbox</span>
+                        <p class="text-ink-dim font-body-md">Pilih pesan dari daftar untuk melihat isinya.</p>
                     </div>
-
-                    <!-- Message Content -->
-                    <div class="font-body-lg text-on-surface-variant space-y-6 leading-relaxed">
-                        <p>Selamat Pagi Admin Pekon Air Naningan,</p>
-                        <p>Perkenalkan saya Budi dari Bandar Lampung. Saya dan keluarga berencana untuk mengunjungi Air Terjun di wilayah Air Naningan pada akhir pekan ini (hari Minggu).</p>
-                        <p>Saya ingin menanyakan beberapa hal terkait operasional wisata di sana:</p>
-                        <ul class="list-disc pl-5 space-y-2 marker:text-primary/50">
-                            <li>Apakah tempat wisata buka secara penuh pada hari Minggu?</li>
-                            <li>Berapa harga tiket masuk per orang saat ini?</li>
-                            <li>Apakah jalan menuju ke lokasi sudah bisa dilalui oleh mobil MPV biasa, atau harus menggunakan kendaraan khusus/motor?</li>
-                        </ul>
-                        <p>Mohon informasinya agar kami bisa mempersiapkan perjalanan dengan baik. Terima kasih banyak atas bantuannya.</p>
-                        <p>Salam hangat,<br/>Budi Santoso</p>
-                    </div>
-
-                    <!-- Reply Form -->
-                    <div class="mt-12 pt-8 border-t border-line/50">
-                        <h4 class="font-h3 text-lg text-ink mb-4 flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary">reply</span> Balas Pesan
-                        </h4>
-                        <div class="bg-surface-container rounded-xl p-1 border border-line-strong focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
-                            <textarea id="reply-text" class="w-full bg-transparent text-ink font-body-md p-3 outline-none resize-none placeholder:text-on-surface-variant/40" placeholder="Tulis balasan untuk Budi Santoso..." rows="5"></textarea>
-                            <div class="flex justify-between items-center p-2 border-t border-line/30">
-                                <div class="flex items-center gap-1">
-                                    <button class="p-2 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors"><span class="material-symbols-outlined text-[20px]">format_bold</span></button>
-                                    <button class="p-2 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors"><span class="material-symbols-outlined text-[20px]">format_italic</span></button>
-                                    <button class="p-2 rounded-lg hover:bg-surface-container-high text-on-surface-variant transition-colors"><span class="material-symbols-outlined text-[20px]">link</span></button>
+                    <!-- Detail content (hidden by default) -->
+                    <div id="detail-content" class="hidden flex-col flex-1 overflow-y-auto">
+                        <!-- Header detail -->
+                        <div class="flex items-start justify-between p-6 border-b border-line gap-4">
+                            <div class="flex items-center gap-4">
+                                <div id="detail-avatar" class="w-11 h-11 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                    <span class="font-h3 text-on-primary text-base" id="detail-initials">—</span>
                                 </div>
-                                <button class="px-6 py-2 rounded-full bg-primary text-on-primary font-body-md font-medium hover:bg-primary-fixed transition-colors flex items-center gap-2 shadow-sm shadow-primary/20">
-                                    <span>Kirim</span>
-                                    <span class="material-symbols-outlined text-[18px]">send</span>
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span id="detail-nama" class="font-h3 text-base text-ink font-semibold">—</span>
+                                        <span id="detail-badge" class="text-[10px] font-label-mono px-2 py-0.5 rounded-full"></span>
+                                    </div>
+                                    <div id="detail-kontak" class="font-body-md text-sm text-ink-dim mt-0.5">—</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button id="btn-toggle-read" type="button" title="Tandai Belum Dibaca"
+                                        class="p-2 rounded-xl text-ink-dim hover:text-ink hover:bg-surface-container-high transition-colors">
+                                    <span class="material-symbols-outlined text-[20px]">mark_email_read</span>
                                 </button>
                             </div>
                         </div>
+                        <!-- Meta info -->
+                        <div class="flex items-center gap-4 px-6 py-3 border-b border-line bg-surface-container/30">
+                            <span class="font-label-mono text-[10px] text-ink-dim uppercase tracking-widest">Kategori</span>
+                            <span id="detail-kategori" class="font-label-mono text-[11px] text-gold-soft bg-gold-soft/10 px-2 py-0.5 rounded-full">—</span>
+                            <span class="w-px h-4 bg-line"></span>
+                            <span class="font-label-mono text-[10px] text-ink-dim uppercase tracking-widest">Waktu</span>
+                            <span id="detail-waktu" class="font-label-mono text-[11px] text-ink-dim">—</span>
+                        </div>
+                        <!-- Message body -->
+                        <div class="flex-1 p-6 md:p-8 lg:p-10">
+                            <div id="detail-pesan"
+                                 class="font-body-md text-body-md text-ink leading-relaxed whitespace-pre-wrap min-h-[140px] max-w-3xl text-[15px] md:text-[16px]">—</div>
+                        </div>
                     </div>
-
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
+<script>
+(function () {
+    'use strict';
+    const base  = '<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>';
+    const csrf  = '<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>';
+
+    let page    = 1;
+    let search  = '';
+    let filter  = 'all';
+    let hasNext = false;
+    let hasPrev = false;
+    let searchTimer = null;
+    let activePesanId = null;
+
+    // ── Toast ──────────────────────────────────────────────────────────────
+    function toast(msg, ok = true) {
+        const el = document.getElementById('pesan-toast');
+        if (!el) return;
+        el.textContent = msg;
+        el.className = [
+            'fixed top-6 right-6 z-[120] max-w-sm px-5 py-4 rounded-xl border shadow-lg font-body-md text-sm transition-all duration-300',
+            ok ? 'bg-surface-2 border-primary/30 text-ink' : 'bg-surface-2 border-danger/40 text-danger',
+        ].join(' ');
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = String(s ?? '');
+        return d.innerHTML;
+    }
+    function formatDate(iso) {
+        if (!iso) return '—';
+        try {
+            return new Intl.DateTimeFormat('id-ID', {
+                day: '2-digit', month: 'long', year: 'numeric',
+                hour: '2-digit', minute: '2-digit',
+                timeZone: 'Asia/Jakarta'
+            }).format(new Date(iso));
+        } catch { return iso; }
+    }
+    function relativeTime(iso) {
+        if (!iso) return '';
+        const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+        if (diff < 60)    return `${diff}d lalu`;
+        if (diff < 3600)  return `${Math.floor(diff / 60)}m lalu`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)}j lalu`;
+        return `${Math.floor(diff / 86400)}h lalu`;
+    }
+    function initials(name) {
+        const parts = (name || 'A').trim().split(/\s+/);
+        return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
+    }
+
+    const kategoriLabel = {
+        info: 'Informasi', layanan: 'Layanan', pengaduan: 'Pengaduan',
+        saran: 'Saran', lainnya: 'Lainnya'
+    };
+
+    // ── Load List ────────────────────────────────────────────────────────────
+    function loadList() {
+        const listEl = document.getElementById('pesan-list');
+        listEl.innerHTML = `<div class="py-12 flex items-center justify-center"><span class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></span></div>`;
+
+        const fd = new FormData();
+        fd.append('page', page);
+        fd.append('search', search);
+        fd.append('filter', filter);
+
+        fetch(base + '/admin/ajax/list-pesan', { method: 'POST', body: fd, credentials: 'same-origin' })
+            .then(r => {
+                if (!r.ok && r.status === 401) {
+                    toast('Sesi habis. Mengalihkan ke login…', false);
+                    setTimeout(() => { window.location.href = base + '/admin/login'; }, 1800);
+                    throw new Error('Unauthorized');
+                }
+                return r.json();
+            })
+            .then(json => {
+                if (!json.success) { toast(json.message || 'Gagal memuat pesan.', false); return; }
+
+                // Update stats
+                document.getElementById('stat-total').textContent   = json.stat_total  ?? '—';
+                document.getElementById('stat-baru').textContent    = json.stat_baru   ?? '—';
+                document.getElementById('stat-dibaca').textContent  = json.stat_dibaca ?? '—';
+
+                hasNext = !!json.has_next;
+                hasPrev = !!json.has_prev;
+                document.getElementById('btn-prev')?.toggleAttribute('disabled', !hasPrev);
+                document.getElementById('btn-next')?.toggleAttribute('disabled', !hasNext);
+                document.getElementById('pesan-meta').textContent =
+                    json.total ? `${json.total} pesan ditemukan` : '0 pesan';
+
+                if (!json.data || json.data.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="flex flex-col items-center justify-center py-16 gap-3 text-center px-4">
+                            <span class="material-symbols-outlined text-4xl text-ink-dim/20">inbox</span>
+                            <p class="text-ink-dim font-body-md text-sm">Belum ada pesan masuk.</p>
+                        </div>`;
+                    return;
+                }
+
+                listEl.innerHTML = json.data.map(item => {
+                    const isUnread = !item.is_read;
+                    const isActive = item.id === activePesanId;
+                    return `
+                    <button type="button"
+                        class="pesan-item w-full text-left px-4 py-4 border-b border-line hover:bg-surface-container-high transition-colors ${isActive ? 'bg-surface-container-high border-l-2 border-l-primary' : ''} flex items-start gap-3"
+                        data-id="${esc(item.id)}">
+                        <div class="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                            <span class="font-bold text-primary text-sm">${esc(initials(item.nama))}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="font-body-md text-sm ${isUnread ? 'font-semibold text-ink' : 'text-ink-dim'} truncate">${esc(item.nama)}</span>
+                                <span class="font-label-mono text-[10px] text-ink-dim shrink-0">${relativeTime(item.created_at)}</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                ${isUnread ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>' : ''}
+                                <span class="text-ink-dim text-xs truncate">${esc((item.pesan || '').substring(0, 60))}…</span>
+                            </div>
+                            <span class="inline-block mt-1 text-[9px] font-label-mono px-1.5 py-0.5 rounded-full ${isUnread ? 'bg-amber-400/15 text-amber-400' : 'bg-surface-container text-ink-dim'}">${isUnread ? 'BARU' : 'DIBACA'}</span>
+                        </div>
+                    </button>`;
+                }).join('');
+
+                // Attach click handlers
+                listEl.querySelectorAll('.pesan-item').forEach(btn => {
+                    btn.addEventListener('click', () => openPesan(btn.dataset.id));
+                });
+            })
+            .catch(err => {
+                if (err.message !== 'Unauthorized') {
+                    listEl.innerHTML = `<div class="py-12 text-center text-ink-dim text-sm">Gagal memuat pesan.</div>`;
+                }
+            });
+    }
+
+    // ── Open Pesan Detail ────────────────────────────────────────────────────
+    async function openPesan(id) {
+        activePesanId = id;
+
+        // Mark item active in list
+        document.querySelectorAll('.pesan-item').forEach(btn => {
+            const isActive = btn.dataset.id === id;
+            btn.classList.toggle('bg-surface-container-high', isActive);
+            btn.classList.toggle('border-l-2', isActive);
+            btn.classList.toggle('border-l-primary', isActive);
+        });
+
+        // Show detail panel, hide empty
+        document.getElementById('detail-empty').classList.add('hidden');
+        const detailContent = document.getElementById('detail-content');
+        detailContent.classList.remove('hidden');
+        detailContent.classList.add('flex');
+
+        // Show skeleton loading
+        document.getElementById('detail-pesan').textContent = 'Memuat…';
+
+        const fd = new FormData();
+        fd.append('id', id);
+
+        try {
+            const res  = await fetch(base + '/admin/ajax/get-pesan', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const json = await res.json();
+
+            if (!json.success) { toast(json.message || 'Gagal memuat pesan.', false); return; }
+
+            const d = json.data;
+
+            document.getElementById('detail-initials').textContent = initials(d.nama);
+            document.getElementById('detail-nama').textContent     = d.nama || '—';
+            document.getElementById('detail-kontak').textContent   = d.kontak || '—';
+            document.getElementById('detail-pesan').textContent    = d.pesan || '—';
+            document.getElementById('detail-waktu').textContent    = formatDate(d.created_at);
+
+            const katLabel = kategoriLabel[d.kategori] || d.kategori || '—';
+            document.getElementById('detail-kategori').textContent = katLabel;
+
+            const badge = document.getElementById('detail-badge');
+            if (d.is_read) {
+                badge.textContent  = 'DIBACA';
+                badge.className    = 'text-[10px] font-label-mono px-2 py-0.5 rounded-full bg-surface-container text-ink-dim';
+            } else {
+                badge.textContent  = 'BARU';
+                badge.className    = 'text-[10px] font-label-mono px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-400';
+            }
+
+            // Update toggle button state
+            const toggleBtn = document.getElementById('btn-toggle-read');
+            toggleBtn.dataset.id     = d.id;
+            toggleBtn.dataset.isRead = d.is_read ? '1' : '0';
+            const toggleIcon = toggleBtn.querySelector('span');
+            toggleIcon.textContent = d.is_read ? 'mark_email_unread' : 'mark_email_read';
+            toggleBtn.title        = d.is_read ? 'Tandai Belum Dibaca' : 'Tandai Sudah Dibaca';
+
+            // Refresh list to update badge
+            loadList();
+
+        } catch (err) {
+            toast('Gagal memuat isi pesan.', false);
+        }
+    }
+
+    // ── Toggle Read Status ────────────────────────────────────────────────────
+    document.getElementById('btn-toggle-read')?.addEventListener('click', async function () {
+        const id     = this.dataset.id;
+        const isRead = this.dataset.isRead === '1';
+        if (!id) return;
+
+        const fd = new FormData();
+        fd.append('id', id);
+        fd.append('is_read', isRead ? '0' : '1');
+
+        try {
+            const res  = await fetch(base + '/admin/ajax/update-pesan', { method: 'POST', body: fd, credentials: 'same-origin' });
+            const json = await res.json();
+            if (!json.success) { toast(json.message || 'Gagal memperbarui status.', false); return; }
+            toast(isRead ? 'Pesan ditandai belum dibaca.' : 'Pesan ditandai sudah dibaca.');
+            // Re-open to refresh detail
+            openPesan(id);
+        } catch {
+            toast('Gagal menghubungi server.', false);
+        }
+    });
+
+    // ── Search ────────────────────────────────────────────────────────────────
+    document.getElementById('search-pesan')?.addEventListener('input', (e) => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+            search = e.target.value.trim();
+            page   = 1;
+            loadList();
+        }, 300);
+    });
+
+    // ── Filter ────────────────────────────────────────────────────────────────
+    document.getElementById('filter-pesan')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('bg-surface-2', 'text-ink', 'border-line-strong');
+            b.classList.add('bg-transparent', 'text-ink-dim', 'border-transparent');
+        });
+        btn.classList.remove('bg-transparent', 'text-ink-dim', 'border-transparent');
+        btn.classList.add('bg-surface-2', 'text-ink', 'border-line-strong');
+        filter = btn.dataset.filter;
+        page   = 1;
+        loadList();
+    });
+
+    // ── Pagination ────────────────────────────────────────────────────────────
+    document.getElementById('btn-prev')?.addEventListener('click', () => { if (hasPrev) { page--; loadList(); } });
+    document.getElementById('btn-next')?.addEventListener('click', () => { if (hasNext) { page++; loadList(); } });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    loadList();
+})();
+</script>
 <?php require __DIR__ . '/../partials/footer.php'; ?>
