@@ -1,5 +1,10 @@
 <?php
-session_start();
+
+header('Content-Type: application/json; charset=utf-8');
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['admin'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Sesi habis, silakan login ulang.']);
@@ -8,14 +13,13 @@ if (!isset($_SESSION['admin'])) {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Metode tidak diizinkan.']);
     exit;
 }
 
 require_once __DIR__ . '/../../../app/Models/Pesan.php';
 
 $id = trim($_POST['id'] ?? '');
-$status = trim($_POST['status'] ?? '');
-$balasan = trim($_POST['balasan'] ?? '');
 
 if (empty($id)) {
     http_response_code(400);
@@ -23,20 +27,12 @@ if (empty($id)) {
     exit;
 }
 
-$payload = [];
-if (!empty($status)) {
-    $payload['status'] = $status;
-}
-if (!empty($balasan)) {
-    $payload['balasan'] = $balasan;
-}
-
-if (empty($payload)) {
+if (!isset($_POST['is_read']) || !in_array((string) $_POST['is_read'], ['0', '1'], true)) {
     echo json_encode(['success' => false, 'message' => 'Tidak ada data yang diperbarui.']);
     exit;
 }
 
-$item = Pesan::update($id, $payload);
+$item = Pesan::update($id, ['is_read' => $_POST['is_read'] === '1']);
 if ($item) {
     echo json_encode([
         'success' => true,

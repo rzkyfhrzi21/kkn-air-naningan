@@ -115,6 +115,10 @@ if ($seg0 === 'admin') {
         (new $class())->index();
     }
 
+} elseif ($seg0 === 'kirim-pesan') {
+
+    require BASE_PATH . '/public/kirim-pesan.php';
+
 } else {
 
     // ── 404 ───────────────────────────────────────────────────────────────────

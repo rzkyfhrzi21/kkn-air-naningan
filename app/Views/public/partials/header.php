@@ -8,6 +8,15 @@ $metaDescription = $metaDescription ?? 'Situs resmi Pekon Air Naningan — profi
 // Deteksi base path (kosong jika di root, '/kkn-air-naningan2' jika subdirektori)
 $base = defined('APP_BASE') ? APP_BASE : '';
 
+if (!function_exists('mediaUrl')) {
+    function mediaUrl(string $path, string $basePath): string {
+        $val = trim($path);
+        if ($val === '' || preg_match('/^(https?:)?\/\//i', $val) || str_starts_with($val, 'data:')) return $val;
+        if ($basePath !== '' && ($val === $basePath || str_starts_with($val, $basePath . '/'))) return $val;
+        return $basePath . '/' . ltrim($val, '/');
+    }
+}
+
 $navLinks = [
     ['beranda',    'Beranda',    $base . '/'],
     ['profil-desa','Profil Desa',$base . '/profil'],

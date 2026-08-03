@@ -60,6 +60,7 @@ class Galeri
             'rasio'          => trim((string) ($payload['rasio'] ?? '100%')),
             'urutan'         => (int) ($payload['urutan'] ?? (count($items) + 1)),
             'created_at'     => date('c'),
+            'updated_at'     => date('c'),
         ];
         $items[] = $item;
         self::save($items);
@@ -96,6 +97,7 @@ class Galeri
             if (isset($payload['urutan'])) {
                 $item['urutan'] = (int) $payload['urutan'];
             }
+            $item['updated_at'] = date('c');
             self::save($items);
             return $item;
         }

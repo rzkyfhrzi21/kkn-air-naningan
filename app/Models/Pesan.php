@@ -60,9 +60,7 @@ class Pesan
             'kategori'   => $kat,
             'kategori_label' => self::KATEGORI[$kat],
             'pesan'      => trim((string) ($payload['pesan'] ?? '')),
-            'status'     => 'belum_dibaca',
-            'balasan'    => '',
-            'dibalas_at' => null,
+            'is_read'    => false,
             'created_at' => date('c'),
         ];
         $items[] = $item;
@@ -77,18 +75,8 @@ class Pesan
             if (($item['id'] ?? '') !== $id) {
                 continue;
             }
-            if (isset($payload['status'])) {
-                $allowed = ['belum_dibaca', 'sudah_dibaca', 'dibalas', 'diarsipkan'];
-                if (in_array($payload['status'], $allowed, true)) {
-                    $item['status'] = $payload['status'];
-                }
-            }
-            if (isset($payload['balasan'])) {
-                $item['balasan'] = trim((string) $payload['balasan']);
-                if ($item['balasan'] !== '') {
-                    $item['status'] = 'dibalas';
-                    $item['dibalas_at'] = date('c');
-                }
+            if (array_key_exists('is_read', $payload)) {
+                $item['is_read'] = (bool) $payload['is_read'];
             }
             self::save($items);
             return $item;

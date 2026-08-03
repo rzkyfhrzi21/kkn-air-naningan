@@ -85,9 +85,11 @@ if ($fileErr === UPLOAD_ERR_OK) {
         exit;
     }
 
-    // Deteksi base path agar URL valid di localhost maupun production
-    $scriptBase = rtrim(dirname(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? ''))), '/');
-    $scriptBase = ($scriptBase === '/') ? '' : $scriptBase;
+    // Use the front controller base path when the app runs in a subdirectory.
+    $scriptBase = defined('APP_BASE')
+        ? rtrim((string) APP_BASE, '/')
+        : rtrim(dirname(dirname(dirname($_SERVER['SCRIPT_NAME'] ?? ''))), '/');
+    $scriptBase = $scriptBase === '/' ? '' : $scriptBase;
     $fotoPath   = $scriptBase . '/uploads/wisata/' . $filename;
 
 } elseif ($fileErr !== UPLOAD_ERR_NO_FILE) {

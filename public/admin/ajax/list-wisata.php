@@ -44,6 +44,11 @@ $total = count($items);
 // Statistik status (hitung dari seluruh data setelah filter, sebelum paginasi)
 $statBuka  = count(array_filter($items, static fn($i) => ($i['status'] ?? 'buka') === 'buka'));
 $statTutup = $total - $statBuka;
+$statKategori = array_fill_keys(array_map(static fn(array $meta): string => $meta['label'], Wisata::KATEGORI), 0);
+foreach ($items as $item) {
+    $label = (string) ($item['kategori_label'] ?? Wisata::KATEGORI[$item['kategori'] ?? '']['label'] ?? 'Lainnya');
+    $statKategori[$label] = ($statKategori[$label] ?? 0) + 1;
+}
 
 $paged = array_slice($items, ($page - 1) * $perPage, $perPage);
 
@@ -54,6 +59,7 @@ echo json_encode([
     'total'      => $total,
     'stat_buka'  => $statBuka,
     'stat_tutup' => $statTutup,
+    'stat_kategori' => $statKategori,
     'has_next'   => ($page * $perPage) < $total,
     'has_prev'   => $page > 1,
 ], JSON_UNESCAPED_UNICODE);

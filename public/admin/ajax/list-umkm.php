@@ -38,6 +38,13 @@ if ($kategori !== '' && $kategori !== 'all') {
 }
 $items = array_values($items);
 $total = count($items);
+$statAktif = count(array_filter($items, static fn(array $i): bool => ($i['status'] ?? 'aktif') === 'aktif'));
+$statFeatured = count(array_filter($items, static fn(array $i): bool => !empty($i['is_featured'])));
+$statKategori = array_fill_keys(array_values(Umkm::KATEGORI), 0);
+foreach ($items as $item) {
+    $label = (string) ($item['kategori_label'] ?? Umkm::KATEGORI[$item['kategori'] ?? ''] ?? 'Lainnya');
+    $statKategori[$label] = ($statKategori[$label] ?? 0) + 1;
+}
 $paged = array_slice($items, ($page - 1) * $perPage, $perPage);
 
 echo json_encode([
@@ -45,6 +52,10 @@ echo json_encode([
     'data'     => $paged,
     'page'     => $page,
     'total'    => $total,
+    'stat_aktif' => $statAktif,
+    'stat_nonaktif' => $total - $statAktif,
+    'stat_featured' => $statFeatured,
+    'stat_kategori' => $statKategori,
     'has_next' => ($page * $perPage) < $total,
     'has_prev' => $page > 1,
 ], JSON_UNESCAPED_UNICODE);

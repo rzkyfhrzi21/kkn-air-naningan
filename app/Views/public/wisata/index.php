@@ -45,7 +45,7 @@ require __DIR__ . '/../partials/header.php';
                 $katIcon   = htmlspecialchars($item['kategori_icon'] ?? 'landscape', ENT_QUOTES, 'UTF-8');
                 $deskripsi = htmlspecialchars($item['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8');
                 $htm       = htmlspecialchars($item['jarak'] ?? '', ENT_QUOTES, 'UTF-8'); // field 'jarak' dipakai sebagai HTM
-                $foto      = htmlspecialchars($item['foto'] ?? '', ENT_QUOTES, 'UTF-8');
+                $foto      = htmlspecialchars(mediaUrl($item['foto'] ?? '', $base), ENT_QUOTES, 'UTF-8');
                 $mapsUrl   = htmlspecialchars($item['maps_url'] ?? '#', ENT_QUOTES, 'UTF-8');
                 $fasilitas = $item['fasilitas'] ?? [];
                 $offset    = !empty($item['offset']);

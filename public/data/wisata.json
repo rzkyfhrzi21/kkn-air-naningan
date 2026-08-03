@@ -68,7 +68,7 @@
         "kategori_icon": "agriculture",
         "deskripsi": "tes",
         "jarak": "10000",
-        "foto": "",
+        "foto": "\\\/uploads\/wisata\/9903bb3f2eceace9919d3267630744ae.jpg",
         "fasilitas": [
             {
                 "icon": "hiking",
@@ -83,6 +83,6 @@
         "offset": false,
         "status": "buka",
         "created_at": "2026-08-03T05:48:32+00:00",
-        "updated_at": "2026-08-03T05:48:32+00:00"
+        "updated_at": "2026-08-03T06:45:10+00:00"
     }
 ]

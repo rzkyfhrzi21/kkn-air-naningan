@@ -127,12 +127,12 @@ require __DIR__ . '/../partials/header.php';
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex flex-col gap-2">
                             <label class="font-body-md text-[13px] text-ink-dim ml-1" for="contact-name">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input class="w-full bg-surface border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-ink-dim/40"
+                    <input name="nama" class="w-full bg-surface border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-ink-dim/40"
                                    id="contact-name" placeholder="Cth: Budi Santoso" required type="text">
                         </div>
                         <div class="flex flex-col gap-2">
                             <label class="font-body-md text-[13px] text-ink-dim ml-1" for="contact-wa">No. WhatsApp / Email <span class="text-danger">*</span></label>
-                            <input class="w-full bg-surface border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-ink-dim/40"
+                    <input name="kontak" class="w-full bg-surface border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-ink-dim/40"
                                    id="contact-wa" placeholder="0812xxx atau email@domain.com" required type="text">
                         </div>
                     </div>
@@ -140,7 +140,7 @@ require __DIR__ . '/../partials/header.php';
                         <label class="font-body-md text-[13px] text-ink-dim ml-1" for="contact-subject">Kategori / Subjek <span class="text-danger">*</span></label>
                         <div class="relative">
                             <select class="w-full bg-surface border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all appearance-none cursor-pointer"
-                                    id="contact-subject" required>
+                                    name="kategori" id="contact-subject" required>
                                 <option disabled selected value="">Pilih jenis pesan...</option>
                                 <option value="info">Permintaan Informasi</option>
                                 <option value="layanan">Layanan Administrasi</option>
@@ -154,7 +154,7 @@ require __DIR__ . '/../partials/header.php';
                     <div class="flex flex-col gap-2">
                         <label class="font-body-md text-[13px] text-ink-dim ml-1" for="contact-message">Isi Pesan <span class="text-danger">*</span></label>
                         <textarea class="w-full bg-surface border border-line rounded-lg px-4 py-3 text-ink font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all resize-none placeholder:text-ink-dim/40"
-                                  id="contact-message" placeholder="Tuliskan detail pesan Anda di sini..." required rows="5"></textarea>
+                                  name="pesan" id="contact-message" placeholder="Tuliskan detail pesan Anda di sini..." required rows="5"></textarea>
                     </div>
                     <div class="pt-4 flex items-center justify-between border-t border-line mt-2">
                         <span class="text-[12px] font-body-md text-ink-dim/60 hidden md:block">Pesan akan dibalas pada jam kerja.</span>
@@ -178,20 +178,38 @@ require __DIR__ . '/../partials/header.php';
 </div>
 
 <script>
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
         e.preventDefault();
+        if (!this.checkValidity()) { this.reportValidity(); return; }
         const btn = document.getElementById('submit-btn');
         btn.disabled = true;
         btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span> Mengirim...';
-        setTimeout(() => {
+        try {
+            const response = await fetch('<?= htmlspecialchars((defined('APP_BASE') ? APP_BASE : ''), ENT_QUOTES, 'UTF-8') ?>/kirim-pesan', {
+                method: 'POST',
+                body: new FormData(this),
+                credentials: 'same-origin'
+            });
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (error) {
+                throw new Error('Server mengirim respons yang tidak valid. Silakan coba lagi.');
+            }
+            if (!response.ok || !result.success) throw new Error(result.message || 'Pesan gagal dikirim.');
             this.reset();
-            btn.disabled = false;
-            btn.innerHTML = 'Kirim Pesan <span class="material-symbols-outlined text-[18px]">send</span>';
             const success = document.getElementById('form-success');
+            success.querySelector('p').textContent = result.message;
             success.classList.remove('hidden');
             success.classList.add('flex');
             setTimeout(() => { success.classList.add('hidden'); success.classList.remove('flex'); }, 5000);
-        }, 1500);
+        } catch (error) {
+            alert(error.message || 'Pesan gagal dikirim.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Kirim Pesan <span class="material-symbols-outlined text-[18px]">send</span>';
+        }
     });
 </script>
 
