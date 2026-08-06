@@ -154,18 +154,12 @@ final class AuthController
     }
 
     /**
-     * Ambil referensi logo asli dari data profil (public/data/profil.json),
-     * dengan fallback ke aset default /assets/images/logo.jpg.
+     * Logo halaman login — wajib sama dengan logo yang dipakai di situs
+     * (header publik & sidebar admin): /assets/images/logo.jpg.
+     * Sumber tunggal agar tidak terjadi perbedaan gambar antara login dan situs.
      */
     private static function loginLogo(): string
     {
-        $file = __DIR__ . '/../../../public/data/profil.json';
-        if (file_exists($file)) {
-            $data = json_decode((string) file_get_contents($file), true);
-            if (is_array($data) && isset($data['logo']) && is_string($data['logo']) && trim($data['logo']) !== '') {
-                return trim($data['logo']);
-            }
-        }
         return '/assets/images/logo.jpg';
     }
 

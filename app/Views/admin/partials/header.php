@@ -151,6 +151,18 @@ $navItems = [
         document.body.classList.toggle('sidebar-collapsed', localStorage.getItem('admin-sidebar-collapsed') === '1');
     </script>
 
+    <!-- Anti-FOUC overlay: menutupi paint awal agar Tailwind CDN sempat generate CSS
+         (mencegah halaman putih/layout hilang saat navigasi halaman secara cepat). -->
+    <div id="app-boot"
+         style="position:fixed;inset:0;z-index:100000;background:#12201a;display:flex;align-items:center;justify-content:center;transition:opacity .25s ease;"
+         aria-hidden="true">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+            <span style="width:40px;height:40px;border-radius:9999px;border:4px solid rgba(242,191,93,.25);border-top-color:#f2bf5d;display:inline-block;animation:ab-spin .8s linear infinite;"></span>
+            <span style="font:500 11px 'JetBrains Mono',monospace;color:#B9C4B4;letter-spacing:.2em;text-transform:uppercase;">Memuat…</span>
+        </div>
+    </div>
+    <style>@keyframes ab-spin{to{transform:rotate(360deg)}}</style>
+
     <!-- ── Sidebar ──────────────────────────────────────────────────────── -->
     <aside id="sidebar" class="fixed left-0 top-0 h-full w-[280px] bg-surface-container border-r border-line z-50 flex flex-col">
         <!-- Logo -->
@@ -211,11 +223,6 @@ $navItems = [
             </div>
         </div>
         <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            <a class="flex items-center gap-1.5 text-ink-dim hover:text-primary transition-colors font-label-mono text-[11px] uppercase tracking-wider" href="<?= $base ?>/" target="_blank" rel="noopener" title="Lihat situs publik">
-                <span class="material-symbols-outlined text-[17px]">open_in_new</span>
-                <span class="hidden sm:inline">Beranda</span>
-            </a>
-            <span class="hidden sm:block h-8 w-px bg-line shrink-0"></span>
             <span class="flex flex-col items-end font-label-mono whitespace-nowrap leading-tight" id="topbar-clock">
                 <span id="topbar-clock-date" class="hidden sm:inline text-[12px] text-ink-dim">—</span>
                 <span id="topbar-clock-time" class="text-[16px] text-ink font-bold">—</span>
@@ -246,6 +253,11 @@ $navItems = [
                     <span class="material-symbols-outlined text-[16px] text-ink-dim">arrow_drop_down</span>
                 </button>
                 <div id="profile-dropdown" class="hidden absolute right-0 top-full mt-2 w-52 bg-surface rounded-xl border border-line shadow-2xl shadow-black/40 py-2 z-50">
+                    <a class="flex items-center gap-2.5 px-4 py-2.5 text-ink-dim hover:text-primary hover:bg-surface-2 transition-colors"
+                        href="<?= $base ?>/" target="_blank" rel="noopener">
+                        <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                        Beranda
+                    </a>
                     <a class="flex items-center gap-2.5 px-4 py-2.5 text-ink-dim hover:text-ink hover:bg-surface-2 transition-colors"
                         href="<?= $base ?>/admin/profil">
                         <span class="material-symbols-outlined text-[18px]">settings</span>

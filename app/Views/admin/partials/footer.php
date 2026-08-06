@@ -30,6 +30,36 @@
 <script src="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/security-warning.js"></script>
 <script src="<?= htmlspecialchars($base, ENT_QUOTES, 'UTF-8') ?>/assets/js/modal-focus.js"></script>
 <script>
+    /* ── Anti-FOUC: sembunyikan overlay boot setelah Tailwind siap render ── */
+    (function () {
+        const boot = document.getElementById('app-boot');
+        if (!boot) return;
+        let done = false;
+        const dismiss = function () {
+            if (done) return;
+            done = true;
+            boot.style.opacity = '0';
+            setTimeout(function () { boot.remove(); }, 260);
+        };
+// Signal paling andal: properti yang dihasilkan Tailwind sudah ter-apply
+        // (mis. body sudah dapat background #12201a dari class bg-bg). Cek 2 tick rAF.
+        const elements = ['#topbar', '#sidebar', 'body'];
+        const probe = function (attempt) {
+            const el = document.querySelector(elements[0]);
+            const bg = el ? getComputedStyle(el).backgroundColor : '';
+            const ready = bg && bg !== 'rgba(0, 0, 0, 0)';
+            if (ready || attempt >= 60) {
+                dismiss();
+            } else {
+                requestAnimationFrame(function () { probe((attempt || 0) + 1); });
+            }
+        };
+        requestAnimationFrame(function () { probe(0); });
+        // Pengaman: lepas overlay maksimal ~1.2s agar tak pernah menggantung.
+        setTimeout(dismiss, 1200);
+    })();
+</script>
+<script>
     const sidebarToggle  = document.getElementById('sidebar-toggle');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const isDesktopView  = () => window.matchMedia('(min-width: 1024px)').matches;
