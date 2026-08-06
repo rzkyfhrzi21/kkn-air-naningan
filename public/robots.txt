@@ -10,4 +10,4 @@ Disallow: /includes/
 Disallow: /Zzz/
 
 # Sitemap
-Sitemap: http://localhost:8090/kkn-air-naningan/sitemap.xml
+Sitemap: https://pekon-air-naningan.web.id/sitemap.xml

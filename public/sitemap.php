@@ -10,15 +10,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../includes/env.php';
 loadEnv(__DIR__ . '/../.env');
 
-$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host   = $_SERVER['HTTP_HOST'] ?? 'localhost:8090';
-
-// Deteksi base path dari SCRIPT_NAME
-$scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? ''), '/');
-// /kkn-air-naningan/sitemap.php → base = /kkn-air-naningan
-$base = $scriptDir;
-
-$baseUrl = $scheme . '://' . $host . $base;
+$baseUrl = rtrim((string) env('APP_URL', 'https://pekon-air-naningan.web.id'), '/');
 
 // Helper: tulis satu <url> entry
 function sitemapUrl(string $loc, string $changefreq = 'weekly', string $priority = '0.8', string $lastmod = ''): string

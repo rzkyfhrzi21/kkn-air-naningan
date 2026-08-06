@@ -39,6 +39,9 @@ class Profil
     {
         $current = self::get();
 
+        if (isset($payload['logo'])) {
+            $current['logo'] = trim((string) $payload['logo']);
+        }
         if (isset($payload['tahun_berdiri'])) {
             $current['tahun_berdiri'] = (int) $payload['tahun_berdiri'];
         }
@@ -218,6 +221,7 @@ class Profil
     private static function defaults(): array
     {
         return [
+            'logo'          => '/assets/images/logo.jpg',
             'tahun_berdiri' => 0,
             'tagline'       => '',
             'visi'          => '',

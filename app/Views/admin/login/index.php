@@ -6,6 +6,10 @@
  */
 $error = $error ?? '';
 $base  = defined('APP_BASE') ? APP_BASE : '';
+$loginLogo = $loginLogo ?? '/assets/images/logo.jpg';
+$loginLogoUrl = preg_match('/^(https?:)?\/\//i', $loginLogo)
+    ? $loginLogo
+    : $base . '/' . ltrim($loginLogo, '/');
 ?>
 <!doctype html>
 <html class="dark" lang="id">
@@ -13,7 +17,7 @@ $base  = defined('APP_BASE') ? APP_BASE : '';
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin | Pekon Air Naningan</title>
-    <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
+    <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($loginLogoUrl, ENT_QUOTES, 'UTF-8') ?>">
     <meta name="robots" content="noindex, nofollow">
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
@@ -60,12 +64,9 @@ $base  = defined('APP_BASE') ? APP_BASE : '';
         <!-- Logo & Title -->
         <div class="flex flex-col items-center gap-6 text-center">
             <div class="w-24 h-24 rounded-2xl bg-surface-2 flex items-center justify-center border border-line p-4 shadow-inner relative overflow-hidden group-hover:border-primary/30 transition-colors duration-500">
-                <svg class="w-full h-full text-primary" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="currentColor" opacity="0.2"/>
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <img src="<?= htmlspecialchars($loginLogoUrl, ENT_QUOTES, 'UTF-8') ?>"
+                     alt="Logo Pekon Air Naningan"
+                     class="w-full h-full object-contain">
             </div>
             <div class="flex flex-col gap-2">
                 <h1 class="font-h2 text-h2 text-ink">Pekon Air Naningan</h1>
@@ -86,6 +87,7 @@ $base  = defined('APP_BASE') ? APP_BASE : '';
         <form class="flex flex-col gap-5 w-full" method="POST"
               action="<?= htmlspecialchars($base . '/admin/login', ENT_QUOTES, 'UTF-8') ?>"
               id="login-form" novalidate>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
             <!-- Username -->
             <div class="flex flex-col gap-1.5 group/input">
@@ -97,6 +99,7 @@ $base  = defined('APP_BASE') ? APP_BASE : '';
                            id="username" name="username" type="text"
                            placeholder="admin"
                            autocomplete="username"
+                           maxlength="64"
                            value="<?= htmlspecialchars($_POST['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                            required>
                 </div>
@@ -114,6 +117,7 @@ $base  = defined('APP_BASE') ? APP_BASE : '';
                            id="password" name="password" type="password"
                            placeholder="••••••••"
                            autocomplete="current-password"
+                           maxlength="256"
                            required>
                     <button class="absolute right-4 text-ink-dim/50 hover:text-ink transition-colors focus:outline-none"
                             type="button" id="toggle-pw" aria-label="Tampilkan/sembunyikan kata sandi">

@@ -3,8 +3,7 @@
 /**
  * index.php — Front Controller Publik
  *
- * Bekerja di root (http://localhost/) maupun subdirektori
- * (http://localhost:8090/kkn-air-naningan2/) tanpa konfigurasi tambahan.
+ * Bekerja di root maupun subdirektori tanpa konfigurasi tambahan.
  */
 
 declare(strict_types=1);
@@ -28,7 +27,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => APP_BASE !== '' ? APP_BASE . '/' : '/',
-        'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'secure'   => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'),
         'httponly' => true,
         'samesite' => 'Lax',
     ]);
