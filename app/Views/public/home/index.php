@@ -4,6 +4,8 @@ $pageTitle       = 'Beranda | Pekon Air Naningan';
 $homepage        = $homepage ?? [];
 $metaDescription = (string) ($homepage['tagline'] ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.');
 $history         = $homepage['history'] ?? [];
+$hamlets         = is_array($homepage['hamlets'] ?? null) ? $homepage['hamlets'] : [];
+$livelihoods     = is_array($homepage['livelihoods'] ?? null) ? $homepage['livelihoods'] : [];
 require __DIR__ . '/../partials/header.php';
 ?>
 
@@ -50,24 +52,33 @@ require __DIR__ . '/../partials/header.php';
     <!-- Statistics Grid -->
     <section class="px-container-pad-mobile lg:px-container-pad-desktop -mt-8 relative z-20">
         <div class="max-w-container-max mx-auto bg-surface-container border border-line rounded-xl overflow-hidden shadow-xl shadow-black/20">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-line">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 divide-x divide-y lg:divide-y-0 divide-line">
                 <div class="p-8 flex flex-col">
+                    <span class="material-symbols-outlined text-gold-soft mb-5" aria-hidden="true">elevation</span>
                     <span class="font-h2 text-h2 text-primary mb-2 flex items-baseline">
                         <?= number_format((int) ($homepage['elevation'] ?? 0), 0, ',', '.') ?>
                     </span>
                     <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase"><?= htmlspecialchars((string) ($homepage['elevation_unit'] ?? 'Mdpl'), ENT_QUOTES, 'UTF-8') ?></span>
                 </div>
                 <div class="p-8 flex flex-col">
+                    <span class="material-symbols-outlined text-gold-soft mb-5" aria-hidden="true">holiday_village</span>
                     <span class="font-h2 text-h2 text-primary mb-2"><?= number_format((int) ($homepage['hamlet_count'] ?? 0), 0, ',', '.') ?></span>
                     <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">Dusun</span>
                 </div>
                 <div class="p-8 flex flex-col">
+                    <span class="material-symbols-outlined text-gold-soft mb-5" aria-hidden="true">groups</span>
                     <span class="font-h2 text-h2 text-primary mb-2"><?= number_format((int) ($homepage['population'] ?? 0), 0, ',', '.') ?></span>
                     <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">Jiwa</span>
                 </div>
                 <div class="p-8 flex flex-col">
-                    <span class="font-h2 text-[28px] font-semibold tracking-tight text-primary mb-2 leading-tight"><?= htmlspecialchars((string) ($homepage['main_livelihood'] ?? 'Pertanian lokal'), ENT_QUOTES, 'UTF-8') ?></span>
-                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase mt-auto pt-2">Mata Pencaharian Utama</span>
+                    <span class="material-symbols-outlined text-gold-soft mb-5" aria-hidden="true">family_restroom</span>
+                    <span class="font-h2 text-h2 text-primary mb-2"><?= number_format((int) ($homepage['household_count'] ?? 0), 0, ',', '.') ?></span>
+                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">Kepala Keluarga</span>
+                </div>
+                <div class="p-8 flex flex-col">
+                    <span class="material-symbols-outlined text-gold-soft mb-5" aria-hidden="true">map</span>
+                    <span class="font-h2 text-h2 text-primary mb-2"><?= number_format((float) ($homepage['area'] ?? 0), 0, ',', '.') ?></span>
+                    <span class="font-label-mono text-label-mono text-ink-dim tracking-widest uppercase">Luas Wilayah (<?= htmlspecialchars((string) ($homepage['area_unit'] ?? ''), ENT_QUOTES, 'UTF-8') ?>)</span>
                 </div>
             </div>
         </div>
@@ -101,6 +112,56 @@ require __DIR__ . '/../partials/header.php';
         </div>
     </section>
 
+    <?php if ($hamlets !== [] || $livelihoods !== []): ?>
+    <section class="pb-section-v-mobile lg:pb-section-v-desktop px-container-pad-mobile lg:px-container-pad-desktop">
+        <div class="max-w-container-max mx-auto border-y border-line py-10 lg:py-14">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+                <div class="max-w-2xl">
+                    <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest">Kehidupan Warga</span>
+                    <h2 class="font-h2 text-h2 text-ink mt-3 mb-3">Demografi pekon</h2>
+                    <p class="font-body-md text-body-md text-ink-dim">Lihat persebaran penduduk dan komposisi bidang pekerjaan masyarakat Air Naningan.</p>
+                </div>
+                <div class="flex gap-2 overflow-x-auto" role="tablist" aria-label="Data demografi pekon">
+                    <?php if ($hamlets !== []): ?>
+                        <button type="button" id="home-tab-hamlets" data-home-tab="hamlets" class="home-demography-tab whitespace-nowrap rounded-full border border-primary bg-primary px-5 py-2.5 font-body-md text-sm text-on-primary" role="tab" aria-selected="true" aria-controls="home-panel-hamlets">Penduduk per Dusun</button>
+                    <?php endif; ?>
+                    <?php if ($livelihoods !== []): ?>
+                        <button type="button" id="home-tab-jobs" data-home-tab="jobs" class="home-demography-tab whitespace-nowrap rounded-full border border-line bg-surface-container px-5 py-2.5 font-body-md text-sm text-ink-dim" role="tab" aria-selected="<?= $hamlets === [] ? 'true' : 'false' ?>" aria-controls="home-panel-jobs">Bidang Pekerjaan</button>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php if ($hamlets !== []): ?>
+                <div id="home-panel-hamlets" data-home-panel="hamlets" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" role="tabpanel" aria-labelledby="home-tab-hamlets">
+                    <?php foreach ($hamlets as $hamlet): ?>
+                        <article class="bg-surface-container rounded-xl border border-line p-6">
+                            <span class="material-symbols-outlined text-gold-soft mb-5" aria-hidden="true">home_work</span>
+                            <h3 class="font-h3 text-xl text-ink mb-2"><?= htmlspecialchars((string) ($hamlet['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h3>
+                            <p class="font-h3 text-h3 text-primary"><?= number_format((int) ($hamlet['jumlah'] ?? 0), 0, ',', '.') ?> <span class="font-body-md text-body-md text-ink-dim">jiwa</span></p>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($livelihoods !== []): ?>
+                <div id="home-panel-jobs" data-home-panel="jobs" class="<?= $hamlets !== [] ? 'hidden ' : '' ?>grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" role="tabpanel" aria-labelledby="home-tab-jobs">
+                    <?php foreach ($livelihoods as $item): ?>
+                        <?php $percent = max(0, min(100, (int) ($item['persen'] ?? 0))); ?>
+                        <?php $widthClass = 'w-[' . $percent . '%]'; ?>
+                        <article class="bg-surface-container rounded-xl border border-line p-6 flex flex-col">
+                            <span class="material-symbols-outlined text-gold-soft mb-5" aria-hidden="true">work</span>
+                            <h3 class="font-body-lg text-body-lg font-medium text-ink mb-5 flex-grow"><?= htmlspecialchars((string) ($item['jenis'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h3>
+                            <div class="flex items-end justify-between gap-4 mb-3">
+                                <span class="font-h3 text-h3 text-primary"><?= $percent ?>%</span>
+                                <span class="font-label-mono text-label-mono text-ink-dim uppercase">Warga</span>
+                            </div>
+                            <div class="h-2 rounded-full bg-surface-2 overflow-hidden"><div class="h-full rounded-full bg-primary <?= htmlspecialchars($widthClass, ENT_QUOTES, 'UTF-8') ?>"></div></div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- Quick Links Grid -->
     <section class="pb-section-v-mobile lg:pb-section-v-desktop px-container-pad-mobile lg:px-container-pad-desktop">
         <div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -112,7 +173,7 @@ require __DIR__ . '/../partials/header.php';
                 </div>
                 <h4 class="font-h3 text-xl text-ink mb-3">Profil Desa</h4>
                 <p class="text-body-md font-body-md text-ink-dim mb-8 flex-grow">
-                    Sejarah, visi misi, struktur organisasi &amp; data kependudukan.
+                    Sejarah lengkap, visi misi, aparatur pekon, dan peta administrasi.
                 </p>
                 <div class="flex items-center gap-2 text-gold-soft font-label-mono text-[12px] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
                     Lihat profil <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -151,5 +212,29 @@ require __DIR__ . '/../partials/header.php';
     </section>
 
 </div>
+
+<script>
+(() => {
+    const tabs = document.querySelectorAll('[data-home-tab]');
+    const panels = document.querySelectorAll('[data-home-panel]');
+
+    tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+            const activeName = tab.dataset.homeTab;
+            tabs.forEach((item) => {
+                const active = item === tab;
+                item.setAttribute('aria-selected', active ? 'true' : 'false');
+                item.classList.toggle('bg-primary', active);
+                item.classList.toggle('border-primary', active);
+                item.classList.toggle('text-on-primary', active);
+                item.classList.toggle('bg-surface-container', !active);
+                item.classList.toggle('border-line', !active);
+                item.classList.toggle('text-ink-dim', !active);
+            });
+            panels.forEach((panel) => panel.classList.toggle('hidden', panel.dataset.homePanel !== activeName));
+        });
+    });
+})();
+</script>
 
 <?php require __DIR__ . '/../partials/footer.php'; ?>

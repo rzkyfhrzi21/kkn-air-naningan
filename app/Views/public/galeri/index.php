@@ -19,14 +19,16 @@ require __DIR__ . '/../partials/header.php';
     <!-- Gallery Section -->
     <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop pb-section-v-mobile lg:pb-section-v-desktop relative">
 
-        <!-- Filter Bar (sticky) -->
-        <div class="flex flex-wrap items-center justify-center gap-3 mb-12 sticky top-24 z-30 bg-bg/90 backdrop-blur-md py-4 rounded-full border border-line px-6 mx-auto w-fit shadow-lg shadow-black/20">
-            <button class="gallery-filter-btn px-6 py-2 rounded-full font-label-mono text-label-mono bg-primary text-on-primary transition-all duration-300" data-filter="all">Semua</button>
-            <?php foreach ($kategori as $kat => $label): ?>
-            <button class="gallery-filter-btn px-6 py-2 rounded-full font-label-mono text-label-mono text-ink-dim hover:text-ink hover:bg-surface-2 transition-all duration-300" data-filter="<?= htmlspecialchars($kat, ENT_QUOTES, 'UTF-8') ?>">
-                <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
-            </button>
-            <?php endforeach; ?>
+        <!-- Filter Bar (sticky) — overflow-x-auto untuk mobile -->
+        <div class="sticky top-24 z-30 mb-12 overflow-x-auto -mx-container-pad-mobile lg:-mx-0 px-container-pad-mobile lg:px-0 no-scrollbar">
+            <div class="flex items-center gap-3 w-max mx-auto bg-bg/90 backdrop-blur-md py-4 rounded-full border border-line px-6 shadow-lg shadow-black/20">
+                <button class="gallery-filter-btn px-6 py-2 rounded-full font-label-mono text-label-mono bg-primary text-on-primary transition-all duration-300 whitespace-nowrap" data-filter="all">Semua</button>
+                <?php foreach ($kategori as $kat => $label): ?>
+                <button class="gallery-filter-btn px-6 py-2 rounded-full font-label-mono text-label-mono text-ink-dim hover:text-ink hover:bg-surface-2 transition-all duration-300 whitespace-nowrap" data-filter="<?= htmlspecialchars($kat, ENT_QUOTES, 'UTF-8') ?>">
+                    <?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8') ?>
+                </button>
+                <?php endforeach; ?>
+            </div>
         </div>
 
         <!-- Masonry Grid -->

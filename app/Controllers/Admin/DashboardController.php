@@ -45,7 +45,6 @@ final class DashboardController
             'umkm'    => ['icon' => 'storefront',          'title' => 'nama',  'entity' => 'UMKM'],
             'wisata'  => ['icon' => 'landscape',           'title' => 'nama',  'entity' => 'Wisata'],
             'galeri'  => ['icon' => 'photo_library',       'title' => 'judul', 'entity' => 'Foto galeri'],
-            'potensi' => ['icon' => 'energy_savings_leaf', 'title' => 'nama',  'entity' => 'Potensi'],
             'pesan'   => ['icon' => 'mail',                'title' => 'pesan', 'entity' => 'Pesan'],
         ];
 
@@ -67,7 +66,7 @@ final class DashboardController
                         ? 'Berita diterbitkan'
                         : 'Berita disimpan sebagai draft',
                     'pesan' => 'Pesan masuk dari ' . (string)($rec['nama'] ?? 'pengunjung'),
-                    'umkm', 'wisata', 'galeri', 'potensi' => self::changedLabel($cfg['entity'], $created, $updated),
+                    'umkm', 'wisata', 'galeri' => self::changedLabel($cfg['entity'], $created, $updated),
                     default => 'Data diperbarui',
                 };
 

@@ -18,10 +18,10 @@ rules/
 # Project Documentation & Temporary Files
 docs/
 Zzz/
-# AGENTS.md
-# CLAUDE.md
-# GEMINI.md
-# README.md
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+README.md
 
 # Dependencies & Node Files
 node_modules/

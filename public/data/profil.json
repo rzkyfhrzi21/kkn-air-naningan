@@ -79,7 +79,7 @@
         {
             "nama": "Yadi Ruhyadi",
             "jabatan": "Kepala Dusun Mataram Selatan",
-            "foto": "",
+            "foto": "\/uploads\/struktur\/struktur_3b9ad0f27add9bc3_1786044565.jpg",
             "level": 3
         },
         {
@@ -111,7 +111,7 @@
         "total_jiwa": 666,
         "kepala_keluarga": 666,
         "luas_wilayah": 666,
-        "luas_satuan": "666",
+        "luas_satuan": "M",
         "ketinggian": 666,
         "ketinggian_satuan": "Mdpl",
         "per_dusun": [
@@ -133,7 +133,7 @@
             },
             {
                 "nama": "Dusun Hacker",
-                "jumlah": 646
+                "jumlah": 666
             }
         ]
     },
@@ -156,7 +156,7 @@
         },
         {
             "jenis": "Hacker",
-            "persen": 82
+            "persen": 66
         }
     ],
     "apbdes": {
@@ -190,16 +190,12 @@
         "laporan_url": ""
     },
     "sejarah": {
-        "paragraf": [
-            "Pekon Air Naningan terbentuk pada tahun 1982 melalui program transmigrasi lokal yang diprakarsai oleh pemerintah daerah. Para pendahulu membuka hutan kawasan ini dengan semangat gotong royong yang tinggi, mengubah lahan rimbun menjadi lumbung pertanian yang subur, khususnya untuk komoditas kopi robusta.",
-            "Seiring berjalannya waktu, Air Naningan berkembang tidak hanya sebagai pusat produksi kopi berkualitas, tetapi juga mulai merintis potensi ekowisata berbasis komunitas. Karakter masyarakatnya yang terbuka namun tetap memegang teguh adat istiadat menjadi pondasi kuat dalam menyongsong era modernisasi pedesaan.",
-            "Kini, di bawah kepemimpinan yang progresif, Air Naningan berupaya memadukan tradisi bertani dengan teknologi tepat guna guna mewujudkan kesejahteraan yang merata bagi seluruh lapisan warganya."
-        ],
+        "paragraf": "<p>Pekon Air Naningan terbentuk pada tahun 1982 melalui program transmigrasi lokal yang diprakarsai oleh pemerintah daerah. Para pendahulu membuka hutan kawasan ini dengan semangat gotong royong yang tinggi, mengubah lahan rimbun menjadi lumbung pertanian yang subur, khususnya untuk komoditas kopi robusta.<\/p>\r\n<p>Seiring berjalannya waktu, Air Naningan berkembang tidak hanya sebagai pusat produksi kopi berkualitas, tetapi juga mulai merintis potensi ekowisata berbasis komunitas. Karakter masyarakatnya yang terbuka namun tetap memegang teguh adat istiadat menjadi pondasi kuat dalam menyongsong era modernisasi pedesaan.<\/p>\r\n<p>Kini, di bawah kepemimpinan yang progresif, Air Naningan berupaya memadukan tradisi bertani dengan teknologi tepat guna guna mewujudkan kesejahteraan yang merata bagi seluruh lapisan warganya.<\/p>",
         "quote": "Tanah ini bukan warisan nenek moyang semata, melainkan titipan untuk dijaga kelestariannya bagi generasi mendatang."
     },
     "peta": {
         "lokasi": "Balai Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus",
         "embed_url": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d3973.1242280727115!2d104.70379107543417!3d-5.243170994734756!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e473fe2ee81a5d3%3A0xf76c3a03568014fd!2sBalai%20Pekon%20Air%20Naningan!5e0!3m2!1sid!2sid!4v1785777123090!5m2!1sid!2sid"
     },
-    "updated_at": "2026-08-03T17:57:43+00:00"
+    "updated_at": "2026-08-06T19:29:25+00:00"
 }

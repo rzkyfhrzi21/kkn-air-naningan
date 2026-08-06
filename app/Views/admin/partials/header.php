@@ -199,28 +199,28 @@ $navItems = [
     <div id="admin-wrapper" class="pl-[280px]">
 
         <!-- Topbar -->
-        <header id="topbar" class="fixed top-0 left-[280px] right-0 h-16 bg-bg/80 backdrop-blur-xl border-b border-line z-40 flex items-center justify-between px-4 md:px-8">
-            <div class="flex items-center gap-3 min-w-0">
+        <header id="topbar" class="fixed top-0 left-[280px] right-0 min-h-16 bg-bg/80 backdrop-blur-xl border-b border-line z-40 flex items-center justify-between gap-2 px-3 sm:px-4 md:px-8 py-2">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                 <button type="button" id="sidebar-toggle" class="flex items-center justify-center w-10 h-10 -ml-2 md:-ml-3 shrink-0 rounded-lg text-ink-dim hover:text-ink hover:bg-surface-container-high transition-colors" aria-label="Buka atau tutup menu sidebar">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
-            <div class="flex items-center gap-2 text-ink-dim font-label-mono text-label-mono truncate">
-                <a class="hover:text-primary transition-colors shrink-0" href="<?= $base ?>/admin">Admin</a>
-                <span class="material-symbols-outlined text-sm shrink-0">chevron_right</span>
+            <div class="flex items-center gap-1.5 sm:gap-2 text-ink-dim font-label-mono text-label-mono truncate">
+                <a class="hidden sm:inline hover:text-primary transition-colors shrink-0" href="<?= $base ?>/admin">Admin</a>
+                <span class="hidden sm:inline material-symbols-outlined text-sm shrink-0">chevron_right</span>
                 <span class="text-ink truncate"><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></span>
             </div>
         </div>
-        <div class="flex items-center gap-3 shrink-0">
+        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <a class="flex items-center gap-1.5 text-ink-dim hover:text-primary transition-colors font-label-mono text-[11px] uppercase tracking-wider" href="<?= $base ?>/" target="_blank" rel="noopener" title="Lihat situs publik">
                 <span class="material-symbols-outlined text-[17px]">open_in_new</span>
-                Beranda
+                <span class="hidden sm:inline">Beranda</span>
             </a>
-            <span class="h-8 w-px bg-line shrink-0"></span>
+            <span class="hidden sm:block h-8 w-px bg-line shrink-0"></span>
             <span class="flex flex-col items-end font-label-mono whitespace-nowrap leading-tight" id="topbar-clock">
-                <span id="topbar-clock-date" class="text-[12px] text-ink-dim">—</span>
+                <span id="topbar-clock-date" class="hidden sm:inline text-[12px] text-ink-dim">—</span>
                 <span id="topbar-clock-time" class="text-[16px] text-ink font-bold">—</span>
             </span>
-            <span class="h-8 w-px bg-line shrink-0"></span>
+            <span class="hidden sm:block h-8 w-px bg-line shrink-0"></span>
             <div class="relative" id="profile-menu">
                 <button type="button" id="profile-menu-btn" class="flex items-center gap-3 rounded-xl p-1.5 pr-2 hover:bg-surface-container-high transition-colors" aria-haspopup="true" aria-expanded="false" aria-label="Menu akun admin">
                     <div class="flex flex-col items-end hidden sm:flex">

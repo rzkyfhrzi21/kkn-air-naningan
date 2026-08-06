@@ -12,8 +12,6 @@ $bakti    = (string) ($profil['masa_bakti'] ?? '');
 $struktur = is_array($profil['struktur'] ?? null) ? $profil['struktur'] : [];
 $demo     = is_array($profil['demografi'] ?? null) ? $profil['demografi'] : [];
 $jobs     = is_array($profil['mata_pencaharian'] ?? null) ? $profil['mata_pencaharian'] : [];
-$apbdes   = is_array($profil['apbdes'] ?? null) ? $profil['apbdes'] : [];
-$apbItems = is_array($apbdes['items'] ?? null) ? $apbdes['items'] : [];
 $sejarah  = is_array($profil['sejarah'] ?? null) ? $profil['sejarah'] : [];
 $paragrafSejarah = $sejarah['paragraf'] ?? [];
 if (is_array($paragrafSejarah)) {
@@ -54,24 +52,16 @@ if ($struktur === []) {
         ['nama' => '', 'jabatan' => 'Kepala Pekon', 'foto' => '', 'level' => 0],
     ];
 }
-if ($apbItems === []) {
-    $apbItems = [
-        ['nama' => 'Penyelenggaraan Pemerintahan', 'jumlah' => '', 'persen' => 0, 'icon' => 'account_balance'],
-        ['nama' => 'Pelaksanaan Pembangunan', 'jumlah' => '', 'persen' => 0, 'icon' => 'construction'],
-        ['nama' => 'Pembinaan Kemasyarakatan', 'jumlah' => '', 'persen' => 0, 'icon' => 'group'],
-        ['nama' => 'Pemberdayaan Masyarakat', 'jumlah' => '', 'persen' => 0, 'icon' => 'trending_up'],
-    ];
-}
 ?>
 <div class="flex flex-col w-full px-container-pad-mobile lg:px-container-pad-desktop pb-section-v-desktop gap-10">
 
     <div class="flex flex-col gap-2 pt-10 max-w-2xl">
         <h1 class="font-h1-mobile lg:font-h1 text-h1-mobile lg:text-h1 text-ink">Profil Desa</h1>
-        <p class="font-body-lg text-body-lg text-ink-dim">Kelola data yang tampil di halaman publik <code class="text-gold-soft">/profil</code> — identitas, sejarah, peta, visi misi, struktur, demografi, mata pencaharian, dan APBDes.</p>
+        <p class="font-body-lg text-body-lg text-ink-dim">Kelola data profil pekon — identitas, sejarah, peta, visi misi, struktur, demografi, dan mata pencaharian.</p>
     </div>
 
 
-    <form id="form-profil" class="flex flex-col gap-gutter">
+    <form id="form-profil" class="flex flex-col gap-gutter" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 
         <!-- Tab Nav -->
@@ -90,11 +80,6 @@ if ($apbItems === []) {
                     class="profil-tab-btn flex items-center gap-2 px-4 py-2.5 rounded-xl border font-body-md text-sm whitespace-nowrap shrink-0 transition-all bg-surface-2 border-line text-ink-dim hover:text-ink">
                 <span class="material-symbols-outlined text-[18px]">groups</span>
                 Demografi &amp; Pencaharian
-            </button>
-            <button type="button" data-tab="apbdes"
-                    class="profil-tab-btn flex items-center gap-2 px-4 py-2.5 rounded-xl border font-body-md text-sm whitespace-nowrap shrink-0 transition-all bg-surface-2 border-line text-ink-dim hover:text-ink">
-                <span class="material-symbols-outlined text-[18px]">account_balance</span>
-                Transparansi APBDes
             </button>
         </nav>
 
@@ -251,23 +236,41 @@ if ($apbItems === []) {
                         <span class="material-symbols-outlined text-[16px]">add</span> Tambah
                     </button>
                 </div>
-                <p class="font-body-md text-body-md text-ink-dim text-sm">Level: 0 = Kepala, 1 = Sekretaris, 2 = staf (indentasi di publik).</p>
+                <p class="font-body-md text-body-md text-ink-dim text-sm">Level: <code>0</code> = Kepala Pekon &middot; <code>1</code> = Sekretaris &middot; <code>2</code> = KAUR/KASI/Staf &middot; <code>3</code> = Kepala Dusun. Foto: jpg/png/webp/gif maks 2 MB.</p>
                 <div class="flex flex-col gap-3" id="struktur-list">
-                    <?php foreach ($struktur as $s): ?>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-start struktur-row bg-surface p-3 rounded-xl border border-line">
-                        <input name="struktur_nama[]" type="text" placeholder="Nama"
-                               value="<?= htmlspecialchars((string) ($s['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               class="md:col-span-3 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <input name="struktur_jabatan[]" type="text" placeholder="Jabatan"
-                               value="<?= htmlspecialchars((string) ($s['jabatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               class="md:col-span-3 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <input name="struktur_foto[]" type="url" placeholder="URL foto (opsional)"
-                               value="<?= htmlspecialchars((string) ($s['foto'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               class="md:col-span-4 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <input name="struktur_level[]" type="number" min="0" max="5" placeholder="Lv"
-                               value="<?= (int) ($s['level'] ?? 0) ?>"
-                               class="md:col-span-1 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <button type="button" class="md:col-span-1 p-2 text-danger hover:bg-surface-2 rounded-lg btn-remove-struktur" aria-label="Hapus">
+                    <?php foreach ($struktur as $s):
+                        $fotoLama = trim((string) ($s['foto'] ?? ''));
+                    ?>
+                    <div class="flex flex-col md:flex-row gap-3 items-start struktur-row bg-surface p-3 rounded-xl border border-line">
+                        <!-- Thumbnail + file input -->
+                        <div class="flex flex-col items-center gap-1.5 shrink-0">
+                            <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-line-strong bg-surface-2 flex items-center justify-center struktur-foto-preview">
+                                <?php if ($fotoLama !== ''): ?>
+                                    <img src="<?= htmlspecialchars($fotoLama, ENT_QUOTES, 'UTF-8') ?>" class="w-full h-full object-cover" alt="">
+                                <?php else: ?>
+                                    <span class="material-symbols-outlined text-ink-dim text-[22px]">person</span>
+                                <?php endif; ?>
+                            </div>
+                            <label class="cursor-pointer text-[9px] text-primary font-bold uppercase tracking-widest hover:underline">
+                                Ganti
+                                <input type="file" name="struktur_foto_file[]" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden struktur-foto-input">
+                            </label>
+                            <!-- Path foto lama, dikosongkan jika ada file baru -->
+                            <input type="hidden" name="struktur_foto[]" value="<?= htmlspecialchars($fotoLama, ENT_QUOTES, 'UTF-8') ?>" class="struktur-foto-hidden">
+                        </div>
+                        <!-- Fields -->
+                        <div class="flex flex-1 flex-wrap gap-2 items-start">
+                            <input name="struktur_nama[]" type="text" placeholder="Nama"
+                                   value="<?= htmlspecialchars((string) ($s['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                                   class="flex-1 min-w-[140px] bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+                            <input name="struktur_jabatan[]" type="text" placeholder="Jabatan"
+                                   value="<?= htmlspecialchars((string) ($s['jabatan'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+                                   class="flex-1 min-w-[140px] bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+                            <input name="struktur_level[]" type="number" min="0" max="5" placeholder="Lv"
+                                   value="<?= (int) ($s['level'] ?? 0) ?>"
+                                   class="w-16 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary text-center">
+                        </div>
+                        <button type="button" class="p-2 text-danger hover:bg-surface-2 rounded-lg btn-remove-struktur self-center shrink-0" aria-label="Hapus">
                             <span class="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                     </div>
@@ -366,7 +369,10 @@ if ($apbItems === []) {
                         <span class="material-symbols-outlined text-[14px]">add</span> Tambah
                     </button>
                 </div>
-                <p class="font-body-md text-body-md text-ink-dim text-sm">Persentase per jenis pekerjaan penduduk.</p>
+                <div class="flex flex-col gap-1">
+                    <p class="font-body-md text-body-md text-ink-dim text-sm">Persentase per jenis pekerjaan penduduk.</p>
+                    <p id="job-total" class="font-label-mono text-[11px] text-ink-dim">Total: 0% | Sisa: 100%</p>
+                </div>
                 <div class="flex flex-col gap-3" id="job-list">
                     <?php foreach ($jobs as $j): ?>
                     <div class="flex items-center gap-2 job-row bg-surface p-2 rounded-lg border border-line-strong">
@@ -374,67 +380,13 @@ if ($apbItems === []) {
                                value="<?= htmlspecialchars((string) ($j['jenis'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                                class="flex-1 bg-transparent text-sm text-ink font-body-md focus:outline-none"
                                placeholder="Jenis pekerjaan">
-                        <input name="pekerjaan_persen[]" type="number" min="0" max="100"
+                        <input name="pekerjaan_persen[]" type="number" min="0" max="100" step="1"
                                value="<?= (int) ($j['persen'] ?? 0) ?>"
-                               class="w-14 bg-transparent text-right text-on-surface font-body-md focus:outline-none"
+                               class="w-14 bg-transparent text-right text-on-surface font-body-md focus:outline-none job-percent-input"
                                placeholder="0">
                         <span class="text-ink-dim text-sm">%</span>
                         <button type="button" class="p-1 text-danger btn-remove-job" aria-label="Hapus">
                             <span class="material-symbols-outlined text-[16px]">close</span>
-                        </button>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
-        </div>
-
-        <!-- Panel: Transparansi APBDes -->
-        <div data-panel="apbdes" class="profil-tab-panel hidden flex-col gap-gutter">
-
-            <!-- APBDes -->
-            <section class="bg-surface-container rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-sm">
-                <div class="flex items-center justify-between border-b border-line pb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-surface-2 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-primary">account_balance</span>
-                        </div>
-                        <h2 class="font-h3 text-h3 text-ink">Transparansi APBDes</h2>
-                    </div>
-                    <button type="button" id="btn-add-apb" class="text-primary hover:text-primary-fixed flex items-center gap-1 font-label-mono text-[10px] uppercase transition-colors">
-                        <span class="material-symbols-outlined text-[16px]">add</span> Item
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <label class="flex flex-col gap-2">
-                        <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest">Tahun Anggaran</span>
-                        <input name="apbdes_tahun" type="number" min="2000" max="2100"
-                               value="<?= (int) ($apbdes['tahun'] ?? date('Y')) ?>"
-                               class="bg-surface border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                    </label>
-                    <label class="flex flex-col gap-2">
-                        <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest">URL Laporan Lengkap</span>
-                        <input name="apbdes_laporan_url" type="url" placeholder="https://..."
-                               value="<?= htmlspecialchars((string) ($apbdes['laporan_url'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               class="bg-surface border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                    </label>
-                </div>
-                <div class="flex flex-col gap-3" id="apb-list">
-                    <?php foreach ($apbItems as $a): ?>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2 items-start apb-row bg-surface p-3 rounded-xl border border-line">
-                        <input name="apbdes_nama[]" type="text" placeholder="Nama pos"
-                               value="<?= htmlspecialchars((string) ($a['nama'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               class="md:col-span-4 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <input name="apbdes_jumlah[]" type="text" placeholder="Rp 420.5M"
-                               value="<?= htmlspecialchars((string) ($a['jumlah'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-                               class="md:col-span-3 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <input name="apbdes_persen[]" type="number" min="0" max="100" placeholder="%"
-                               value="<?= (int) ($a['persen'] ?? 0) ?>"
-                               class="md:col-span-2 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <input name="apbdes_icon[]" type="text" placeholder="icon"
-                               value="<?= htmlspecialchars((string) ($a['icon'] ?? 'account_balance'), ENT_QUOTES, 'UTF-8') ?>"
-                               class="md:col-span-2 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-                        <button type="button" class="md:col-span-1 p-2 text-danger hover:bg-surface-2 rounded-lg btn-remove-apb" aria-label="Hapus">
-                            <span class="material-symbols-outlined text-[18px]">delete</span>
                         </button>
                     </div>
                     <?php endforeach; ?>
@@ -488,7 +440,7 @@ if ($apbItems === []) {
     }
 
     // ── Tabs ──────────────────────────────────────────────────────────────────
-    const tabNames = ['identitas', 'visi-struktur', 'demografi', 'apbdes'];
+    const tabNames = ['identitas', 'visi-struktur', 'demografi'];
     function activateTab(name) {
         document.querySelectorAll('.profil-tab-btn').forEach(b => {
             const active = b.dataset.tab === name;
@@ -539,44 +491,75 @@ if ($apbItems === []) {
         renumberMisi();
     });
 
+    // ── Helper: preview & validasi foto struktur ─────────────────────────────
+    const FOTO_MAX_BYTES = 2 * 1024 * 1024; // 2 MB
+    const FOTO_ACCEPT    = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+    function bindFotoInput(fileInput) {
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            const row  = fileInput.closest('.struktur-row');
+            const preview = row?.querySelector('.struktur-foto-preview');
+            const hidden  = row?.querySelector('.struktur-foto-hidden');
+            if (!file) return;
+            // Validasi ukuran
+            if (file.size > FOTO_MAX_BYTES) {
+                showToast('Foto terlalu besar. Maksimal 2 MB.', false);
+                fileInput.value = '';
+                return;
+            }
+            // Validasi tipe
+            if (!FOTO_ACCEPT.includes(file.type)) {
+                showToast('Format foto tidak didukung. Gunakan JPG, PNG, WEBP, atau GIF.', false);
+                fileInput.value = '';
+                return;
+            }
+            // Tampilkan preview
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (preview) preview.innerHTML = `<img src="${ev.target.result}" class="w-full h-full object-cover" alt="">`;
+            };
+            reader.readAsDataURL(file);
+            // Kosongkan hidden (ada file baru, jangan pakai path lama)
+            if (hidden) hidden.value = '';
+        });
+    }
+
+    // Bind semua file input yang sudah ada saat load
+    document.querySelectorAll('.struktur-foto-input').forEach(bindFotoInput);
+
     document.getElementById('btn-add-struktur')?.addEventListener('click', () => {
         const list = document.getElementById('struktur-list');
-        const row = document.createElement('div');
-        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-2 items-start struktur-row bg-surface p-3 rounded-xl border border-line';
+        const row  = document.createElement('div');
+        row.className = 'flex flex-col md:flex-row gap-3 items-start struktur-row bg-surface p-3 rounded-xl border border-line';
         row.innerHTML = `
-            <input name="struktur_nama[]" type="text" placeholder="Nama" class="md:col-span-3 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <input name="struktur_jabatan[]" type="text" placeholder="Jabatan" class="md:col-span-3 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <input name="struktur_foto[]" type="url" placeholder="URL foto (opsional)" class="md:col-span-4 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <input name="struktur_level[]" type="number" min="0" max="5" value="2" class="md:col-span-1 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <button type="button" class="md:col-span-1 p-2 text-danger hover:bg-surface-2 rounded-lg btn-remove-struktur" aria-label="Hapus">
+            <div class="flex flex-col items-center gap-1.5 shrink-0">
+                <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-line-strong bg-surface-2 flex items-center justify-center struktur-foto-preview">
+                    <span class="material-symbols-outlined text-ink-dim text-[22px]">person</span>
+                </div>
+                <label class="cursor-pointer text-[9px] text-primary font-bold uppercase tracking-widest hover:underline">
+                    Pilih Foto
+                    <input type="file" name="struktur_foto_file[]" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden struktur-foto-input">
+                </label>
+                <input type="hidden" name="struktur_foto[]" value="" class="struktur-foto-hidden">
+            </div>
+            <div class="flex flex-1 flex-wrap gap-2 items-start">
+                <input name="struktur_nama[]" type="text" placeholder="Nama" class="flex-1 min-w-[140px] bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+                <input name="struktur_jabatan[]" type="text" placeholder="Jabatan" class="flex-1 min-w-[140px] bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
+                <input name="struktur_level[]" type="number" min="0" max="5" value="2" class="w-16 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary text-center">
+            </div>
+            <button type="button" class="p-2 text-danger hover:bg-surface-2 rounded-lg btn-remove-struktur self-center shrink-0" aria-label="Hapus">
                 <span class="material-symbols-outlined text-[18px]">delete</span>
             </button>`;
         list.appendChild(row);
+        // Bind file input baru
+        bindFotoInput(row.querySelector('.struktur-foto-input'));
+        row.querySelector('input[name="struktur_nama[]"]')?.focus();
     });
 
     document.getElementById('struktur-list')?.addEventListener('click', (e) => {
         const btn = e.target.closest('.btn-remove-struktur');
         if (btn) btn.closest('.struktur-row')?.remove();
-    });
-
-    document.getElementById('btn-add-apb')?.addEventListener('click', () => {
-        const list = document.getElementById('apb-list');
-        const row = document.createElement('div');
-        row.className = 'grid grid-cols-1 md:grid-cols-12 gap-2 items-start apb-row bg-surface p-3 rounded-xl border border-line';
-        row.innerHTML = `
-            <input name="apbdes_nama[]" type="text" placeholder="Nama pos" class="md:col-span-4 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <input name="apbdes_jumlah[]" type="text" placeholder="Rp 0" class="md:col-span-3 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <input name="apbdes_persen[]" type="number" min="0" max="100" value="0" class="md:col-span-2 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <input name="apbdes_icon[]" type="text" value="account_balance" class="md:col-span-2 bg-surface-2 border border-line-strong rounded-lg p-2.5 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary">
-            <button type="button" class="md:col-span-1 p-2 text-danger hover:bg-surface-2 rounded-lg btn-remove-apb" aria-label="Hapus">
-                <span class="material-symbols-outlined text-[18px]">delete</span>
-            </button>`;
-        list.appendChild(row);
-    });
-
-    document.getElementById('apb-list')?.addEventListener('click', (e) => {
-        const btn = e.target.closest('.btn-remove-apb');
-        if (btn) btn.closest('.apb-row')?.remove();
     });
 
     document.getElementById('btn-add-job')?.addEventListener('click', () => {
@@ -585,18 +568,45 @@ if ($apbItems === []) {
         row.className = 'flex items-center gap-2 job-row bg-surface p-2 rounded-lg border border-line-strong';
         row.innerHTML = `
             <input name="pekerjaan_jenis[]" type="text" class="flex-1 bg-transparent text-sm text-ink font-body-md focus:outline-none" placeholder="Jenis pekerjaan">
-            <input name="pekerjaan_persen[]" type="number" min="0" max="100" value="0" class="w-14 bg-transparent text-right text-on-surface font-body-md focus:outline-none">
+            <input name="pekerjaan_persen[]" type="number" min="0" max="100" step="1" value="0" class="w-14 bg-transparent text-right text-on-surface font-body-md focus:outline-none job-percent-input">
             <span class="text-ink-dim text-sm">%</span>
             <button type="button" class="p-1 text-danger btn-remove-job" aria-label="Hapus">
                 <span class="material-symbols-outlined text-[16px]">close</span>
             </button>`;
         list.appendChild(row);
+        updateJobPercentages();
+    });
+
+    function updateJobPercentages() {
+        const inputs = [...document.querySelectorAll('#job-list .job-percent-input')];
+        const total = inputs.reduce((sum, input) => sum + Math.max(0, Number(input.value) || 0), 0);
+        const remaining = 100 - total;
+        const totalLabel = document.getElementById('job-total');
+        if (totalLabel) {
+            totalLabel.textContent = `Total: ${total}% | Sisa: ${remaining}%`;
+            totalLabel.classList.toggle('text-danger', total > 100);
+            totalLabel.classList.toggle('text-primary', total === 100);
+            totalLabel.classList.toggle('text-ink-dim', total < 100);
+        }
+        inputs.forEach(input => {
+            const otherTotal = total - (Math.max(0, Number(input.value) || 0));
+            input.max = String(Math.max(0, 100 - otherTotal));
+        });
+    }
+
+    document.getElementById('job-list')?.addEventListener('input', (e) => {
+        if (e.target.matches('input[name="pekerjaan_persen[]"]')) updateJobPercentages();
     });
 
     document.getElementById('job-list')?.addEventListener('click', (e) => {
         const btn = e.target.closest('.btn-remove-job');
-        if (btn) btn.closest('.job-row')?.remove();
+        if (btn) {
+            btn.closest('.job-row')?.remove();
+            updateJobPercentages();
+        }
     });
+
+    updateJobPercentages();
 
     document.getElementById('btn-add-dusun')?.addEventListener('click', () => {
         const list = document.getElementById('dusun-list');
@@ -659,6 +669,33 @@ if ($apbItems === []) {
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         rteInput.value = normalizeRichHtml(rte.innerHTML);
+
+        const jobInputs = [...document.querySelectorAll('#job-list input[name="pekerjaan_persen[]"]')];
+        const jobTotal = jobInputs.reduce((sum, input) => sum + Math.max(0, Number(input.value) || 0), 0);
+        if (jobInputs.length === 0) {
+            showToast('Minimal satu jenis mata pencaharian harus diisi.', false);
+            return;
+        }
+        if (jobTotal !== 100) {
+            showToast(`Total persentase mata pencaharian harus tepat 100%. Saat ini ${jobTotal}%.`, false);
+            return;
+        }
+
+        // Validasi client-side semua file foto sebelum kirim
+        let fotoError = false;
+        document.querySelectorAll('.struktur-foto-input').forEach(inp => {
+            const file = inp.files[0];
+            if (!file) return;
+            if (file.size > FOTO_MAX_BYTES) {
+                showToast(`Foto "${file.name}" melebihi batas 2 MB.`, false);
+                fotoError = true;
+            } else if (!FOTO_ACCEPT.includes(file.type)) {
+                showToast(`Format foto "${file.name}" tidak didukung (JPG/PNG/WEBP/GIF).`, false);
+                fotoError = true;
+            }
+        });
+        if (fotoError) return;
+
         const btn = document.getElementById('btn-simpan-profil');
         btn.disabled = true;
         btn.classList.add('opacity-60');

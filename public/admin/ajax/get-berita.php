@@ -29,4 +29,7 @@ if (!$item) {
     exit;
 }
 
+$item['is_published'] = Berita::isPublished($item);
+$item['is_scheduled'] = Berita::isScheduled($item);
+
 echo json_encode(['success' => true, 'data' => $item]);

@@ -6,15 +6,19 @@
         <?php
         require_once dirname(__DIR__, 4) . '/includes/env.php';
         loadEnv(dirname(__DIR__, 4) . '/.env');
-        $instagramHandle = env('KONTAK_INSTAGRAM_HANDLE', '');
-        $instagramUrl    = env('KONTAK_INSTAGRAM_URL', '');
+        $instagramHandle = env('KONTAK_INSTAGRAM_HANDLE', '@pkpm56_airnaningan1');
+        $instagramUrl    = env('KONTAK_INSTAGRAM_URL', 'https://www.instagram.com/pkpm56_airnaningan1/');
         ?>
         <?php if ($instagramUrl !== '' && $instagramHandle !== ''): ?>
         <a class="flex items-center gap-2 font-label-mono text-[11px] text-ink-dim hover:text-primary transition-colors"
             href="<?= htmlspecialchars($instagramUrl, ENT_QUOTES, 'UTF-8') ?>"
             target="_blank" rel="noopener noreferrer"
             title="Instagram Pekon Air Naningan">
-            <span class="material-symbols-outlined text-[14px]">photo_camera</span>
+            <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                <circle cx="12" cy="12" r="4"></circle>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+            </svg>
             <?= htmlspecialchars($instagramHandle, ENT_QUOTES, 'UTF-8') ?>
         </a>
         <?php endif; ?>

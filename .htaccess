@@ -10,6 +10,15 @@ DirectoryIndex index.php
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
     Header always unset X-Powered-By
     Header always unset Server
+
+    # ── Content Security Policy ────────────────────────────────────────────────
+    # Script: self + Tailwind CDN (play & jsdelivr), Bootstrap lokal
+    # Style : self + Google Fonts + Material Symbols
+    # Font  : self + Google Fonts static (gstatic)
+    # Img   : self + data: URI (avatar inisial) + blob:
+    # Connect: self (AJAX)
+    # Frame : Google Maps embed
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self'; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self';"
 </IfModule>
 
 # ── A05: Lindungi folder sensitif dari akses langsung ─────────────────────────
@@ -38,6 +47,10 @@ DirectoryIndex index.php
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(assets|uploads)(/.+)$ public/$1$2 [L]
 
+    # ── Arahkan robots.txt & sitemap.xml ke public/ ──────────────────────────
+    RewriteRule ^robots\.txt$ public/robots.txt [L]
+    RewriteRule ^sitemap\.xml$ public/sitemap.php [L]
+
     # ── Lewati file & folder yang benar-benar ada di root ─────────────────────
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
@@ -49,7 +62,7 @@ DirectoryIndex index.php
 </IfModule>
 
 # ── A05: Blok akses ke file sensitif ─────────────────────────────────────────
-<FilesMatch "\.(json|log|md|txt|env|toml|lock|gitignore)$">
+<FilesMatch "\.(json|log|md|env|toml|lock|gitignore)$">
     <IfModule mod_authz_core.c>
         Require all denied
     </IfModule>
@@ -58,6 +71,19 @@ DirectoryIndex index.php
         Deny from all
     </IfModule>
 </FilesMatch>
+
+# Izinkan robots.txt (file .txt di public/ perlu bisa diakses)
+<Files "robots.txt">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+</Files>
+
+# ── Production: Matikan tampilan error ke browser ─────────────────────────────
+<IfModule mod_php.c>
+    php_flag display_errors off
+    php_flag log_errors on
+</IfModule>
 
 # Izinkan manifest.json jika ada
 <FilesMatch "manifest\.json$">
@@ -77,5 +103,17 @@ DirectoryIndex index.php
 
 # ── Performa: Kompres output ──────────────────────────────────────────────────
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript text/plain application/json application/xml
+</IfModule>
+
+# ── Performa: Cache headers untuk aset statis ────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png  "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/gif  "access plus 1 month"
+    ExpiresByType text/css   "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/x-icon "access plus 1 year"
 </IfModule>

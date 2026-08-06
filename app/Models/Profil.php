@@ -103,6 +103,7 @@ class Profil
         }
         if (isset($payload['mata_pencaharian']) && is_array($payload['mata_pencaharian'])) {
             $jobs = [];
+            $jobTotal = 0;
             foreach ($payload['mata_pencaharian'] as $row) {
                 if (!is_array($row)) {
                     continue;
@@ -112,7 +113,14 @@ class Profil
                     continue;
                 }
                 $persen = max(0, min(100, (int) ($row['persen'] ?? 0)));
+                $jobTotal += $persen;
                 $jobs[] = ['jenis' => $jenis, 'persen' => $persen];
+            }
+            if ($jobs === []) {
+                throw new InvalidArgumentException('Minimal satu jenis mata pencaharian harus diisi.');
+            }
+            if ($jobTotal !== 100) {
+                throw new InvalidArgumentException("Total persentase mata pencaharian harus tepat 100%. Saat ini {$jobTotal}%.");
             }
             $current['mata_pencaharian'] = $jobs;
         }

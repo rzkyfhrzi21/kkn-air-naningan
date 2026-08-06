@@ -61,7 +61,7 @@ if ($petaEmbedUrl !== '') {
 $dusunNama   = $_POST['dusun_nama'] ?? [];
 $dusunJumlah = $_POST['dusun_jumlah'] ?? [];
 $perDusun    = [];
-if (is_array($dusunNama)) {
+if (is_array($dusunNama) && is_array($dusunJumlah)) {
     foreach ($dusunNama as $i => $nama) {
         $nama = trim((string) $nama);
         if ($nama === '') {
@@ -69,7 +69,7 @@ if (is_array($dusunNama)) {
         }
         $perDusun[] = [
             'nama'   => $nama,
-            'jumlah' => (int) ($dusunJumlah[$i] ?? 0),
+            'jumlah' => max(0, (int) ($dusunJumlah[$i] ?? 0)),
         ];
     }
 }
@@ -77,24 +77,105 @@ if (is_array($dusunNama)) {
 $jobJenis  = $_POST['pekerjaan_jenis'] ?? [];
 $jobPersen = $_POST['pekerjaan_persen'] ?? [];
 $jobs      = [];
-if (is_array($jobJenis)) {
+$jobTotal  = 0;
+if (is_array($jobJenis) && is_array($jobPersen)) {
     foreach ($jobJenis as $i => $jenis) {
         $jenis = trim((string) $jenis);
         if ($jenis === '') {
             continue;
         }
+        $rawPersen = $jobPersen[$i] ?? null;
+        $persen = filter_var($rawPersen, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 0, 'max_range' => 100],
+        ]);
+        if ($persen === false) {
+            echo json_encode(['success' => false, 'message' => "Persentase pekerjaan '{$jenis}' harus berupa bilangan bulat antara 0 sampai 100%."]);
+            exit;
+        }
+        $jobTotal += $persen;
         $jobs[] = [
             'jenis'  => $jenis,
-            'persen' => (int) ($jobPersen[$i] ?? 0),
+            'persen' => $persen,
+        ];
+    }
+}
+if ($jobs === []) {
+    echo json_encode(['success' => false, 'message' => 'Minimal satu jenis mata pencaharian harus diisi.']);
+    exit;
+}
+if ($jobTotal !== 100) {
+    echo json_encode(['success' => false, 'message' => "Total persentase mata pencaharian harus tepat 100%. Saat ini {$jobTotal}%."]);
+    exit;
+}
+
+// ── Upload foto struktur ──────────────────────────────────────────────────────
+// Allowed MIME types (validasi server-side asli via finfo)
+const FOTO_ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const FOTO_MAX_BYTES    = 2 * 1024 * 1024; // 2 MB
+const UPLOAD_DIR        = __DIR__ . '/../../../public/uploads/struktur/';
+const UPLOAD_URL_PREFIX = '/uploads/struktur/'; // path publik relatif dari web root
+
+/**
+ * Upload satu file foto struktur, kembalikan URL path publik.
+ * Lempar Exception jika gagal validasi.
+ */
+function uploadFotoStruktur(array $file): string
+{
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Upload gagal (kode error PHP: ' . $file['error'] . ').');
+    }
+    if ($file['size'] > FOTO_MAX_BYTES) {
+        throw new RuntimeException("Foto \"{$file['name']}\" melebihi batas 2 MB.");
+    }
+    // Validasi MIME asli (bukan dari ekstensi/header browser)
+    $finfo    = new finfo(FILEINFO_MIME_TYPE);
+    $mimeReal = $finfo->file($file['tmp_name']);
+    if (!in_array($mimeReal, FOTO_ALLOWED_MIME, true)) {
+        throw new RuntimeException("Format foto \"{$file['name']}\" tidak didukung ($mimeReal). Gunakan JPG, PNG, WEBP, atau GIF.");
+    }
+    // Generate nama file aman: hash + ekstensi dari MIME asli
+    $ext      = match ($mimeReal) {
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/webp' => 'webp',
+        'image/gif'  => 'gif',
+        default      => 'jpg',
+    };
+    $filename = 'struktur_' . bin2hex(random_bytes(8)) . '_' . time() . '.' . $ext;
+    $destPath = UPLOAD_DIR . $filename;
+
+    if (!is_dir(UPLOAD_DIR)) {
+        mkdir(UPLOAD_DIR, 0755, true);
+    }
+    if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+        throw new RuntimeException("Gagal menyimpan foto \"{$file['name']}\" ke server.");
+    }
+    return UPLOAD_URL_PREFIX . $filename;
+}
+
+// Proses array file upload. PHP normalisasi $_FILES['struktur_foto_file'] menjadi array per field.
+$uploadedFiles = $_FILES['struktur_foto_file'] ?? [];
+// Normalkan ke indexed array of per-file arrays
+$fotoFiles = [];
+if (!empty($uploadedFiles['name']) && is_array($uploadedFiles['name'])) {
+    foreach ($uploadedFiles['name'] as $i => $name) {
+        $fotoFiles[$i] = [
+            'name'     => $name,
+            'type'     => $uploadedFiles['type'][$i],
+            'tmp_name' => $uploadedFiles['tmp_name'][$i],
+            'error'    => (int) $uploadedFiles['error'][$i],
+            'size'     => (int) $uploadedFiles['size'][$i],
         ];
     }
 }
 
-$strNama    = $_POST['struktur_nama'] ?? [];
+// ── Susun array struktur ──────────────────────────────────────────────────────
+$strNama    = $_POST['struktur_nama']    ?? [];
 $strJabatan = $_POST['struktur_jabatan'] ?? [];
-$strFoto    = $_POST['struktur_foto'] ?? [];
-$strLevel   = $_POST['struktur_level'] ?? [];
+$strFoto    = $_POST['struktur_foto']    ?? []; // path foto lama (hidden input)
+$strLevel   = $_POST['struktur_level']   ?? [];
 $struktur   = [];
+
 if (is_array($strNama)) {
     foreach ($strNama as $i => $nama) {
         $nama = trim((string) $nama);
@@ -102,31 +183,24 @@ if (is_array($strNama)) {
         if ($nama === '' && $jab === '') {
             continue;
         }
+
+        // Tentukan path foto: pakai file baru jika ada, fallback ke path lama
+        $fotoPath = trim((string) ($strFoto[$i] ?? ''));
+        $fileEntry = $fotoFiles[$i] ?? null;
+        if ($fileEntry && $fileEntry['error'] === UPLOAD_ERR_OK && $fileEntry['size'] > 0) {
+            try {
+                $fotoPath = uploadFotoStruktur($fileEntry);
+            } catch (RuntimeException $ex) {
+                echo json_encode(['success' => false, 'message' => $ex->getMessage()]);
+                exit;
+            }
+        }
+
         $struktur[] = [
             'nama'    => $nama,
             'jabatan' => $jab,
-            'foto'    => trim((string) ($strFoto[$i] ?? '')),
+            'foto'    => $fotoPath,
             'level'   => (int) ($strLevel[$i] ?? 0),
-        ];
-    }
-}
-
-$apbNama   = $_POST['apbdes_nama'] ?? [];
-$apbJumlah = $_POST['apbdes_jumlah'] ?? [];
-$apbPersen = $_POST['apbdes_persen'] ?? [];
-$apbIcon   = $_POST['apbdes_icon'] ?? [];
-$apbItems  = [];
-if (is_array($apbNama)) {
-    foreach ($apbNama as $i => $nama) {
-        $nama = trim((string) $nama);
-        if ($nama === '') {
-            continue;
-        }
-        $apbItems[] = [
-            'nama'   => $nama,
-            'jumlah' => trim((string) ($apbJumlah[$i] ?? '')),
-            'persen' => (int) ($apbPersen[$i] ?? 0),
-            'icon'   => trim((string) ($apbIcon[$i] ?? 'account_balance')),
         ];
     }
 }
@@ -149,11 +223,6 @@ try {
             'per_dusun'         => $perDusun,
         ],
         'mata_pencaharian' => $jobs,
-        'apbdes'           => [
-            'tahun'       => (int) ($_POST['apbdes_tahun'] ?? date('Y')),
-            'laporan_url' => trim((string) ($_POST['apbdes_laporan_url'] ?? '')),
-            'items'       => $apbItems,
-        ],
         'sejarah' => [
             'paragraf' => $sejarahText,
             'quote'    => $sejarahQuote,

@@ -43,6 +43,11 @@ $total = count($items);
 $statTerbit = count(array_filter($items, fn($i) => ($i['status'] ?? '') === 'terbit'));
 $statDraft  = $total - $statTerbit;
 $paged = array_slice($items, ($page - 1) * $perPage, $perPage);
+$paged = array_map(static function (array $item): array {
+    $item['is_published'] = Berita::isPublished($item);
+    $item['is_scheduled'] = Berita::isScheduled($item);
+    return $item;
+}, $paged);
 
 echo json_encode([
     'success' => true,

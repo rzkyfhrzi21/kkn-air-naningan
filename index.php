@@ -55,7 +55,6 @@ $publicRoutes = [
     'berita'      => ['BeritaController',  'app/Controllers/BeritaController.php'],
     'galeri'      => ['GaleriController',  'app/Controllers/GaleriController.php'],
     'kontak'      => ['KontakController',  'app/Controllers/KontakController.php'],
-    'potensi'     => ['PotensiController', 'app/Controllers/PotensiController.php'],
 ];
 
 // ── Dispatch ─────────────────────────────────────────────────────────────────
@@ -69,7 +68,6 @@ if ($seg0 === 'admin') {
     $adminRoutes = [
         'kelola-umkm'    => 'KelolaUmkmController',
         'kelola-wisata'  => 'KelolaWisataController',
-        'kelola-potensi' => 'KelolaPotensiController',
         'kelola-galeri'  => 'KelolaGaleriController',
         'kelola-profil'  => 'KelolaProfilController',
         'kelola-berita'  => 'KelolaBeritaController',

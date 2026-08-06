@@ -9,17 +9,18 @@ loadEnv(dirname(__DIR__, 4) . '/.env');
 $pageTitle       = $pageTitle       ?? 'Pekon Air Naningan';
 $currentPage     = $currentPage     ?? 'beranda';
 $metaDescription = $metaDescription ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.';
-$metaKeywords    = $metaKeywords    ?? 'Pekon Air Naningan, profil desa, UMKM, wisata, galeri, berita desa, Pesisir Barat';
+$metaKeywords    = $metaKeywords    ?? 'Pekon Air Naningan, profil desa, UMKM, wisata, galeri, berita desa, Tanggamus';
 $metaImage       = $metaImage       ?? '';
 
-// Deteksi base path (kosong jika di root, '/kkn-air-naningan2' jika subdirektori)
+// Deteksi base path
 $base = defined('APP_BASE') ? APP_BASE : '';
 
-// §10.1: URL absolut untuk og:url & canonical (dukung http & https)
-$scheme   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host     = $_SERVER['HTTP_HOST'] ?? '';
-$reqUri   = $_SERVER['REQUEST_URI'] ?? '/';
-$metaImageUrl = $metaImage !== '' ? $metaImage : $base . '/assets/images/logo.jpg';
+// URL absolut untuk og:url & canonical
+$scheme      = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$host        = $_SERVER['HTTP_HOST'] ?? '';
+$reqUri      = $_SERVER['REQUEST_URI'] ?? '/';
+$canonicalUri = strtok($reqUri, '?'); // tanpa query string untuk canonical
+$metaImageUrl = $metaImage !== '' ? $metaImage : $scheme . '://' . $host . $base . '/assets/images/logo.jpg';
 
 if (!function_exists('mediaUrl')) {
     function mediaUrl(string $path, string $basePath): string {
@@ -49,14 +50,25 @@ $navLinks = [
     <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
     <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
     <meta name="keywords" content="<?= htmlspecialchars($metaKeywords, ENT_QUOTES, 'UTF-8') ?>">
+    <!-- Open Graph -->
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:image" content="<?= htmlspecialchars($metaImageUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:url" content="<?= htmlspecialchars($scheme . '://' . $host . $reqUri, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="id_ID">
+    <meta property="og:site_name" content="Pekon Air Naningan">
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="canonical" href="<?= htmlspecialchars($scheme . '://' . $host . $reqUri, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="twitter:image" content="<?= htmlspecialchars($metaImageUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <!-- Canonical (tanpa query string) -->
+    <link rel="canonical" href="<?= htmlspecialchars($scheme . '://' . $host . $canonicalUri, ENT_QUOTES, 'UTF-8') ?>">
+    <!-- Inline critical base styles -->
     <style>
         @layer base {
             html, body { margin: 0; padding: 0; }
@@ -64,6 +76,7 @@ $navLinks = [
         }
         ::-webkit-scrollbar { display: none; }
     </style>
+    <!-- Tailwind CSS Browser CDN (Play CDN untuk dev; sesuai keputusan proyek) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script id="tailwind-config">
         tailwind.config = {
@@ -163,8 +176,30 @@ $navLinks = [
             }
         }
     </script>
+    <!-- Fonts: preconnect untuk performa, lalu load stylesheet -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <!-- JSON-LD: Organization / GovernmentOrganization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "GovernmentOrganization",
+      "name": "Pekon Air Naningan",
+      "alternateName": "Desa Air Naningan",
+      "url": "<?= htmlspecialchars($scheme . '://' . $host . $base . '/', ENT_QUOTES, 'UTF-8') ?>",
+      "logo": "<?= htmlspecialchars($scheme . '://' . $host . $base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>",
+      "description": "Situs resmi Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus, Lampung.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Air Naningan",
+        "addressRegion": "Tanggamus, Lampung",
+        "addressCountry": "ID"
+      },
+      "areaServed": "Air Naningan, Kecamatan Air Naningan, Tanggamus"
+    }
+    </script>
 </head>
 <body class="bg-bg font-body-md text-on-surface">
 
@@ -196,7 +231,7 @@ $navLinks = [
                 <span class="font-label-mono text-label-mono text-gold-soft tracking-widest uppercase">Pekon Mandiri</span>
             </div>
         </a>
-        <nav class="hidden lg:flex items-center gap-6">
+        <nav class="hidden lg:flex items-center gap-6" aria-label="Navigasi utama">
             <?php foreach ($navLinks as [$path, $label, $href]): ?>
                 <?php if ($currentPage === $path): ?>
                     <a aria-current="page"
@@ -213,7 +248,7 @@ $navLinks = [
             <?php endforeach; ?>
         </nav>
         <div class="flex items-center">
-            <button class="lg:hidden text-ink" id="mobile-menu-btn" aria-label="Buka menu navigasi">
+            <button class="lg:hidden text-ink" id="mobile-menu-btn" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobile-menu">
                 <span class="material-symbols-outlined" id="menu-icon">menu</span>
             </button>
         </div>

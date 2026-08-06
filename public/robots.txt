@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /admin
+Disallow: /admin/ajax
+Disallow: /admin/ajax/
+Disallow: /public/data/
+Disallow: /secure/
+Disallow: /app/
+Disallow: /config/
+Disallow: /includes/
+Disallow: /Zzz/
+
+# Sitemap
+Sitemap: http://localhost:8090/kkn-air-naningan/sitemap.xml

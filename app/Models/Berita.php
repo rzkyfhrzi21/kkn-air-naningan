@@ -32,12 +32,36 @@ class Berita
         return $data;
     }
 
-    /** Ambil hanya yang status=terbit */
+    /** Ambil hanya berita yang sudah berstatus terbit dan tanggal publikasinya tiba. */
     public static function published(): array
     {
         return array_values(
-            array_filter(self::all(), static fn(array $b): bool => ($b['status'] ?? '') === 'terbit')
+            array_filter(self::all(), static fn(array $b): bool => self::isPublished($b))
         );
+    }
+
+    public static function isPublished(array $item, ?DateTimeImmutable $today = null): bool
+    {
+        if (($item['status'] ?? '') !== 'terbit') {
+            return false;
+        }
+
+        $publishedAt = DateTimeImmutable::createFromFormat('!Y-m-d', (string) ($item['tanggal_terbit'] ?? ''));
+        if ($publishedAt === false) {
+            return false;
+        }
+
+        return $publishedAt <= ($today ?? new DateTimeImmutable('today'));
+    }
+
+    public static function isScheduled(array $item, ?DateTimeImmutable $today = null): bool
+    {
+        if (($item['status'] ?? '') !== 'terbit') {
+            return false;
+        }
+
+        $publishedAt = DateTimeImmutable::createFromFormat('!Y-m-d', (string) ($item['tanggal_terbit'] ?? ''));
+        return $publishedAt !== false && $publishedAt > ($today ?? new DateTimeImmutable('today'));
     }
 
     public static function find(string $id): ?array

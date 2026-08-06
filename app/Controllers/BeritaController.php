@@ -22,7 +22,7 @@ final class BeritaController
         $slug   = $GLOBALS['_beritaSlug'] ?? '';
         $berita = Berita::findBySlug($slug);
 
-        if ($berita === null || ($berita['status'] ?? '') !== 'terbit') {
+        if ($berita === null || !Berita::isPublished($berita)) {
             http_response_code(404);
             $base = defined('APP_BASE') ? APP_BASE : '';
             echo '<!doctype html><html lang="id"><head><meta charset="utf-8"><title>404 — Pekon Air Naningan</title>'

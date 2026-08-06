@@ -146,7 +146,6 @@ require __DIR__ . '/../partials/header.php';
                     ['kelola-berita', 'newspaper',           'Berita',        $summaries['berita']  ?? 0],
                     ['kelola-wisata', 'landscape',           'Wisata',        $summaries['wisata']  ?? 0],
                     ['kelola-galeri', 'photo_library',       'Galeri',        $summaries['galeri']  ?? 0],
-                    ['kelola-potensi','energy_savings_leaf', 'Potensi',       $summaries['potensi'] ?? 0],
                 ];
                 foreach ($menuItems as [$slug, $icon, $label, $count]):
                 ?>

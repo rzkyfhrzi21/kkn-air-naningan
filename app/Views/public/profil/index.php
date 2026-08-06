@@ -6,11 +6,6 @@ $base            = defined('APP_BASE') ? APP_BASE : '';
 $escape          = static fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $misi            = is_array($profil['misi'] ?? null) ? $profil['misi'] : [];
 $struktur        = is_array($profil['struktur'] ?? null) ? $profil['struktur'] : [];
-$demografi       = is_array($profil['demografi'] ?? null) ? $profil['demografi'] : [];
-$perDusun        = is_array($demografi['per_dusun'] ?? null) ? $demografi['per_dusun'] : [];
-$pekerjaan       = is_array($profil['mata_pencaharian'] ?? null) ? $profil['mata_pencaharian'] : [];
-$apbdes          = is_array($profil['apbdes'] ?? null) ? $profil['apbdes'] : [];
-$apbItems        = is_array($apbdes['items'] ?? null) ? $apbdes['items'] : [];
 $sejarah         = is_array($profil['sejarah'] ?? null) ? $profil['sejarah'] : [];
 $paragrafSejarah = $sejarah['paragraf'] ?? [];
 $peta            = is_array($profil['peta'] ?? null) ? $profil['peta'] : [];
@@ -43,152 +38,6 @@ require __DIR__ . '/../partials/header.php';
         </div>
     </section>
 
-    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface">
-        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
-            <div class="flex flex-col lg:flex-row gap-16 lg:gap-24">
-                <div class="flex-1 flex flex-col gap-6">
-                    <div class="flex items-center gap-4">
-                        <span class="w-12 h-px bg-primary"></span>
-                        <h2 class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest">Arah Juang</h2>
-                    </div>
-                    <h3 class="font-h2 text-h2 text-ink">&ldquo;<?= $escape($profil['visi'] ?? '') ?>&rdquo;</h3>
-                </div>
-                <div class="flex-1 flex flex-col gap-8">
-                    <h4 class="font-label-mono text-label-mono text-ink-dim uppercase tracking-widest border-b border-line pb-4">Misi Pekon</h4>
-                    <ul class="flex flex-col gap-6">
-                        <?php foreach ($misi as $index => $item): ?>
-                            <li class="flex gap-4">
-                                <span class="font-h3 text-h3 text-primary/40"><?= str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) ?></span>
-                                <p class="font-body-lg text-body-lg text-ink"><?= $escape($item) ?></p>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface-container-lowest">
-        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
-            <div class="flex flex-col gap-12">
-                <div class="flex flex-col gap-2 text-center">
-                    <h2 class="font-h3 text-h3 text-ink">Struktur Pemerintahan</h2>
-                    <?php if (($profil['masa_bakti'] ?? '') !== ''): ?>
-                        <p class="font-body-md text-body-md text-ink-dim">Aparatur pekon masa bakti <?= $escape($profil['masa_bakti']) ?>.</p>
-                    <?php endif; ?>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <?php foreach ($struktur as $aparatur): ?>
-                        <?php $foto = trim((string) ($aparatur['foto'] ?? '')); ?>
-                        <article class="bg-surface-2 rounded-xl border border-line overflow-hidden <?= (int) ($aparatur['level'] ?? 0) === 0 ? 'sm:col-span-2 lg:col-span-4 lg:max-w-sm lg:mx-auto lg:w-full border-primary' : '' ?>">
-                            <?php if ($foto !== ''): ?>
-                                <button type="button" class="block w-full aspect-[4/3] overflow-hidden cursor-zoom-in" data-profile-photo="<?= $escape($foto) ?>" data-profile-name="<?= $escape($aparatur['nama'] ?? '') ?>">
-                                    <img src="<?= $escape($foto) ?>" alt="Foto <?= $escape($aparatur['nama'] ?? 'aparatur pekon') ?>" class="w-full h-full object-cover" loading="lazy"
-                                         onerror="this.onerror=null; this.src='<?= $base ?>/assets/images/placeholder.webp';">
-                                </button>
-                            <?php endif; ?>
-                            <div class="px-5 py-4 text-center">
-                                <p class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest mb-1"><?= $escape($aparatur['jabatan'] ?? '') ?></p>
-                                <p class="font-body-md font-semibold text-ink"><?= $escape($aparatur['nama'] ?? '') ?></p>
-                            </div>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface">
-        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
-            <div class="mb-10">
-                <h2 class="font-h2 text-h2 text-ink mb-2">Demografi &amp; Mata Pencaharian</h2>
-                <p class="font-body-md text-body-md text-ink-dim">Ringkasan kondisi wilayah dan penduduk Pekon Air Naningan.</p>
-            </div>
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-                <?php
-                $stats = [
-                    ['label' => 'Total Penduduk', 'value' => number_format((int) ($demografi['total_jiwa'] ?? 0), 0, ',', '.') . ' jiwa'],
-                    ['label' => 'Kepala Keluarga', 'value' => number_format((int) ($demografi['kepala_keluarga'] ?? 0), 0, ',', '.') . ' KK'],
-                    ['label' => 'Luas Wilayah', 'value' => $escape($demografi['luas_wilayah'] ?? 0) . ' ' . $escape($demografi['luas_satuan'] ?? '')],
-                    ['label' => 'Ketinggian', 'value' => $escape($demografi['ketinggian'] ?? 0) . ' ' . $escape($demografi['ketinggian_satuan'] ?? '')],
-                ];
-                foreach ($stats as $stat):
-                ?>
-                    <div class="bg-surface-2 border border-line rounded-xl p-5">
-                        <p class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest mb-2"><?= $stat['label'] ?></p>
-                        <p class="font-h3 text-h3 text-ink"><?= $stat['value'] ?></p>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <div>
-                    <h3 class="font-h3 text-h3 text-ink mb-6">Penduduk per Dusun</h3>
-                    <div class="flex flex-col gap-4">
-                        <?php foreach ($perDusun as $dusun): ?>
-                            <?php $dusunPercent = (int) ($demografi['total_jiwa'] ?? 0) > 0 ? min(100, ((int) ($dusun['jumlah'] ?? 0) / (int) $demografi['total_jiwa']) * 100) : 0; ?>
-                            <?php $dusunWidthClass = 'w-[' . round($dusunPercent, 2) . '%]'; ?>
-                            <div>
-                                <div class="flex justify-between gap-4 mb-2 text-sm"><span class="text-ink"><?= $escape($dusun['nama'] ?? '') ?></span><span class="text-ink-dim"><?= number_format((int) ($dusun['jumlah'] ?? 0), 0, ',', '.') ?> jiwa</span></div>
-                                <div class="h-2 rounded-full bg-surface-container overflow-hidden"><div class="h-full bg-primary rounded-full <?= $escape($dusunWidthClass) ?>"></div></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="font-h3 text-h3 text-ink mb-6">Mata Pencaharian</h3>
-                    <div class="flex flex-col gap-4">
-                        <?php foreach ($pekerjaan as $item): ?>
-                            <?php $jobWidthClass = 'w-[' . max(0, min(100, (int) ($item['persen'] ?? 0))) . '%]'; ?>
-                            <div>
-                                <div class="flex justify-between gap-4 mb-2 text-sm"><span class="text-ink"><?= $escape($item['jenis'] ?? '') ?></span><span class="text-gold-soft"><?= (int) ($item['persen'] ?? 0) ?>%</span></div>
-                                <div class="h-2 rounded-full bg-surface-container overflow-hidden"><div class="h-full bg-primary rounded-full <?= $escape($jobWidthClass) ?>"></div></div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface-container-lowest">
-        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-10 gap-4">
-                <div>
-                    <h2 class="font-h2 text-h2 text-ink mb-2">Transparansi Anggaran (<?= (int) ($apbdes['tahun'] ?? date('Y')) ?>)</h2>
-                    <p class="font-body-md text-body-md text-ink-dim">Ringkasan realisasi Anggaran Pendapatan dan Belanja Desa.</p>
-                </div>
-                <?php if (trim((string) ($apbdes['laporan_url'] ?? '')) !== ''): ?>
-                    <a href="<?= $escape($apbdes['laporan_url']) ?>" target="_blank" rel="noopener noreferrer" class="px-6 py-2 rounded-full border border-line text-ink font-label-mono text-label-mono hover:bg-surface-2 transition-colors">UNDUH LAPORAN LENGKAP</a>
-                <?php endif; ?>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <?php foreach ($apbItems as $item): ?>
-                    <article class="bg-surface-2 p-6 rounded-xl flex flex-col gap-6 border border-line relative overflow-hidden">
-                        <div class="flex items-start justify-between">
-                            <div class="w-10 h-10 rounded bg-surface border border-line flex items-center justify-center"><span class="material-symbols-outlined text-primary"><?= $escape($item['icon'] ?? 'account_balance') ?></span></div>
-                            <span class="font-label-mono text-label-mono text-gold-soft bg-surface-container px-2 py-1 rounded"><?= (int) ($item['persen'] ?? 0) ?>%</span>
-                        </div>
-                        <div><p class="font-body-md text-body-md text-ink-dim mb-1"><?= $escape($item['nama'] ?? '') ?></p><p class="font-h3 text-h3 text-ink"><?= $escape($item['jumlah'] ?? '') ?></p></div>
-                        <div class="absolute inset-x-0 bottom-0 h-1 bg-primary"></div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
-
-    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface">
-        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
-            <h2 class="font-h2 text-h2 text-ink mb-6">Peta Administrasi</h2>
-            <div class="w-full h-[400px] lg:h-[500px] rounded-2xl overflow-hidden border border-line bg-surface-2 shadow-xl">
-                <?php if (trim((string) ($peta['embed_url'] ?? '')) !== ''): ?>
-                    <iframe src="<?= $escape($peta['embed_url']) ?>" title="Peta <?= $escape($peta['lokasi'] ?? 'Pekon Air Naningan') ?>" class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-                <?php else: ?>
-                    <div class="w-full h-full flex items-center justify-center p-6 text-center"><span class="font-label-mono text-label-mono text-ink-dim"><?= $escape($peta['lokasi'] ?? 'Peta belum dikonfigurasi') ?></span></div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </section>
-
     <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface-container-lowest border-t border-line">
         <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
             <div class="max-w-3xl mx-auto flex flex-col gap-12">
@@ -216,6 +65,175 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </div>
     </section>
+
+    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface">
+        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
+            <div class="flex flex-col lg:flex-row gap-16 lg:gap-24">
+                <div class="flex-1 flex flex-col gap-6">
+                    <div class="flex items-center gap-4">
+                        <span class="w-12 h-px bg-primary"></span>
+                        <h2 class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest">Arah Juang</h2>
+                    </div>
+                    <h3 class="font-h2 text-h2 text-ink">&ldquo;<?= $escape($profil['visi'] ?? '') ?>&rdquo;</h3>
+                </div>
+                <div class="flex-1 flex flex-col gap-8">
+                    <h4 class="font-label-mono text-label-mono text-ink-dim uppercase tracking-widest border-b border-line pb-4">Misi Pekon</h4>
+                    <ul class="flex flex-col gap-6">
+                        <?php foreach ($misi as $index => $item): ?>
+                            <li class="flex gap-4">
+                                <span class="font-h3 text-h3 text-primary/40"><?= str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) ?></span>
+                                <p class="font-body-lg text-body-lg text-ink"><?= $escape($item) ?></p>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <?php
+    // Kelompokkan data struktur per peran
+    $org_head  = null;
+    $org_sek   = null;
+    $org_kaur  = [];
+    $org_kasi  = [];
+    $org_staf  = [];
+    $org_kadus = [];
+    $jabatan_kaur = ['kaur tu', 'kaur umum', 'kaur keuangan', 'kaur perencanaan'];
+    $jabatan_kadus = ['kepala dusun'];
+    foreach ($struktur as $ap) {
+        $jab_lower = mb_strtolower(trim($ap['jabatan'] ?? ''));
+        $level = (int) ($ap['level'] ?? 0);
+        if ($level === 0) { $org_head = $ap; }
+        elseif ($level === 1) { $org_sek = $ap; }
+        elseif ($level === 3 || str_starts_with($jab_lower, 'kepala dusun')) { $org_kadus[] = $ap; }
+        elseif (str_starts_with($jab_lower, 'kaur')) { $org_kaur[] = $ap; }
+        elseif (str_starts_with($jab_lower, 'staf')) { $org_staf[] = $ap; }
+        else { $org_kasi[] = $ap; }
+    }
+    // Helper: render satu org card
+    $org_card = function(array $p, string $extra = '') use ($escape, $base): void {
+        $fotoRaw  = trim((string)($p['foto'] ?? ''));
+        $foto     = $fotoRaw !== '' ? mediaUrl($fotoRaw, $base) : '';
+        $nama     = $p['nama'] ?? '-';
+        $jabatan  = $p['jabatan'] ?? '-';
+        $initials = implode('', array_map(
+            fn($w) => mb_strtoupper(mb_substr($w, 0, 1)),
+            array_slice(explode(' ', trim($nama)), 0, 2)
+        ));
+        ?>
+        <div class="flex flex-col items-center gap-3 bg-surface-container rounded-2xl border border-line px-5 py-5 text-center shadow-sm transition-colors hover:border-primary/40 <?= $extra ?>">
+            <?php if ($foto !== ''): ?>
+                <button type="button"
+                        class="w-16 h-16 rounded-full overflow-hidden shrink-0 border-2 border-primary/20 cursor-zoom-in focus:outline-none focus:ring-2 focus:ring-primary"
+                        data-profile-photo="<?= $escape($foto) ?>"
+                        data-profile-name="<?= $escape($nama) ?>"
+                        aria-label="Lihat foto <?= $escape($nama) ?>">
+                    <img src="<?= $escape($foto) ?>" alt="Foto <?= $escape($nama) ?>"
+                         class="w-full h-full object-cover"
+                         loading="lazy"
+                         onerror="this.onerror=null;this.closest('button').outerHTML='<div class=\'w-16 h-16 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-lg select-none bg-primary/20 text-primary\'><?= $escape($initials) ?: '?' ?></div>';">
+                </button>
+            <?php else: ?>
+                <div class="w-16 h-16 rounded-full shrink-0 flex items-center justify-center font-bold text-lg select-none bg-primary/20 text-primary">
+                    <?= $escape($initials) ?: '?' ?>
+                </div>
+            <?php endif; ?>
+            <div>
+                <p class="font-semibold text-ink text-sm leading-snug"><?= $escape($nama) ?></p>
+                <p class="text-gold-soft text-xs mt-0.5"><?= $escape($jabatan) ?></p>
+            </div>
+        </div>
+        <?php
+    };
+    ?>
+    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface-container-lowest">
+        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
+
+            <!-- Judul section -->
+            <div class="flex flex-col gap-2 text-center mb-12">
+                <h2 class="font-h3 text-h3 text-ink">Struktur Pemerintahan</h2>
+                <?php if (($profil['masa_bakti'] ?? '') !== ''): ?>
+                    <p class="font-body-md text-body-md text-ink-dim">Aparatur pekon masa bakti <?= $escape($profil['masa_bakti']) ?>.</p>
+                <?php endif; ?>
+            </div>
+
+            <div class="flex flex-col items-center gap-0">
+
+                <!-- 1. Kepala Pekon -->
+                <?php if ($org_head): ?>
+                <div class="w-full flex justify-center">
+                    <?php $org_card($org_head, 'max-w-[220px] w-full border-primary/40 shadow-md'); ?>
+                </div>
+                <!-- garis penghubung -->
+                <div class="w-px h-8 bg-gold-soft/40"></div>
+                <?php endif; ?>
+
+                <!-- 2. Sekretaris Pekon -->
+                <?php if ($org_sek): ?>
+                <div class="w-full flex justify-center">
+                    <?php $org_card($org_sek, 'max-w-[220px] w-full'); ?>
+                </div>
+                <div class="w-px h-8 bg-line-strong"></div>
+                <?php endif; ?>
+
+                <!-- 3. KAUR -->
+                <?php if (!empty($org_kaur)): ?>
+                <div class="w-full flex flex-col items-center gap-4">
+                    <p class="text-xs font-bold tracking-widest text-ink-dim uppercase">Kepala Urusan (KAUR)</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
+                        <?php foreach ($org_kaur as $ap): $org_card($ap); endforeach; ?>
+                    </div>
+                </div>
+                <div class="w-px h-8 bg-line-strong"></div>
+                <?php endif; ?>
+
+                <!-- 4. KASI -->
+                <?php if (!empty($org_kasi)): ?>
+                <div class="w-full flex flex-col items-center gap-4">
+                    <p class="text-xs font-bold tracking-widest text-ink-dim uppercase">Kepala Seksi (KASI)</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-2xl">
+                        <?php foreach ($org_kasi as $ap): $org_card($ap); endforeach; ?>
+                    </div>
+                    <?php if (!empty($org_staf)): ?>
+                    <div class="text-center mt-2">
+                        <p class="text-[10px] text-ink-dim uppercase tracking-widest mb-2">Staf</p>
+                        <div class="flex justify-center gap-4">
+                            <?php foreach ($org_staf as $ap): $org_card($ap, 'max-w-[180px] w-full'); endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <div class="w-px h-8 bg-line-strong"></div>
+                <?php endif; ?>
+
+                <!-- 5. Kepala Dusun -->
+                <?php if (!empty($org_kadus)): ?>
+                <div class="w-full flex flex-col items-center gap-4">
+                    <p class="text-xs font-bold tracking-widest text-ink-dim uppercase">Kepala Dusun</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 w-full">
+                        <?php foreach ($org_kadus as $ap): $org_card($ap); endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+            </div><!-- /bagan -->
+        </div>
+    </section>
+
+    <section class="w-full py-section-v-mobile lg:py-section-v-desktop bg-surface">
+        <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
+            <h2 class="font-h2 text-h2 text-ink mb-6">Peta Administrasi</h2>
+            <div class="w-full h-[400px] lg:h-[500px] rounded-2xl overflow-hidden border border-line bg-surface-2 shadow-xl">
+                <?php if (trim((string) ($peta['embed_url'] ?? '')) !== ''): ?>
+                    <iframe src="<?= $escape($peta['embed_url']) ?>" title="Peta <?= $escape($peta['lokasi'] ?? 'Pekon Air Naningan') ?>" class="w-full h-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                <?php else: ?>
+                    <div class="w-full h-full flex items-center justify-center p-6 text-center"><span class="font-label-mono text-label-mono text-ink-dim"><?= $escape($peta['lokasi'] ?? 'Peta belum dikonfigurasi') ?></span></div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+
 </div>
 
 <div id="profile-photo-modal" data-modal class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto aparatur">

@@ -482,7 +482,8 @@ require __DIR__ . '/../partials/header.php';
             }
 
             tbody.innerHTML = json.data.map((row, i) => {
-                const isTerbit = (row.status === 'terbit');
+                const isTerbit = (row.status === 'terbit' && row.is_published);
+                const isScheduled = (row.status === 'terbit' && row.is_scheduled);
                 const cover = row.foto_sampul ? mediaUrl(row.foto_sampul) : null;
                 const id = escapeHtml(row.id);
                 const title = escapeHtml(row.judul);
@@ -514,6 +515,8 @@ require __DIR__ . '/../partials/header.php';
                         <div class="sm:col-span-2 flex items-center">
                             ${isTerbit ?
                                 `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container-highest text-ink font-label-mono text-[10px]"><span class="material-symbols-outlined text-[14px]">public</span>Terbit</span>` :
+                                isScheduled ?
+                                `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-primary-container/20 text-primary font-label-mono text-[10px]"><span class="material-symbols-outlined text-[14px]">schedule</span>Terjadwal</span>` :
                                 `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container text-ink-dim font-label-mono text-[10px]"><span class="material-symbols-outlined text-[14px]">edit_document</span>Draft</span>`
                             }
                         </div>
@@ -602,11 +605,14 @@ require __DIR__ . '/../partials/header.php';
             previewData = d;
 
             document.getElementById('pv-judul').textContent = d.judul;
-            const isTerbit = d.status === 'terbit';
+            const isTerbit = d.status === 'terbit' && d.is_published;
+            const isScheduled = d.status === 'terbit' && d.is_scheduled;
             const statusEl = document.getElementById('pv-status');
-            statusEl.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-label-mono text-[10px] ' + (isTerbit ? 'bg-surface-container-highest text-ink' : 'bg-surface-container text-ink-dim');
+            statusEl.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-label-mono text-[10px] ' + (isTerbit ? 'bg-surface-container-highest text-ink' : isScheduled ? 'bg-primary-container/20 text-primary' : 'bg-surface-container text-ink-dim');
             statusEl.innerHTML = isTerbit
                 ? '<span class="material-symbols-outlined text-[14px]">public</span>Terbit'
+                : isScheduled
+                ? '<span class="material-symbols-outlined text-[14px]">schedule</span>Terjadwal'
                 : '<span class="material-symbols-outlined text-[14px]">edit_document</span>Draft';
             document.getElementById('pv-kategori').textContent = d.kategori || '-';
             document.getElementById('pv-meta').textContent = [d.tanggal_terbit, d.penulis].filter(Boolean).join(' · ');

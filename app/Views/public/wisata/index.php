@@ -6,7 +6,7 @@ $base            = $base ?? '';
 require __DIR__ . '/../partials/header.php';
 ?>
 
-<div class="flex flex-col w-full overflow-hidden pb-section-v-desktop">
+<div class="flex flex-col w-full overflow-hidden pb-section-v-mobile lg:pb-section-v-desktop">
 
     <!-- Hero Section -->
     <section class="relative w-full h-[614px] min-h-[500px] flex items-center justify-center -mt-20 pt-20">
@@ -106,7 +106,7 @@ require __DIR__ . '/../partials/header.php';
     </section>
 
     <!-- Info & Map Section -->
-    <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop mt-section-v-desktop">
+    <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop mt-section-v-mobile lg:mt-section-v-desktop">
         <div class="flex flex-col lg:flex-row gap-12 items-center">
             <div class="w-full lg:w-1/3 flex flex-col gap-8">
                 <div>
@@ -139,7 +139,7 @@ require __DIR__ . '/../partials/header.php';
     </section>
 
     <!-- CTA Section -->
-    <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop mt-section-v-desktop mb-8">
+    <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop mt-section-v-mobile lg:mt-section-v-desktop mb-8">
         <div class="relative w-full rounded-3xl overflow-hidden bg-surface-container flex flex-col md:flex-row items-center border border-line-strong p-8 md:p-12">
             <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none"></div>
             <div class="flex-1 md:pr-12 text-center md:text-left z-10 mb-8 md:mb-0">

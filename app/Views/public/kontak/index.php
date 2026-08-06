@@ -23,7 +23,7 @@ require __DIR__ . '/../partials/header.php';
 <div class="flex flex-col w-full min-h-screen pb-section-v-desktop">
 
     <!-- Hero Section -->
-    <section class="relative pt-32 pb-24 md:pt-48 md:pb-32 px-container-pad-mobile lg:px-container-pad-desktop max-w-container-max mx-auto w-full">
+    <section class="relative pt-24 pb-12 md:pt-32 md:pb-16 px-container-pad-mobile lg:px-container-pad-desktop max-w-container-max mx-auto w-full">
         <div class="flex flex-col gap-6 max-w-2xl relative z-10">
             <span class="font-label-mono text-label-mono text-primary tracking-widest uppercase flex items-center gap-4">
                 <span class="w-8 h-[1px] bg-primary block"></span>

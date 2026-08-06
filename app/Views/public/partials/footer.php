@@ -17,6 +17,18 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
                 <p class="text-ink-dim text-body-md max-w-xs">
                     Mewujudkan masyarakat pekon yang mandiri, berbudaya, dan sejahtera melalui optimalisasi potensi alam.
                 </p>
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/pkpm56_airnaningan1/"
+                   target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2.5 text-ink-dim hover:text-gold-soft transition-colors group w-fit"
+                   aria-label="Ikuti kami di Instagram @pkpm56_airnaningan1">
+                    <svg class="size-5 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+                    </svg>
+                    <span class="font-label-mono text-label-mono tracking-wider">@pkpm56_airnaningan1</span>
+                </a>
             </div>
             <div class="flex flex-col gap-4">
                 <h4 class="font-h3 text-h3 text-gold-soft">Kontak Kami</h4>
@@ -43,7 +55,18 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
         </div>
         <div class="border-t border-line pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-label-mono text-ink-dim">
             <p>© <?= date('Y') ?> PEKON AIR NANINGAN. ALL RIGHTS RESERVED.</p>
-            <div class="flex gap-6">
+            <div class="flex items-center gap-6">
+                <a href="https://www.instagram.com/pkpm56_airnaningan1/"
+                   target="_blank" rel="noopener noreferrer"
+                   class="flex items-center gap-1.5 hover:text-gold-soft transition-colors group"
+                   aria-label="Instagram @pkpm56_airnaningan1">
+                    <svg class="size-4 shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+                    </svg>
+                    <span>INSTAGRAM</span>
+                </a>
                 <a class="hover:text-ink transition-colors" href="#">KEBIJAKAN PRIVASI</a>
                 <a class="hover:text-ink transition-colors" href="#">SYARAT &amp; KETENTUAN</a>
             </div>

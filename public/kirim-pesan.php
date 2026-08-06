@@ -29,6 +29,14 @@ if (mb_strlen($nama) > 100 || mb_strlen($kontak) > 150 || mb_strlen($pesan) > 50
     exit;
 }
 
+// Whitelist kategori — mencegah nilai sembarang tersimpan di JSON
+$kategoriValid = ['info', 'layanan', 'pengaduan', 'saran', 'lainnya'];
+if (!in_array($kategori, $kategoriValid, true)) {
+    http_response_code(422);
+    echo json_encode(['success' => false, 'message' => 'Kategori pesan tidak valid.']);
+    exit;
+}
+
 $item = Pesan::create([
     'nama' => $nama,
     'kontak' => $kontak,
