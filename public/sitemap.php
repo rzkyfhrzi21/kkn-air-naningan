@@ -34,7 +34,6 @@ $staticPages = [
     ['/',        'daily',   '1.0'],
     ['/profil',  'monthly', '0.9'],
     ['/umkm',    'weekly',  '0.8'],
-    ['/wisata',  'weekly',  '0.8'],
     ['/berita',  'daily',   '0.8'],
     ['/galeri',  'weekly',  '0.7'],
     ['/kontak',  'monthly', '0.6'],
@@ -74,19 +73,6 @@ if (file_exists($umkmFile)) {
             continue;
         }
         $urls .= sitemapUrl($baseUrl . '/umkm?id=' . urlencode($slug), 'monthly', '0.5');
-    }
-}
-
-// ── Wisata dinamis ────────────────────────────────────────────────────────────
-$wisataFile = __DIR__ . '/data/wisata.json';
-if (file_exists($wisataFile)) {
-    $wisataData = json_decode(file_get_contents($wisataFile), true) ?? [];
-    foreach ($wisataData as $item) {
-        $slug = trim((string) ($item['slug'] ?? $item['id'] ?? ''));
-        if ($slug === '') {
-            continue;
-        }
-        $urls .= sitemapUrl($baseUrl . '/wisata?id=' . urlencode($slug), 'monthly', '0.6');
     }
 }
 

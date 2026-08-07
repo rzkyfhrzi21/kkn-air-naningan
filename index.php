@@ -50,7 +50,6 @@ $publicRoutes = [
     ''            => ['HomeController',    'app/Controllers/HomeController.php'],
     'profil'      => ['ProfilController',  'app/Controllers/ProfilController.php'],
     'profil-desa' => ['ProfilController',  'app/Controllers/ProfilController.php'],
-    'wisata'      => ['WisataController',  'app/Controllers/WisataController.php'],
     'umkm'        => ['UmkmController',    'app/Controllers/UmkmController.php'],
     'berita'      => ['BeritaController',  'app/Controllers/BeritaController.php'],
     'galeri'      => ['GaleriController',  'app/Controllers/GaleriController.php'],
@@ -67,7 +66,6 @@ if ($seg0 === 'admin') {
     // ── Admin route map ───────────────────────────────────────────────────────
     $adminRoutes = [
         'kelola-umkm'    => 'KelolaUmkmController',
-        'kelola-wisata'  => 'KelolaWisataController',
         'kelola-galeri'  => 'KelolaGaleriController',
         'kelola-profil'  => 'KelolaProfilController',
         'kelola-berita'  => 'KelolaBeritaController',

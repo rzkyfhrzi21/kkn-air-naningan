@@ -2,7 +2,7 @@
 $currentPage     = 'beranda';
 $pageTitle       = 'Beranda | Pekon Air Naningan';
 $homepage        = $homepage ?? [];
-$metaDescription = (string) ($homepage['tagline'] ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.');
+$metaDescription = (string) ($homepage['tagline'] ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan berita pekon, dalam satu tempat.');
 $history         = $homepage['history'] ?? [];
 $hamlets         = is_array($homepage['hamlets'] ?? null) ? $homepage['hamlets'] : [];
 $livelihoods     = is_array($homepage['livelihoods'] ?? null) ? $homepage['livelihoods'] : [];
@@ -38,9 +38,6 @@ require __DIR__ . '/../partials/header.php';
             <div class="flex flex-wrap items-center gap-4">
                 <a class="inline-flex items-center justify-center bg-primary text-on-primary font-body-md font-medium px-8 py-3.5 rounded-full hover:bg-primary-fixed transition-colors" href="<?= $base ?>/profil">
                     Jelajahi Desa &rarr;
-                </a>
-                <a class="inline-flex items-center justify-center bg-surface-container-lowest text-ink font-body-md font-medium px-8 py-3.5 rounded-full border border-line hover:bg-surface-container transition-colors" href="<?= $base ?>/wisata">
-                    Wisata
                 </a>
                 <a class="inline-flex items-center justify-center bg-surface-container-lowest text-ink font-body-md font-medium px-8 py-3.5 rounded-full border border-line hover:bg-surface-container transition-colors" href="<?= $base ?>/umkm">
                     UMKM
@@ -164,7 +161,7 @@ require __DIR__ . '/../partials/header.php';
 
     <!-- Quick Links Grid -->
     <section class="pb-section-v-mobile lg:pb-section-v-desktop px-container-pad-mobile lg:px-container-pad-desktop">
-        <div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- Profil Desa -->
             <a class="group bg-surface-container rounded-xl p-6 border border-line hover:border-gold-soft/50 hover:bg-surface-container-high transition-all duration-300 flex flex-col h-full" href="<?= $base ?>/profil">
@@ -191,20 +188,6 @@ require __DIR__ . '/../partials/header.php';
                 </p>
                 <div class="flex items-center gap-2 text-gold-soft font-label-mono text-[12px] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
                     Lihat katalog <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
-                </div>
-            </a>
-
-            <!-- Wisata -->
-            <a class="group bg-surface-container rounded-xl p-6 border border-line hover:border-gold-soft/50 hover:bg-surface-container-high transition-all duration-300 flex flex-col h-full" href="<?= $base ?>/wisata">
-                <div class="w-10 h-10 rounded border border-line flex items-center justify-center text-gold-soft mb-6 group-hover:bg-gold-soft/10 transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">landscape</span>
-                </div>
-                <h4 class="font-h3 text-xl text-ink mb-3">Wisata</h4>
-                <p class="text-body-md font-body-md text-ink-dim mb-8 flex-grow">
-                    <?= number_format((int) ($homepage['tourism_count'] ?? 0), 0, ',', '.') ?> titik wisata alam di sekitar lereng Tanggamus.
-                </p>
-                <div class="flex items-center gap-2 text-gold-soft font-label-mono text-[12px] uppercase tracking-wider group-hover:translate-x-1 transition-transform">
-                    Jelajahi <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </div>
             </a>
 

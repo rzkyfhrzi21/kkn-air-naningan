@@ -8,8 +8,8 @@ loadEnv(dirname(__DIR__, 4) . '/.env');
 
 $pageTitle       = $pageTitle       ?? 'Pekon Air Naningan';
 $currentPage     = $currentPage     ?? 'beranda';
-$metaDescription = $metaDescription ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan potensi wisata alam, dalam satu tempat.';
-$metaKeywords    = $metaKeywords    ?? 'Pekon Air Naningan, profil desa, UMKM, wisata, galeri, berita desa, Tanggamus';
+$metaDescription = $metaDescription ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan berita pekon, dalam satu tempat.';
+$metaKeywords    = $metaKeywords    ?? 'Pekon Air Naningan, profil desa, UMKM, galeri, berita desa, Tanggamus';
 $metaImage       = $metaImage       ?? '';
 
 // Deteksi base path
@@ -35,7 +35,6 @@ $navLinks = [
     ['beranda',    'Beranda',    $base . '/'],
     ['profil-desa','Profil Desa',$base . '/profil'],
     ['umkm',       'UMKM',      $base . '/umkm'],
-    ['wisata',     'Wisata',    $base . '/wisata'],
     ['berita',     'Berita',    $base . '/berita'],
     ['galeri',     'Galeri',    $base . '/galeri'],
     ['kontak',     'Kontak',    $base . '/kontak'],

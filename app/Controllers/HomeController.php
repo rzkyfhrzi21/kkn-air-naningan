@@ -44,7 +44,6 @@ final class HomeController
             'history' => $history,
             'livelihoods' => $livelihoods,
             'umkm_count' => is_array($datasets['umkm'] ?? null) ? count($datasets['umkm']) : 0,
-            'tourism_count' => is_array($datasets['wisata'] ?? null) ? count($datasets['wisata']) : 0,
         ];
 
         require __DIR__ . '/../Views/public/home/index.php';

@@ -58,20 +58,6 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </div>
 
-        <!-- Wisata -->
-        <div class="bg-surface-container p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden group border border-line hover:border-line-strong transition-colors">
-                        <div class="flex items-center justify-between relative z-10">
-                <span class="font-label-mono text-label-mono text-ink-dim uppercase tracking-widest">Destinasi Wisata</span>
-                <div class="w-10 h-10 rounded-full bg-surface-2 flex items-center justify-center border border-line text-primary">
-                    <span class="material-symbols-outlined text-[20px]">landscape</span>
-                </div>
-            </div>
-            <div class="flex items-baseline gap-2 relative z-10">
-                <span class="font-h2 text-h2 text-ink"><?= number_format($summaries['wisata'] ?? 0) ?></span>
-                <span class="font-body-md text-[13px] text-ink-dim">lokasi</span>
-            </div>
-        </div>
-
         <!-- Galeri -->
         <div class="bg-surface-container p-6 rounded-2xl flex flex-col gap-4 relative overflow-hidden group border border-line hover:border-line-strong transition-colors">
                         <div class="flex items-center justify-between relative z-10">
@@ -144,7 +130,6 @@ require __DIR__ . '/../partials/header.php';
                 $menuItems = [
                     ['kelola-umkm',   'storefront',          'UMKM',         $summaries['umkm']    ?? 0],
                     ['kelola-berita', 'newspaper',           'Berita',        $summaries['berita']  ?? 0],
-                    ['kelola-wisata', 'landscape',           'Wisata',        $summaries['wisata']  ?? 0],
                     ['kelola-galeri', 'photo_library',       'Galeri',        $summaries['galeri']  ?? 0],
                 ];
                 foreach ($menuItems as [$slug, $icon, $label, $count]):

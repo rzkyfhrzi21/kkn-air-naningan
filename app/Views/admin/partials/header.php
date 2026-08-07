@@ -18,7 +18,6 @@ $navItems = [
     ['overview',      'dashboard',          'Overview'],
     ['kelola-profil', 'info',               'Kelola Profil'],
     ['kelola-umkm',   'storefront',         'Kelola UMKM'],
-    ['kelola-wisata', 'landscape',          'Kelola Wisata'],
     ['kelola-berita', 'newspaper',          'Kelola Berita'],
     ['kelola-galeri', 'photo_library',      'Kelola Galeri'],
     ['pesan-masuk',   'mail',               'Pesan Masuk'],
