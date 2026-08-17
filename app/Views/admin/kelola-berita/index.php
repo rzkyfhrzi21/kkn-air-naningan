@@ -1,4 +1,23 @@
 <?php
+/* ======================================================
+   HALAMAN KELOLA BERITA (MENULIS & MENGATUR ARTIKEL)
+
+   Halaman ini adalah "meja kerja redaksi" panel admin.
+   Dari sini admin bisa:
+   - Melihat jumlah berita (total, terbit, draft),
+   - Menulis berita baru atau mengedit berita lama,
+   - Menghapus berita,
+   - Melihat pratinjau (preview) tampilan berita.
+
+   Data berita disimpan di file JSON dan dipanggil melalui
+   Model Berita. Daftar berita TIDAK dirender langsung oleh
+   PHP — tabelnya dikosongkan lalu diisi oleh JavaScript
+   melalui AJAX (lihat blok <script> di bagian bawah).
+
+   Variabel yang dipakai:
+   - $kategoriList : daftar kategori berita untuk dropdown
+   - $csrf         : token pengaman (CSRF) untuk form
+====================================================== */
 $pageTitle = 'Kelola Berita';
 $activeNav = 'kelola-berita';
 $base = defined('APP_BASE') ? APP_BASE : '';
@@ -7,6 +26,15 @@ require __DIR__ . '/../partials/header.php';
 ?>
 <div class="flex flex-col w-full">
 
+    <!-- ======================================================
+         JUDUL HALAMAN + TOMBOL "TULIS BERITA BARU"
+
+         Bagian paling atas halaman. Menampilkan judul
+         "Kelola Berita" dan tombol utama berwarna emas.
+         Saat tombol "Tulis Berita Baru" diklik, JavaScript
+         akan membuka modal editor kosong (id btn-create-news
+         → openEditor('create')).
+    ====================================================== -->
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pt-10 px-container-pad-mobile lg:px-container-pad-desktop">
         <div class="flex flex-col gap-2 max-w-2xl">
@@ -22,6 +50,19 @@ require __DIR__ . '/../partials/header.php';
     <!-- News List -->
     <div class="w-full px-container-pad-mobile lg:px-container-pad-desktop pt-10 pb-section-v-desktop flex flex-col gap-6">
 
+        <!-- ======================================================
+             KARTU STATISTIK BERITA (3 KARTU ANGKA)
+
+             Tiga kotak ringkasan yang awalnya bertuliskan "—"
+             dan akan diisi oleh JavaScript setelah data datang
+             dari server (lihat fungsi loadList di <script>):
+             - id="stat-total"  → jumlah seluruh berita
+             - id="stat-terbit" → jumlah berita berstatus Terbit
+             - id="stat-draft"  → jumlah berita berstatus Draft
+
+             Angkanya diambil dari jawaban JSON endpoint
+             list-berita (kolom stat_total, stat_terbit, stat_draft).
+        ====================================================== -->
         <!-- Stats Card -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
@@ -53,6 +94,20 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </div>
 
+        <!-- ======================================================
+             GRAFIK STATISTIK BERITA (SEBARAN KATEGORI & STATUS)
+
+             Dua grafik yang digambar oleh pustaka ApexCharts:
+             1) "Sebaran Kategori" (id chart-kategori) → grafik
+                batang berapa banyak berita di tiap kategori.
+             2) "Status Publikasi" (id chart-status) → grafik
+                donat perbandingan berita Terbit vs Draft.
+
+             Data grafik diminta lewat AJAX ke endpoint
+             admin/ajax/chart-berita, lalu digambar oleh
+             JavaScript (fungsi loadChart). Kotak grafik masih
+             kosong sampai data datang.
+        ====================================================== -->
         <!-- Statistik Berita -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <section class="lg:col-span-2 bg-surface rounded-2xl border border-line p-5 md:p-6" aria-labelledby="berita-category-chart-title">
@@ -68,6 +123,24 @@ require __DIR__ . '/../partials/header.php';
             </section>
         </div>
 
+        <!-- ======================================================
+             KOTAK CARI + FILTER BERITA
+
+             Alat bantu untuk menyaring daftar berita:
+             - Kotak "Cari judul berita..." (id search-berita):
+               setiap ketikan menunggu 0,3 detik lalu meminta
+               ulang data (agar tidak membebani server).
+             - Dropdown Kategori (id filter-kategori): isinya
+               dibuat lewat foreach pada $kategoriList, satu
+               <option> untuk satu kategori.
+             - Dropdown Status (id filter-status): pilihan
+               tetap Terbit / Draft.
+             - Tombol "Reset" (id btn-reset-filter): mengosongkan
+               semua filter dan menampilkan semua berita lagi.
+
+             Semua filter dikirim ke endpoint list-berita
+             bersama permintaan data.
+        ====================================================== -->
         <!-- Filter & Search -->
         <div class="p-5 bg-surface-container rounded-2xl border border-line flex flex-col sm:flex-row gap-4 items-center justify-between">
             <div class="relative w-full sm:w-80">
@@ -98,6 +171,14 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </div>
 
+        <!-- ======================================================
+             BARIS JUDUL KOLOM DAFTAR BERITA
+
+             Sekadar penanda nama kolom (tidak berisi data):
+             No, Judul Berita, Kategori, Status, Tanggal, Aksi.
+             Baris data aslinya diisi oleh JavaScript ke dalam
+             wadah #berita-tbody di bawah (lihat blok <script>).
+        ====================================================== -->
         <!-- Table Header -->
         <div class="hidden sm:grid grid-cols-12 gap-4 px-8 py-4 border-b border-line bg-surface-container-lowest font-label-mono text-[10px] text-ink-dim uppercase tracking-widest">
             <div class="col-span-1">No</div>
@@ -108,11 +189,35 @@ require __DIR__ . '/../partials/header.php';
             <div class="col-span-1 text-right">Aksi</div>
         </div>
 
+        <!-- ======================================================
+             WADAH DAFTAR BERITA (ISI DARI JAVASCRIPT)
+
+             Div kosong ini adalah "panggung" tempat daftar
+             berita ditampilkan. JavaScript memanggil endpoint
+             admin/ajax/list-berita lalu menggambar 1 baris
+             kartu untuk setiap berita dengan data kolom:
+             - row.judul / row.ringkasan / row.kategori
+             - row.status & row.is_published / row.is_scheduled
+             - row.tanggal_terbit
+             - row.foto_sampul (gambar sampul berita, diambil
+               dari folder uploads/ — path digabung dengan $base)
+             - tombol Preview (lihat isi) & Hapus per baris
+        ====================================================== -->
         <!-- News Items -->
         <div id="berita-tbody" class="divide-y divide-line">
             <!-- Data loaded via JS -->
         </div>
 
+        <!-- ======================================================
+             NAVIGASI HALAMAN (PREV / NEXT)
+
+             Daftar berita dibatasi 10 per halaman. Teks
+             "Menampilkan X–Y dari Z berita" ada di
+             id="berita-meta", tombol Prev (btn-prev) dan
+             Next (btn-next) untuk berpindah halaman. Tombol
+             akan otomatis mati (disabled) bila sudah di
+             halaman pertama/terakhir.
+        ====================================================== -->
         <!-- Pagination -->
         <div class="p-6 border-t border-line flex items-center justify-between text-ink-dim font-label-mono text-[11px]">
             <span id="berita-meta">Menampilkan 0 data</span>
@@ -128,8 +233,31 @@ require __DIR__ . '/../partials/header.php';
     </div>
 </div>
 
+<!-- ======================================================
+     NOTIFIKASI TOAST (PEMBERITAHUAN)
+
+     Saat admin menyimpan / menghapus berita, muncul kotak
+     notifikasi kecil di pojok kanan atas (toast) berisi
+     pesan dari server, misalnya "Berita berhasil
+     ditambahkan." atau "Gagal menyimpan." Kotak toast ini
+     dibuat oleh fungsi window.showAdminToast() yang berada
+     di file footer admin, jadi semua halaman admin memakai
+     notifikasi yang sama.
+====================================================== -->
 <!-- Toast -->
 
+<!-- ======================================================
+     MODAL KONFIRMASI HAPUS BERITA
+
+     Jendela popup (modal) yang muncul saat admin menekan
+     tombol hapus. Berfungsi seperti bertanya sekali lagi
+     "Anda yakin?" agar berita tidak terhapus tidak sengaja.
+     - Judul berita yang akan dihapus ditulis ke id="hapus-nama"
+     - Tombol "Batal" (hapus-batal) → menutup modal
+     - Tombol "Hapus" (hapus-ya) → mengirim permintaan hapus
+       via AJAX ke endpoint admin/ajax/delete-berita bersama
+       token CSRF, lalu daftar dimuat ulang.
+====================================================== -->
 <!-- Modal Hapus -->
 <div id="modal-hapus" data-modal class="fixed inset-0 z-[80] hidden items-center justify-center">
     <div id="modal-hapus-backdrop" class="absolute inset-0 bg-scrim/40 backdrop-blur-sm"></div>
@@ -148,6 +276,37 @@ require __DIR__ . '/../partials/header.php';
     </div>
 </div>
 
+<!-- ======================================================
+     MODAL EDITOR BERITA (TAMBAH / EDIT DALAM SATU FORM)
+
+     Popup besar berisi formulir lengkap untuk menulis berita
+     baru ATAU mengedit berita lama (mode ditentukan lewat
+     input tersembunyi id="berita-id": kosong = tambah baru,
+     berisi ID = edit).
+
+     Daftar kolom isian (input) dalam formulir:
+     - Judul (berita-judul, name="judul")            : wajib
+     - Kategori (berita-kategori, name="kategori")   : wajib,
+       dengan daftar saran dari foreach $kategoriList
+     - Tanggal Publikasi (berita-tanggal, name="tanggal_terbit")
+     - Ringkasan (berita-ringkasan, name="ringkasan") : wajib
+     - Penulis (berita-penulis, name="penulis")
+     - Tag (berita-tags, name="tags")
+     - Gambar Sampul (berita-foto-file, name="foto_file"):
+       upload foto, wajib di bawah 2MB (diperiksa JavaScript
+       dan server). Foto lama tampil di id="berita-foto-old-img"
+     - Isi Berita: editor teks (id="rte-berita") dengan
+       toolbar format (tebal, miring, subjudul, kutipan,
+       daftar, tautan). Hasilnya disalin ke textarea
+       tersembunyi name="konten" (berita-konten).
+
+     Tiga tombol di bawah:
+     - "Simpan Draft" (btn-save-draft)   → status = draft
+     - "Publikasikan" (btn-save-publish) → status = terbit
+     Keduanya mengirim formulir via fetch() POST ke endpoint
+     admin/ajax/store-berita bersama token CSRF
+     (name="csrf_token" diisi nilai $csrf dari PHP).
+====================================================== -->
 <!-- Modal Editor (Tambah / Edit) -->
 <div id="modal-editor" data-modal class="fixed inset-0 z-[70] hidden items-center justify-center">
     <div id="modal-editor-backdrop" class="absolute inset-0 bg-scrim/40 backdrop-blur-sm"></div>
@@ -262,6 +421,26 @@ require __DIR__ . '/../partials/header.php';
     </div>
 </div>
 
+<!-- ======================================================
+     MODAL PRATINJAU (PREVIEW) BERITA
+
+     Popup yang menampilkan "wajah jadi" sebuah berita
+     sebelum dipublikasikan — seperti melihat hasil cetak
+     koran. Muncul saat admin mengklik ikon mata pada salah
+     satu baris daftar.
+
+     Data diambil lewat AJAX dari endpoint
+     admin/ajax/get-berita lalu diisikan ke:
+     - pv-status    : label Terbit / Terjadwal / Draft
+     - pv-kategori  : nama kategori berita
+     - pv-judul     : judul berita
+     - pv-meta      : tanggal terbit & penulis
+     - pv-foto      : gambar sampul (folder uploads/)
+     - pv-konten    : isi berita lengkap
+
+     Dari sini admin bisa langsung "Edit Berita" (pv-edit)
+     kembali ke modal editor, atau "Hapus" (pv-hapus).
+====================================================== -->
 <!-- Modal Preview -->
 <div id="modal-preview" data-modal class="fixed inset-0 z-[70] hidden items-center justify-center">
     <div id="modal-preview-backdrop" class="absolute inset-0 bg-scrim/40 backdrop-blur-sm"></div>
@@ -296,8 +475,16 @@ require __DIR__ . '/../partials/header.php';
     </div>
 </div>
 
+<!-- ======================================================
+     ATURAN TAMPILAN TAMBAHAN (CSS KECIL)
+
+     Gaya pelengkap yang tidak bisa dibuat pakai Tailwind:
+     - tombol toolbar editor teks (rte-btn) saat ditekan,
+     - tampilan paragraf/judul/kutipan dalam editor dan preview,
+     - teks bayangan "Tulis isi berita di sini..." saat
+       editor masih kosong.
+====================================================== -->
 <style>
-    #pv-konten p { margin: 1em 0; }
     .rte-btn { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 0.5rem; color: var(--color-ink-dim, #64748b); transition: background-color .15s, color .15s; }
     .rte-btn:hover { background-color: var(--color-surface-container-highest, #e2e8f0); color: var(--color-ink, #0f172a); }
     .rte-btn[data-active="true"] { background-color: var(--color-primary-container, rgba(31,88,74,.15)); color: var(--color-primary, #1f584a); }

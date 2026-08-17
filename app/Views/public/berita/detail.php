@@ -1,4 +1,18 @@
 <?php
+/* ======================================================
+   HALAMAN DETAIL BERITA (MEMBACA SATU ARTIKEL UTUH)
+
+   Halaman ini ibarat membuka satu lembar koran: pengunjung
+   mengeklik judul berita di daftar, lalu halaman ini muncul
+   untuk membacanya dari awal sampai akhir.
+
+   Data yang dikirim Controller (BeritaController::detail()):
+   - $berita  : data 1 artikel yang sedang dibaca. Kolom yang
+                dipakai: judul, kategori, penulis, tanggal_terbit,
+                ringkasan, konten, tags, foto_sampul
+   - $terkait : daftar artikel lain (satu artikel terbaru per
+                kategori) untuk ditampilkan di sidebar
+====================================================== */
 /**
  * View: Detail Berita
  *
@@ -29,15 +43,42 @@ $bulan = ['01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Me
 $tglParts   = explode('-', $berita['tanggal_terbit'] ?? date('Y-m-d'));
 $tglFormatted = ($tglParts[2] ?? '') . ' ' . ($bulan[$tglParts[1] ?? ''] ?? '') . ' ' . ($tglParts[0] ?? '');
 
-$pageTitle       = htmlspecialchars($berita['judul'], ENT_QUOTES, 'UTF-8') . ' — Pekon Air Naningan';
+$pageTitle       = (string) $berita['judul'] . ' | Pekon Air Naningan';
 $currentPage     = 'berita';
-$metaDescription = htmlspecialchars($berita['ringkasan'] ?? '', ENT_QUOTES, 'UTF-8');
+$metaDescription = (string) ($berita['ringkasan'] ?? '');
+$metaKeywords    = implode(', ', array_filter(array_map('strval', (array) ($berita['tags'] ?? []))));
+$metaImage       = (string) ($berita['foto_sampul'] ?? '');
+$articleSchema   = [
+    'slug'          => (string) ($berita['slug'] ?? ''),
+    'headline'      => (string) ($berita['judul'] ?? ''),
+    'datePublished' => (string) ($berita['tanggal_terbit'] ?? ''),
+    'dateModified'  => (string) ($berita['updated_at'] ?? $berita['tanggal_terbit'] ?? ''),
+    'author'        => (string) ($berita['penulis'] ?? 'Admin Pekon'),
+    'section'       => (string) ($berita['kategori'] ?? 'Berita Pekon'),
+    'keywords'      => (array) ($berita['tags'] ?? []),
+];
 
 require __DIR__ . '/../partials/header.php';
 ?>
 
 <div class="flex flex-col w-full">
 
+    <!-- ======================================================
+         BREADCRUMB & JUDUL ARTIKEL
+
+         "Breadcrumb" adalah jejak lokasi seperti: Beranda /
+         Berita / Judul Artikel. Fungsinya seperti peta kecil
+         agar pengunjung tahu sedang berada di halaman mana
+         dan bisa kembali ke Beranda atau daftar Berita.
+
+         Data yang ditampilkan:
+         - $berita['judul']    : judul artikel
+         - $berita['kategori'] : kategori artikel (label bulat)
+         - $berita['penulis']  : nama penulis artikel
+         - $tglFormatted       : tanggal terbit yang sudah
+           diubah dari format "2024-08-12" menjadi
+           "12 Agustus 2024" lewat array $bulan di atas
+    ====================================================== -->
     <!-- ── Breadcrumb & Judul ─────────────────────────────────────────────── -->
     <section class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop pt-8 pb-10 w-full">
 
@@ -73,6 +114,17 @@ require __DIR__ . '/../partials/header.php';
         </div>
     </section>
 
+    <!-- ======================================================
+         FOTO SAMPUL ARTIKEL (GAMBAR PEMBUKA BESAR)
+
+         Foto utama artikel ditampilkan besar di bawah judul.
+         - File diambil dari kolom $berita['foto_sampul']
+           (folder uploads/konten/ lewat pembantu mediaUrl()).
+         - Jika file kosong, tampil ikon koran sebagai pengganti.
+         - Jika foto gagal dimuat, otomatis diganti gambar
+           placeholder (assets/images/placeholder.webp).
+         - Di bawah foto ada keterangan judul artikel.
+    ====================================================== -->
     <!-- ── Foto Sampul ────────────────────────────────────────────────────── -->
     <section class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop w-full mb-14">
         <div class="w-full h-[340px] md:h-[520px] rounded-xl overflow-hidden relative shadow-2xl bg-surface-container-highest">
@@ -96,11 +148,29 @@ require __DIR__ . '/../partials/header.php';
         </div>
     </section>
 
+    <!-- ======================================================
+         ISI ARTIKEL + SIDEBAR (DUA KOLOM)
+
+         Bagian ini dibagi 2 kolom memakai grid-cols-12:
+         - Kolom kiri (8 dari 12) : isi artikel yang dibaca
+         - Kolom kanan (4 dari 12) : daftar "Berita Terbaru"
+         Di layar HP (grid-cols-1) keduanya menumpuk ke bawah.
+    ====================================================== -->
     <!-- ── Konten Artikel + Sidebar ──────────────────────────────────────── -->
     <section class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop
                     w-full pb-section-v-mobile lg:pb-section-v-desktop
                     grid grid-cols-1 lg:grid-cols-12 gap-gutter">
 
+        <!-- ======================================================
+             ARTIKEL UTAMA (RINGKASAN + ISI LENGKAP)
+
+             - $berita['ringkasan'] : paragraf pembuka yang
+               diberi garis kuning di samping kiri
+             - $berita['konten']    : isi artikel lengkap. Isi
+               ini sudah dibersihkan dari kode berbahaya oleh
+               Model::sanitizeHtml() (hanya menyisakan tag aman
+               seperti h2, h3, blockquote, a, ul, ol).
+        ====================================================== -->
         <!-- ── Artikel Utama ──────────────────────────────────────────────── -->
         <article class="lg:col-span-8 flex flex-col gap-6 font-body-lg text-body-lg text-ink leading-relaxed">
 
@@ -117,6 +187,17 @@ require __DIR__ . '/../partials/header.php';
                 </div>
             <?php endif; ?>
 
+            <!-- ======================================================
+                 TAGS & TOMBOL BAGIKAN
+
+                 - Tags : sistem mengambil daftar dari kolom
+                   $berita['tags'], lalu foreach membuat 1 tautan
+                   per tag yang mengarah ke daftar berita dengan
+                   filter tag tersebut (?tag=...).
+                 - Bagikan : tombol berbagi memakai fitur bawaan
+                   HP (navigator.share) jika didukung; jika tidak,
+                   tautan halaman disalin ke papan klip.
+            ====================================================== -->
             <!-- ── Tags & Share ─────────────────────────────────────────── -->
             <div class="mt-10 pt-6 border-t border-line-strong flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <?php $tags = $berita['tags'] ?? []; ?>
@@ -141,6 +222,12 @@ require __DIR__ . '/../partials/header.php';
                 </div>
             </div>
 
+            <!-- ======================================================
+                 TOMBOL KEMBALI KE DAFTAR BERITA
+
+                 Tautan sederhana "Semua Berita" untuk kembali ke
+                 halaman daftar berita (alamat $base . '/berita').
+            ====================================================== -->
             <!-- ── Navigasi Prev/Next ──────────────────────────────────── -->
             <div class="mt-4">
                 <a href="<?= htmlspecialchars($base . '/berita', ENT_QUOTES) ?>"
@@ -151,9 +238,31 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </article>
 
+        <!-- ======================================================
+             SIDEBAR — KOTAK "BERITA TERBARU"
+
+             Kolom samping ini berisi 1 artikel terbaru dari
+             setiap kategori ($terkait). Berguna agar pembaca
+             bisa pindah ke artikel lain tanpa harus kembali ke
+             daftar berita.
+        ====================================================== -->
         <!-- ── Sidebar ────────────────────────────────────────────────────── -->
         <aside class="lg:col-span-4 flex flex-col gap-8 mt-10 lg:mt-0">
 
+            <!-- ======================================================
+                 DAFTAR ARTIKEL TERKAIT (PERULANGAN foreach)
+
+                 Sistem memeriksa semua artikel di $terkait satu
+                 per satu, lalu membuat 1 baris tautan untuk tiap
+                 artikel. Kolom yang dipakai:
+                 - $item['foto_sampul'] : foto kecil (folder
+                   uploads/konten/, lewat mediaUrl())
+                 - $item['kategori']    : label kategori
+                 - $item['judul']       : judul artikel
+                 - $item['tanggal_terbit'] : tanggal (diubah ke
+                   format "12 Agustus 2024" memakai array $bulan)
+                 Setiap baris menautkan ke halaman detail artikel.
+            ====================================================== -->
             <!-- Berita terbaru, satu dari setiap kategori -->
             <div class="bg-surface-container rounded-xl p-6 border border-line shadow-sm">
                 <h3 class="text-h3 font-h3 text-gold-soft mb-6 flex items-center gap-2">

@@ -2,85 +2,97 @@
 
 declare(strict_types=1);
 
-/**
- * sitemap.php — Sitemap XML dinamis untuk Pekon Air Naningan
- * Generate otomatis dari data JSON yang tersedia.
- */
-
 require_once __DIR__ . '/../includes/env.php';
+require_once __DIR__ . '/../app/Models/Berita.php';
+
 loadEnv(__DIR__ . '/../.env');
 
 $baseUrl = rtrim((string) env('APP_URL', 'https://pekon-air-naningan.web.id'), '/');
 
-// Helper: tulis satu <url> entry
-function sitemapUrl(string $loc, string $changefreq = 'weekly', string $priority = '0.8', string $lastmod = ''): string
+/** @return string ISO 8601 date accepted by sitemap parsers. */
+function sitemapDate(string $value, string $fallbackFile = ''): string
 {
-    $entry  = '  <url>' . PHP_EOL;
-    $entry .= '    <loc>' . htmlspecialchars($loc, ENT_XML1, 'UTF-8') . '</loc>' . PHP_EOL;
-    if ($lastmod !== '') {
-        $entry .= '    <lastmod>' . htmlspecialchars($lastmod, ENT_XML1) . '</lastmod>' . PHP_EOL;
+    $timestamp = $value !== '' ? strtotime($value) : false;
+    if ($timestamp === false && $fallbackFile !== '' && is_file($fallbackFile)) {
+        $timestamp = filemtime($fallbackFile);
     }
-    $entry .= '    <changefreq>' . $changefreq . '</changefreq>' . PHP_EOL;
-    $entry .= '    <priority>' . $priority . '</priority>' . PHP_EOL;
-    $entry .= '  </url>' . PHP_EOL;
-    return $entry;
+
+    return $timestamp === false ? '' : date('c', $timestamp);
 }
 
-// Kumpulkan semua URL
-$urls = '';
+/** @return string Waktu modifikasi terbaru di antara daftar file. */
+function sitemapNewest(string $directory): string
+{
+    $newest = 0;
+    foreach (glob($directory . '/*.json') ?: [] as $file) {
+        $mtime = filemtime($file);
+        if ($mtime !== false && $mtime > $newest) {
+            $newest = $mtime;
+        }
+    }
 
-// ── Halaman statis ──────────────────────────────────────────────────────────
+    return $newest > 0 ? date('c', $newest) : '';
+}
+
+function sitemapEntry(
+    string $location,
+    string $lastModified = '',
+    string $changeFrequency = 'weekly',
+    string $priority = '0.5',
+    string $image = ''
+): string {
+    $xml  = "  <url>\n    <loc>" . htmlspecialchars($location, ENT_XML1, 'UTF-8') . "</loc>\n";
+    if ($lastModified !== '') {
+        $xml .= '    <lastmod>' . htmlspecialchars($lastModified, ENT_XML1, 'UTF-8') . "</lastmod>\n";
+    }
+    $xml .= '    <changefreq>' . $changeFrequency . "</changefreq>\n";
+    $xml .= '    <priority>' . $priority . "</priority>\n";
+    if ($image !== '') {
+        $xml .= "    <image:image>\n";
+        $xml .= '      <image:loc>' . htmlspecialchars($image, ENT_XML1, 'UTF-8') . "</image:loc>\n";
+        $xml .= "    </image:image>\n";
+    }
+
+    return $xml . "  </url>\n";
+}
+
+$dataDir = __DIR__ . '/data';
+$assetsDir = $baseUrl . '/assets/images';
 $staticPages = [
-    ['/',        'daily',   '1.0'],
-    ['/profil',  'monthly', '0.9'],
-    ['/umkm',    'weekly',  '0.8'],
-    ['/berita',  'daily',   '0.8'],
-    ['/galeri',  'weekly',  '0.7'],
-    ['/kontak',  'monthly', '0.6'],
+    ['/', sitemapNewest($dataDir), 'daily', '1.0', $assetsDir . '/logo.jpg'],
+    ['/profil', sitemapDate('', $dataDir . '/profil.json'), 'monthly', '0.8', ''],
+    ['/umkm', sitemapDate('', $dataDir . '/umkm.json'), 'weekly', '0.8', ''],
+    ['/berita', sitemapDate('', $dataDir . '/berita.json'), 'daily', '0.8', ''],
+    ['/galeri', sitemapDate('', $dataDir . '/galeri.json'), 'weekly', '0.7', ''],
+    ['/kontak', '', 'monthly', '0.7', ''],
 ];
 
-$profilJson = __DIR__ . '/data/profil.json';
-$updatedAt  = file_exists($profilJson) ? date('Y-m-d', filemtime($profilJson)) : date('Y-m-d');
-
-foreach ($staticPages as [$path, $freq, $prio]) {
-    $urls .= sitemapUrl($baseUrl . $path, $freq, $prio, $updatedAt);
+$urls = '';
+foreach ($staticPages as [$path, $lastmod, $frequency, $priority, $image]) {
+    $urls .= sitemapEntry(
+        $baseUrl . ($path === '/' ? '/' : $path),
+        $lastmod,
+        $frequency,
+        $priority,
+        $image
+    );
 }
 
-// ── Berita dinamis ───────────────────────────────────────────────────────────
-require_once dirname(__DIR__) . '/app/Models/Berita.php';
-foreach (Berita::published() as $item) {
-        $slug = trim((string) ($item['slug'] ?? $item['id'] ?? ''));
-        if ($slug === '') {
-            continue;
-        }
-        $lastmod = '';
-        if (!empty($item['tanggal_terbit'])) {
-            $ts = strtotime((string) $item['tanggal_terbit']);
-            if ($ts !== false) {
-                $lastmod = date('Y-m-d', $ts);
-            }
-        }
-        $urls .= sitemapUrl($baseUrl . '/berita/' . rawurlencode($slug), 'monthly', '0.6', $lastmod);
-}
-
-// ── UMKM dinamis ─────────────────────────────────────────────────────────────
-$umkmFile = __DIR__ . '/data/umkm.json';
-if (file_exists($umkmFile)) {
-    $umkmData = json_decode(file_get_contents($umkmFile), true) ?? [];
-    foreach ($umkmData as $item) {
-        $slug = trim((string) ($item['slug'] ?? $item['id'] ?? ''));
-        if ($slug === '') {
-            continue;
-        }
-        $urls .= sitemapUrl($baseUrl . '/umkm?id=' . urlencode($slug), 'monthly', '0.5');
+foreach (Berita::published() as $article) {
+    $slug = trim((string) ($article['slug'] ?? ''));
+    if ($slug === '') {
+        continue;
     }
+
+    $lastModified = sitemapDate((string) ($article['updated_at'] ?? $article['tanggal_terbit'] ?? ''));
+    $urls .= sitemapEntry($baseUrl . '/berita/' . rawurlencode($slug), $lastModified, 'monthly', '0.6', '');
 }
 
-// ── Output XML ───────────────────────────────────────────────────────────────
 header('Content-Type: application/xml; charset=utf-8');
-header('X-Robots-Tag: noindex'); // Sitemap sendiri tidak perlu diindex
+header('X-Content-Type-Options: nosniff');
 
-echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
-echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . PHP_EOL;
+echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+   . ' xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">' . "\n";
 echo $urls;
-echo '</urlset>' . PHP_EOL;
+echo '</urlset>' . "\n";

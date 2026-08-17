@@ -1,4 +1,17 @@
 <?php
+/* ======================================================
+   HALAMAN KELOLA GALERI (FOTO & VIDEO DESA)
+
+   Halaman ini adalah "album foto & video" panel admin.
+   Dari sini admin bisa:
+   - Melihat daftar media galeri foto dan video,
+   - Mengunggah foto baru (maks 2MB, JPG/PNG/GIF/WebP) atau video baru (maks 15MB, MP4/WebM/MOV),
+   - Menghapus media galeri,
+   - Memutar video atau memperbesar foto lewat modal preview.
+
+   Tabel data galeri diisi secara interaktif oleh JavaScript via AJAX (list-galeri.php).
+====================================================== */
+
 $pageTitle = 'Kelola Galeri';
 $activeNav = 'kelola-galeri';
 require __DIR__ . '/../partials/header.php';
@@ -7,6 +20,7 @@ $csrf     = (string) ($_SESSION['csrf_token'] ?? '');
 $base     = defined('APP_BASE') ? APP_BASE : '';
 $kategori = $kategori ?? Galeri::KATEGORI;
 ?>
+
 <div class="flex flex-col w-full px-container-pad-mobile lg:px-container-pad-desktop pb-section-v-desktop gap-10">
 
 

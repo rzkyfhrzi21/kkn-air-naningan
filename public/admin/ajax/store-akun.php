@@ -2,8 +2,26 @@
 
 declare(strict_types=1);
 
+/* ======================================================
+   ENDPOINT AJAX: SIMPAN AKUN ADMIN (FORM EDIT PROFIL AKUN ADMIN)
+
+   File ini ibarat "petugas pendaftaran ulang pegawai":
+   saat admin mengubah nama lengkap, username, nomor WhatsApp, email,
+   foto profil, atau password pada halaman Profil Admin, file ini dipanggil via AJAX.
+
+   Alur kerjanya:
+   (1) Memeriksa sesi login admin & token keamanan CSRF.
+   (2) Mengambil data kredensial akun admin dari Model Akun.
+   (3) Validasi input: Nama lengkap, Username (format & panjang), WhatsApp (format 62), Email.
+   (4) Validasi perubahan password (jika diisi: password lama, password baru >= 8 karakter, konfirmasi).
+   (5) Proses upload foto profil ke folder `uploads/admin/` (validasi MIME & hapus foto lama).
+   (6) Memperbarui file JSON `secure/admin_credentials.json` via Model Akun.
+   (7) Mengirimkan balasan JSON sukses/gagal.
+====================================================== */
+
 header('Content-Type: application/json; charset=utf-8');
 
+// (1) Cek Sesi Admin & Metode POST
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -20,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Cek Token Keamanan CSRF
 $csrf = (string) ($_POST['csrf_token'] ?? '');
 if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
     http_response_code(403);
@@ -29,6 +48,7 @@ if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['cs
 
 require_once __DIR__ . '/../../../app/Models/Akun.php';
 
+// (2) Ambil data kredensial saat ini dari Model Akun
 $creds = Akun::get();
 if ($creds === []) {
     http_response_code(500);
@@ -36,8 +56,7 @@ if ($creds === []) {
     exit;
 }
 
-// ── Username ─────────────────────────────────────────────────────────────────
-// ── Nama lengkap ────────────────────────────────────────────────────────────
+// (3) Validasi Nama Lengkap & Username
 $namaLengkap = trim((string) ($_POST['nama_lengkap'] ?? ''));
 if ($namaLengkap === '') {
     echo json_encode(['success' => false, 'message' => 'Nama lengkap wajib diisi.']);
@@ -58,7 +77,7 @@ if (!preg_match('/^[a-zA-Z0-9_.-]{3,32}$/', $username)) {
     exit;
 }
 
-// ── WhatsApp ─────────────────────────────────────────────────────────────────
+// Validasi & Format WhatsApp (dirapikan ke 62)
 $whatsappRaw = preg_replace('/\D/', '', (string) ($_POST['whatsapp'] ?? ''));
 if ($whatsappRaw === '') {
     $whatsapp = '';
@@ -73,14 +92,14 @@ if ($whatsappRaw === '') {
     exit;
 }
 
-// ── Email ────────────────────────────────────────────────────────────────────
+// Validasi Email
 $email = trim((string) ($_POST['email'] ?? ''));
 if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(['success' => false, 'message' => 'Alamat email tidak valid.']);
     exit;
 }
 
-// ── Password (opsional) ──────────────────────────────────────────────────────
+// (4) Validasi Penggantian Password (opsional)
 $currentPass = (string) ($_POST['password_saat_ini'] ?? '');
 $newPass     = (string) ($_POST['password_baru'] ?? '');
 $confirmPass = (string) ($_POST['konfirmasi_password'] ?? '');
@@ -106,7 +125,7 @@ if ($newPass !== '' || $confirmPass !== '' || $currentPass !== '') {
     $passwordHash = password_hash($newPass, PASSWORD_DEFAULT);
 }
 
-// ── Foto profil (opsional, maks 2MB) ─────────────────────────────────────────
+// (5) Pengolahan File Upload Foto Profil (Maks 2MB, simpan di uploads/admin/)
 $foto = (string) ($creds['foto'] ?? '');
 $fileErr = $_FILES['foto_profil']['error'] ?? UPLOAD_ERR_NO_FILE;
 
@@ -144,7 +163,7 @@ if ($fileErr === UPLOAD_ERR_OK) {
         exit;
     }
 
-    // Hapus foto lama bila diganti dan masih milik uploads lokal.
+    // Hapus foto lama jika diganti
     if ($foto !== '' && str_contains($foto, '/uploads/admin/')) {
         $oldPath = dirname(__DIR__, 2) . '/' . str_replace('\\', '/', $foto);
         if (is_file($oldPath)) {
@@ -164,7 +183,7 @@ if ($fileErr === UPLOAD_ERR_OK) {
     exit;
 }
 
-// ── Hapus foto (tanpa file baru) ─────────────────────────────────────────────
+// Hapus foto profil jika opsi hapus dipilih
 if ($fileErr === UPLOAD_ERR_NO_FILE && ($_POST['hapus_foto'] ?? '') === '1') {
     if ($foto !== '' && str_contains($foto, '/uploads/admin/')) {
         $oldPath = dirname(__DIR__, 2) . '/' . str_replace('\\', '/', $foto);
@@ -175,7 +194,7 @@ if ($fileErr === UPLOAD_ERR_NO_FILE && ($_POST['hapus_foto'] ?? '') === '1') {
     $foto = '';
 }
 
-// ── Simpan ───────────────────────────────────────────────────────────────────
+// (6) Rangkai paket data baru & update via Model Akun
 $payload = [
     'nama_lengkap' => $namaLengkap,
     'username'     => $username,
@@ -191,6 +210,8 @@ try {
     $saved = Akun::update($payload);
     $_SESSION['admin_username']    = $username;
     $_SESSION['admin_nama_lengkap'] = $namaLengkap;
+    
+    // (7) Kirim respon JSON sukses
     echo json_encode([
         'success' => true,
         'message' => 'Akun admin berhasil diperbarui.',
@@ -206,3 +227,4 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Gagal menyimpan akun: ' . $e->getMessage()]);
 }
+

@@ -1,7 +1,24 @@
 <?php
+/* ======================================================
+   HALAMAN DAFTAR BERITA (KABAR PEKON)
+
+   Halaman ini ibarat papan pengumuman desa: semua artikel
+   yang sudah terbit ditampilkan dalam bentuk kartu, lengkap
+   dengan foto, kategori, tanggal, penulis, dan ringkasan.
+
+   Data utama:
+   - $beritaList : daftar semua berita, diambil dari
+                   Berita::published() (hanya berita dengan
+                   status terbit). Kolom yang dipakai: id,
+                   judul, slug, kategori, ringkasan, penulis,
+                   foto_sampul, tanggal_terbit.
+   - Jika data kosong, disiapkan 4 contoh berita (dummy)
+     agar halaman tetap terlihat hidup.
+====================================================== */
 $currentPage     = 'berita';
-$pageTitle       = 'Berita | Pekon Air Naningan';
-$metaDescription = 'Informasi terkini, pengumuman resmi, dan dokumentasi kegiatan masyarakat di lingkungan Pekon Air Naningan.';
+$pageTitle       = 'Berita Pekon Air Naningan Terkini | Tanggamus';
+$metaDescription = 'Baca berita Pekon Air Naningan terkini, pengumuman resmi, program pemerintah, dan dokumentasi kegiatan masyarakat Kecamatan Air Naningan.';
+$metaKeywords    = 'berita Air Naningan, kabar Pekon Air Naningan, pengumuman desa Tanggamus, kegiatan masyarakat Air Naningan';
 $base            = defined('APP_BASE') ? APP_BASE : '';
 
 if (!class_exists('Berita')) {
@@ -66,6 +83,14 @@ require __DIR__ . '/../partials/header.php';
 
 <div class="flex flex-col w-full min-h-screen bg-bg">
 
+    <!-- ======================================================
+         HERO (KEPALA HALAMAN BERITA)
+
+         Bagian pembuka yang lebar: judul "Kabar Pekon Air
+         Naningan" beserta keterangan singkat, berlatar pola
+         kotak-kotak halus. Berisi juga jejak "Beranda /
+         Berita & Informasi" agar pengunjung tahu posisinya.
+    ====================================================== -->
     <!-- Hero Header -->
     <div class="relative w-full h-[409px] min-h-[300px] flex items-center justify-center overflow-hidden">
         <div class="absolute inset-0 bg-surface-container-lowest z-0">
@@ -96,6 +121,19 @@ require __DIR__ . '/../partials/header.php';
     <!-- Main Content -->
     <div class="max-w-container-max w-full mx-auto px-container-pad-mobile lg:px-container-pad-desktop py-section-v-mobile lg:py-section-v-desktop flex flex-col gap-12">
 
+        <!-- ======================================================
+             BAGIAN FILTER KATEGORI & PENCARIAN
+
+             - Baris tombol kategori: tombol "Semua Berita" plus
+               tombol per kategori. Kategori dihitung otomatis:
+               sistem mengambil kolom $item['kategori'] dari semua
+               berita, menghapus yang sama, mengurutkan A-Z, lalu
+               foreach membuat 1 tombol per kategori.
+             - Kotak pencarian (id="search-input") untuk mencari
+               berita berdasarkan kata kunci.
+             Keduanya dijalankan oleh JavaScript di bagian bawah
+             halaman (tanpa memuat ulang halaman).
+        ====================================================== -->
         <!-- Filter Section -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-line pb-6">
             <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0" id="filter-buttons">
@@ -118,6 +156,26 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </div>
 
+        <!-- ======================================================
+             DAFTAR KARTU BERITA (PERULANGAN foreach)
+
+             Sistem memeriksa seluruh $beritaList satu per satu,
+             lalu membuat 1 kartu (article) untuk setiap berita.
+             Kartu memakai kolom:
+             - $item['slug']           : alamat halaman detail
+             - $item['kategori']       : kategori (juga disalin ke
+               data-category untuk filter JavaScript)
+             - $item['judul']          : judul (data-title)
+             - $item['ringkasan']      : ringkasan (data-summary)
+             - $item['penulis']        : nama penulis
+             - $item['foto_sampul']    : foto dari folder
+               uploads/konten/ lewat mediaUrl(); bila kosong
+               diganti ikon koran, bila gagal dimuat diganti
+               assets/images/placeholder.webp
+             - $item['tanggal_terbit'] : tanggal (diubah ke
+               format "12 Agustus 2024")
+             Setiap kartu menautkan ke halaman detail berita.
+        ====================================================== -->
         <!-- News Grid -->
         <div class="flex flex-col gap-6" id="news-grid">
 
@@ -130,7 +188,8 @@ require __DIR__ . '/../partials/header.php';
                 $penulis = htmlspecialchars($item['penulis'] ?? 'Admin Pekon', ENT_QUOTES);
                 $foto = !empty($item['foto_sampul']) ? $item['foto_sampul'] : '';
 
-                // Format tanggal
+                // Format tanggal: ubah "2024-08-12" menjadi
+                // "12 Agustus 2024" memakai peta bulan $bulanMap
                 $tglStr = $item['tanggal_terbit'] ?? date('Y-m-d');
                 $tParts = explode('-', $tglStr);
                 $tFormatted = ($tParts[2] ?? '') . ' ' . ($bulanMap[$tParts[1] ?? ''] ?? '') . ' ' . ($tParts[0] ?? '');
@@ -183,6 +242,14 @@ require __DIR__ . '/../partials/header.php';
 
         </div>
 
+        <!-- ======================================================
+             KOTAK "TIDAK ADA HASIL" (MUNCUL OTOMATIS)
+
+             Awalnya disembunyikan (hidden). Jika pengguna memilih
+             kategori/ketikan yang tidak cocok dengan berita mana
+             pun, JavaScript menghapus kelas hidden sehingga kotak
+             "Tidak ada berita yang sesuai..." tampil.
+        ====================================================== -->
         <!-- Empty state hidden by default -->
         <div id="no-results" class="hidden text-center py-12 flex-col items-center gap-3">
             <span class="material-symbols-outlined text-[48px] text-ink-dim/40">search_off</span>
@@ -193,8 +260,30 @@ require __DIR__ . '/../partials/header.php';
 
 </div>
 
+/* ======================================================
+   SKRIP FILTER KATEGORI & PENCARIAN BERITA
+
+   Skrip ini menyaring kartu berita langsung di browser,
+   tanpa memuat ulang halaman. Alur kerjanya:
+   (1) Tunggu seluruh HTML selesai dimuat.
+   (2) Siapkan semua "alat": tombol kategori, kotak pencarian,
+       kartu berita, dan kotak pesan "tidak ada hasil".
+   (3) Fungsi filterNews() memeriksa setiap kartu: cocok tidak
+       dengan kategori aktif dan kata kunci pencarian? Data
+       pembanding diambil dari atribut data-category,
+       data-title, dan data-summary yang diisikan PHP.
+   (4) Kartu yang cocok ditampilkan, yang tidak cocok
+       disembunyikan.
+   (5) Jika tidak ada kartu yang cocok, kotak "Tidak ada
+       berita yang sesuai" tampil.
+   (6) Tombol kategori dipasangi pendengar: saat diklik, tombol
+       yang aktif dipertukarkan dan daftar disaring ulang.
+====================================================== */
 <script>
+// (1) Tunggu seluruh HTML halaman selesai dimuat dulu
 document.addEventListener('DOMContentLoaded', function() {
+    // (2) Kumpulkan alat-alatnya: tombol kategori, kotak cari,
+    //     kartu berita, dan kotak pesan hasil kosong
     const filterBtns = document.querySelectorAll('.filter-btn');
     const searchInput = document.getElementById('search-input');
     const cards = document.querySelectorAll('.news-card');
@@ -202,10 +291,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentCat = 'all';
 
+    // (3) Fungsi penyaring: dipanggil setiap kali kategori
+    //     dipilih atau kata kunci diketik
     function filterNews() {
         const query = searchInput.value.toLowerCase().trim();
         let visibleCount = 0;
 
+        // (3) Periksa setiap kartu berita satu per satu
         cards.forEach(card => {
             const cat = card.getAttribute('data-category');
             const title = card.getAttribute('data-title');
@@ -214,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const matchCat = (currentCat === 'all' || cat.toLowerCase() === currentCat.toLowerCase());
             const matchSearch = !query || title.includes(query) || summary.includes(query);
 
+            // (4) Kartu yang cocok ditampilkan, yang tidak cocok disembunyikan
             if (matchCat && matchSearch) {
                 card.style.display = 'flex';
                 visibleCount++;
@@ -222,6 +315,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
+        // (5) Kalau tidak ada kartu yang cocok, tampilkan kotak peringatan
         if (visibleCount === 0) {
             noResults.classList.remove('hidden');
             noResults.classList.add('flex');
@@ -231,6 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // (6) Pasang pendengar di setiap tombol kategori
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             filterBtns.forEach(b => {
@@ -240,11 +335,13 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('bg-surface-2', 'text-ink', 'hover:text-primary', 'border', 'border-line');
             this.classList.add('bg-primary', 'text-on-primary', 'shadow-md', 'shadow-primary/20');
 
+            // (6) Catat kategori yang baru dipilih, lalu saring ulang
             currentCat = this.getAttribute('data-cat');
             filterNews();
         });
     });
 
+    // (3) Setiap ketikan di kotak pencarian langsung menyaring ulang
     if (searchInput) {
         searchInput.addEventListener('input', filterNews);
     }

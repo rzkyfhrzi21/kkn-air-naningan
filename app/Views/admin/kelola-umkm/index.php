@@ -1,4 +1,17 @@
 <?php
+/* ======================================================
+   HALAMAN KELOLA UMKM (KATALOG PRODUCT MANAGEMENT)
+
+   Halaman ini adalah "meja pendaftaran usaha warga" panel admin.
+   Dari sini admin bisa:
+   - Melihat daftar usaha UMKM warga pekon,
+   - Menambahkan produk UMKM baru / mengedit data UMKM lama (nama, kategori, pemilik, no WA, foto, status),
+   - Menghapus data UMKM,
+   - Memilih produk UMKM mana yang ditampilkan di Beranda (is_featured).
+
+   Tabel data UMKM diisi secara interaktif oleh JavaScript via AJAX (list-umkm.php).
+====================================================== */
+
 $pageTitle = 'Kelola UMKM';
 $activeNav = 'kelola-umkm';
 require __DIR__ . '/../partials/header.php';
@@ -7,6 +20,7 @@ $kategori = $kategori ?? [];
 $csrf     = (string) ($_SESSION['csrf_token'] ?? '');
 $base     = defined('APP_BASE') ? APP_BASE : '';
 ?>
+
 <div class="flex flex-col w-full">
 
     <!-- Page Header -->

@@ -2,8 +2,29 @@
 
 declare(strict_types=1);
 
+/* ======================================================
+   ENDPOINT AJAX: SIMPAN / PERBARUI MEDIA GALERI (FORM KELOLA GALERI)
+
+   File ini ibarat "petugas pengunggah album foto/video desa":
+   saat admin menekan tombol "Simpan Media" (tambah foto/video baru atau edit media lama),
+   halaman Kelola Galeri memanggil file ini lewat AJAX.
+
+   Alur kerjanya:
+   (1) Memeriksa login admin & token keamanan CSRF.
+   (2) Mengambil input form (judul, deskripsi, kategori, tipe foto/video, rasio, urutan).
+   (3) Validasi bidang wajib diisi & validasi kategori resmi.
+   (4) Pengolahan upload file media ke `uploads/galeri/`:
+       - Tipe Foto: maks 2MB, format JPG/PNG/GIF/WebP.
+       - Tipe Video: maks 15MB, format MP4/WebM/MOV (MKV ditolak).
+       - Hapus file lama jika diganti.
+   (5) Jika ID kosong: panggil `Galeri::create()` untuk menambah media baru.
+       Jika ID ada: panggil `Galeri::update()` untuk memperbarui media lama.
+   (6) Mengirimkan balasan JSON berpesan rinci untuk notifikasi toast.
+====================================================== */
+
 header('Content-Type: application/json; charset=utf-8');
 
+// (1) Cek Sesi Admin & Metode POST
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -18,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Cek Token Keamanan CSRF
 $csrf = (string) ($_POST['csrf_token'] ?? '');
 if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
     http_response_code(403);
@@ -27,6 +49,7 @@ if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['cs
 
 require_once __DIR__ . '/../../../app/Models/Galeri.php';
 
+// (2) Ambil input dari form HTML admin
 $id        = trim((string) ($_POST['id'] ?? ''));
 $judul     = trim((string) ($_POST['judul'] ?? ''));
 $deskripsi = trim((string) ($_POST['deskripsi'] ?? ''));
@@ -35,6 +58,7 @@ $tipe      = trim((string) ($_POST['tipe'] ?? 'foto'));
 $rasio     = trim((string) ($_POST['rasio'] ?? '100%'));
 $urutan    = (int) ($_POST['urutan'] ?? 0);
 
+// (3) Validasi bidang wajib & kategori
 if ($judul === '') {
     echo json_encode(['success' => false, 'message' => 'Judul galeri wajib diisi.']);
     exit;
@@ -57,6 +81,7 @@ if ($id !== '' && $existing === null) {
     exit;
 }
 
+// (4) Pengolahan Upload File Media (Foto / Video)
 $filePath = '';
 $fileErr  = $_FILES['media_file']['error'] ?? UPLOAD_ERR_NO_FILE;
 
@@ -118,7 +143,7 @@ if ($fileErr === UPLOAD_ERR_OK) {
     $scriptBase = $scriptBase === '/' ? '' : $scriptBase;
     $filePath   = $scriptBase . '/uploads/galeri/' . $filename;
 
-    // Hapus file lama jika diganti dan file itu milik uploads lokal.
+    // Hapus file lama jika diganti
     $oldFile = (string) ($existing['file'] ?? '');
     if ($oldFile !== '' && !preg_match('#^https?://#i', $oldFile) && str_contains($oldFile, '/uploads/galeri/')) {
         $oldBase = basename(parse_url($oldFile, PHP_URL_PATH) ?: $oldFile);
@@ -150,6 +175,7 @@ if ($fileErr === UPLOAD_ERR_OK) {
     }
 }
 
+// (5) Rangkai paket data baru untuk disimpan
 $payload = [
     'judul'     => $judul,
     'deskripsi' => $deskripsi,
@@ -160,6 +186,7 @@ $payload = [
     'urutan'    => $urutan > 0 ? $urutan : null,
 ];
 
+// (6) Eksekusi simpan baru (create) atau perbarui lama (update)
 try {
     if ($id !== '') {
         if ($payload['urutan'] === null) {
@@ -190,3 +217,4 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Gagal menyimpan: ' . $e->getMessage()]);
 }
+

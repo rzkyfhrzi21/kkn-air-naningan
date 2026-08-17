@@ -1,5 +1,14 @@
     </main><!-- /main -->
 
+    <!-- ======================================================
+         BAGIAN KAKI DAERAH ADMIN (ADMIN FOOTER PARTIAL)
+
+         File ini ibarat "penutup halaman kerja admin":
+         menampilkan footer admin, komponen Toast Notifikasi (ShowToast),
+         Modal Preview Media Universal (Foto & Video), serta skrip pembantu JavaScript
+         untuk mengelola notifikasi toast dan preview modal.
+    ====================================================== -->
+
     <!-- Admin Footer -->
     <footer class="border-t border-line px-4 md:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-3">
         <span class="font-label-mono text-[10px] text-ink-dim tracking-widest uppercase">© 2026 Pekon Air Naningan. All Rights Reserved.</span>
@@ -23,6 +32,7 @@
         </a>
         <?php endif; ?>
     </footer>
+
 </div><!-- /.pl-[280px] -->
 
 <?php $base = defined('APP_BASE') ? APP_BASE : ''; ?>

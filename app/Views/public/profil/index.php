@@ -1,7 +1,23 @@
 <?php
+/* ======================================================
+   VIEW PROFIL DESA PUBLIK (VILLAGE PROFILE PAGE VIEW)
+
+   File ini ibarat "buku profil resmi desa":
+   menampilkan sejarah singkat pekon, visi dan misi, struktur aparatur pekon,
+   peta wilayah Google Maps, serta data statistik demografi warga.
+
+   Data / Variabel yang dipanggil di file ini:
+   - $profil['visi']       : Teks Visi pekon
+   - $profil['misi']       : Array daftar Misi pekon
+   - $profil['struktur']   : Array susunan aparatur desa (nama, jabatan, foto)
+   - $profil['sejarah']    : Narasi sejarah pekon
+   - $profil['peta']       : URL embed Google Maps balai pekon
+====================================================== */
+
 $currentPage     = 'profil-desa';
-$pageTitle       = 'Profil Desa | Pekon Air Naningan';
-$metaDescription = 'Profil Pekon Air Naningan - sejarah, visi misi, struktur pemerintahan, data demografi, transparansi anggaran, dan peta administrasi.';
+$pageTitle       = 'Profil Pekon Air Naningan Tanggamus | Pemerintahan';
+$metaDescription = 'Kenali profil Pekon Air Naningan, Tanggamus: sejarah desa, visi misi, struktur pemerintahan, data demografi, transparansi, dan peta wilayah.';
+$metaKeywords    = 'profil Pekon Air Naningan, sejarah Air Naningan, pemerintahan desa Tanggamus, demografi Air Naningan';
 $base            = defined('APP_BASE') ? APP_BASE : '';
 $escape          = static fn(mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $misi            = is_array($profil['misi'] ?? null) ? $profil['misi'] : [];
@@ -11,6 +27,7 @@ $paragrafSejarah = $sejarah['paragraf'] ?? [];
 $peta            = is_array($profil['peta'] ?? null) ? $profil['peta'] : [];
 require __DIR__ . '/../partials/header.php';
 ?>
+
 
 <div class="flex flex-col w-full text-on-surface">
     <section class="w-full pt-12 pb-8 bg-surface-container-lowest">

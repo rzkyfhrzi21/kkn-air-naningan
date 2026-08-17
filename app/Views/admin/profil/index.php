@@ -1,4 +1,15 @@
 <?php
+/* ======================================================
+   HALAMAN PENGATURAN AKUN ADMIN (ADMIN PROFILE SETTINGS)
+
+   Halaman ini adalah "buku pengaturan akun pengelola":
+   dari sini admin pekon bisa mengganti Username, nama admin, nomor WhatsApp,
+   foto profil avatar admin (dikompres & disimpan ke /uploads/profil/),
+   serta mengganti kata sandi (password) admin yang dienkripsi menggunakan `password_hash()`.
+
+   Kredensial tersimpan di file rahasia `/secure/admin_credentials.json`.
+====================================================== */
+
 $pageTitle = 'Profil';
 $activeNav = 'profil';
 require __DIR__ . '/../partials/header.php';
@@ -9,6 +20,7 @@ $base  = defined('APP_BASE') ? APP_BASE : '';
 $fotoUrl = ($akun['foto'] ?? '') !== '' ? $base . '/' . $akun['foto'] : '';
 $waVal = preg_replace('/^(62|0)/', '', (string) ($akun['whatsapp'] ?? ''));
 ?>
+
 <div class="flex flex-col w-full px-container-pad-mobile lg:px-container-pad-desktop pb-section-v-desktop gap-10">
 
     <div class="flex flex-col gap-2 pt-10 max-w-2xl">

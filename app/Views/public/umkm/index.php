@@ -1,12 +1,26 @@
 <?php
+/* ======================================================
+   VIEW KATALOG UMKM PUBLIK (UMKM CATALOG PAGE VIEW)
+
+   File ini ibarat "pasar digital / etalase toko warga desa":
+   menampilkan seluruh produk usaha mikro warga Pekon Air Naningan (kopi robusta, gula aren, dll)
+   dalam bentuk kartu lengkap dengan foto produk, kategori, deskripsi, dan tombol hubungi via WhatsApp.
+
+   Data / Variabel yang dipanggil di file ini:
+   - $items    : Array daftar UMKM yang berstatus 'aktif'
+   - $kategori : Daftar kategori produk UMKM untuk pencarian/filter
+====================================================== */
+
 $currentPage     = 'umkm';
-$pageTitle       = 'UMKM | Pekon Air Naningan';
-$metaDescription = 'Katalog produk UMKM dan usaha warga Pekon Air Naningan — kopi robusta, kuliner olahan, kerajinan bambu, dan gula aren murni.';
+$pageTitle       = 'UMKM Air Naningan: Kopi dan Produk Lokal Tanggamus';
+$metaDescription = 'Jelajahi UMKM Pekon Air Naningan, Tanggamus: kopi robusta, kuliner olahan, kerajinan bambu, dan gula aren lokal. Hubungi pelaku usaha langsung.';
+$metaKeywords    = 'UMKM Air Naningan, kopi robusta Tanggamus, produk lokal Tanggamus, gula aren Air Naningan, kerajinan bambu';
 require __DIR__ . '/../partials/header.php';
 
 $items    = $items ?? [];
 $kategori = $kategori ?? [];
 ?>
+
 
 <div class="flex flex-col w-full relative min-h-screen pb-section-v-mobile lg:pb-section-v-desktop bg-bg text-on-surface">
 

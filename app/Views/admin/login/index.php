@@ -1,4 +1,18 @@
 <?php
+/* ======================================================
+   HALAMAN LOGIN ADMIN (ADMIN AUTHENTICATION FORM)
+
+   File ini ibarat "pintu gerbang berkunci pos satpam":
+   halaman khusus tempat pengurus pekon memasukkan Username dan Password
+   untuk bisa mengedit isi website Pekon Air Naningan.
+
+   Penanganan Keamanan:
+   (1) Menyediakan formulir login (Username & Password).
+   (2) Menampilkan notifikasi merah jika Username / Password salah.
+   (3) Dilengkapi tag `<meta name="robots" content="noindex, nofollow">`
+       agar halaman login ini tidak terindeks oleh mesin pencari Google.
+====================================================== */
+
 /**
  * Login view — standalone, tidak pakai admin layout.
  * Variabel dari AuthController::login():
@@ -18,7 +32,8 @@ $loginLogoUrl = preg_match('/^(https?:)?\/\//i', $loginLogo)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin | Pekon Air Naningan</title>
     <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($loginLogoUrl, ENT_QUOTES, 'UTF-8') ?>">
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>

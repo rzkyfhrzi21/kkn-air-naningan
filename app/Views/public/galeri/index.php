@@ -1,12 +1,35 @@
 <?php
+/* ======================================================
+   HALAMAN GALERI FOTO & VIDEO PEKON
+
+   Halaman ini adalah "album foto" desa: menampilkan semua
+   foto/video dalam susunan rapatan (masonry). Pengunjung
+   bisa memfilter per kategori dan mengeklik media untuk
+   melihatnya besar.
+
+   Data yang dikirim Controller:
+   - $items    : daftar media galeri. Kolom yang dipakai:
+                 kategori, kategori_label, judul, deskripsi,
+                 file, rasio, tipe (foto/video)
+   - $kategori : daftar kategori untuk tombol filter,
+                 bentuknya kode => label (misal "kegiatan"
+                 => "Kegiatan")
+====================================================== */
 $currentPage     = 'galeri';
-$pageTitle       = 'Galeri | Pekon Air Naningan';
-$metaDescription = 'Galeri visual Pekon Air Naningan — menangkap momen, merawat ingatan. Bingkai keseharian, pesona alam, dan geliat pembangunan.';
+$pageTitle       = 'Galeri Pekon Air Naningan | Kegiatan dan Potensi Desa';
+$metaDescription = 'Lihat galeri Pekon Air Naningan, Tanggamus yang mendokumentasikan kegiatan warga, pesona alam, potensi desa, budaya, dan pembangunan pekon.';
+$metaKeywords    = 'galeri Air Naningan, foto Pekon Air Naningan, potensi desa Tanggamus, kegiatan warga Air Naningan';
 require __DIR__ . '/../partials/header.php';
 ?>
 
 <div class="flex flex-col w-full min-h-screen">
 
+    <!-- ======================================================
+         KEPALA HALAMAN GALERI
+
+         Bagian pembuka: judul "Potret Pekon" dan keterangan
+         singkat, disusun rata tengah di atas halaman.
+    ====================================================== -->
     <!-- Page Header -->
     <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop pt-12 lg:pt-24 pb-8 lg:pb-16 flex flex-col items-center justify-center text-center">
         <span class="font-label-mono text-label-mono text-gold-soft tracking-widest uppercase mb-4 opacity-80">Galeri Visual</span>
@@ -16,6 +39,16 @@ require __DIR__ . '/../partials/header.php';
         </p>
     </section>
 
+    <!-- ======================================================
+         GALERI + BARIS TOMBOL FILTER
+
+         Baris tombol filter ditempel di atas layar (sticky)
+         saat halaman digulir, agar filter selalu terlihat.
+         Tombol "Semua" ditambah 1 tombol per kategori lewat
+         foreach $kategori ($kat = kode, $label = nama tampil).
+         Setiap tombol menyimpan kode kategori pada atribut
+         data-filter untuk dipakai JavaScript.
+    ====================================================== -->
     <!-- Gallery Section -->
     <section class="w-full max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop pb-section-v-mobile lg:pb-section-v-desktop relative">
 
@@ -31,6 +64,29 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </div>
 
+        <!-- ======================================================
+             KOTAK GALERI (SUSUNAN MASONRY)
+
+             Susunan kolom: 1 kolom di HP, 2 di layar sedang,
+             3 di layar lebar (columns-1 md:columns-2
+             lg:columns-3).
+
+             Perulangan: sistem memeriksa seluruh $items satu
+             per satu lalu membuat 1 kartu untuk tiap media.
+             Kolom yang dipakai:
+             - $item['file']           : file media dari folder
+               uploads/galeri/ lewat pembantu mediaUrl()
+             - $item['rasio']          : tinggi kartu (agar
+               susunan masonry rapi)
+             - $item['tipe']           : "video" atau "foto"
+             - $item['kategori']       : kode kategori (disalin
+               ke data-category untuk filter)
+             - $item['kategori_label'] : nama kategori tampil
+             - $item['judul']          : judul media
+             - $item['deskripsi']      : keterangan media
+             Atribut data-file dan data-tipe dipakai tombol
+             perbesar (lightbox) saat kartu diklik.
+        ====================================================== -->
         <!-- Masonry Grid -->
         <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6" id="gallery-grid">
 
@@ -41,6 +97,8 @@ require __DIR__ . '/../partials/header.php';
             </div>
             <?php else: ?>
             <?php foreach ($items as $item):
+                // Siapkan isi kartu: kategori, judul, deskripsi,
+                // file media, rasio tinggi, dan tipe (foto/video)
                 $kat = htmlspecialchars($item['kategori'] ?? '', ENT_QUOTES, 'UTF-8');
                 $katLabel = htmlspecialchars($item['kategori_label'] ?? '', ENT_QUOTES, 'UTF-8');
                 $judul = htmlspecialchars($item['judul'] ?? '', ENT_QUOTES, 'UTF-8');
@@ -76,6 +134,14 @@ require __DIR__ . '/../partials/header.php';
 
         </div>
 
+        <!-- ======================================================
+             TOMBOL "MUAT LEBIH BANYAK"
+
+             Awalnya hanya 6 media yang ditampilkan (diatur
+             JavaScript). Tombol ini menambah 6 media lagi setiap
+             kali diklik. Jika semua media sudah tampil, tombol
+             ini disembunyikan.
+        ====================================================== -->
         <div class="mt-16 flex justify-center" id="load-more-container">
             <button id="load-more-btn" class="px-8 py-3 rounded-full border border-line hover:bg-surface-2 text-ink transition-colors font-label-mono text-label-mono flex items-center gap-2 group">
                 <span>MUAT LEBIH BANYAK</span>
@@ -85,6 +151,15 @@ require __DIR__ . '/../partials/header.php';
 
     </section>
 
+    <!-- ======================================================
+         KOTAK PERBESAR MEDIA (LIGHTBOX)
+
+         Saat sebuah foto/video diklik, kotak besar berlatar
+         gelap ini muncul untuk memperlihatkan medianya.
+         - Bagian tengah : foto atau video (video bisa diputar)
+         - Panel kanan   : kategori, judul, dan keterangan
+         - Tombol × / latar gelap / tombol Escape : menutup
+    ====================================================== -->
     <!-- Lightbox Modal -->
     <div data-modal class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300 flex flex-col" id="lightbox">
         <div class="w-full p-6 flex justify-end absolute top-0 left-0 z-10">

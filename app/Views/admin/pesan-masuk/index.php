@@ -1,4 +1,18 @@
 <?php
+/* ======================================================
+   HALAMAN KOTAK PESAN MASUK (INBOX MESSAGES)
+
+   Halaman ini adalah "kotak surat pengaduan warga" panel admin.
+   Dari sini admin bisa:
+   - Melihat pesan/pengaduan/aspirasi yang dikirim pengunjung lewat form `/kontak`,
+   - Memfilter pesan yang "Belum Dibaca" atau "Sudah Dibaca",
+   - Membaca isi pesan lengkap dalam modal baca,
+   - Menandai pesan sebagai "Sudah Dibaca",
+   - Menghapus pesan dari sistem.
+
+   Tabel data pesan diisi secara interaktif oleh JavaScript via AJAX (list-pesan.php).
+====================================================== */
+
 $pageTitle = 'Pesan Masuk';
 $activeNav = 'pesan-masuk';
 require __DIR__ . '/../partials/header.php';
@@ -6,6 +20,7 @@ require __DIR__ . '/../partials/header.php';
 $csrf = (string) ($_SESSION['csrf_token'] ?? '');
 $base = defined('APP_BASE') ? APP_BASE : '';
 ?>
+
 <div class="flex flex-col w-full">
 
     <!-- Page Header -->

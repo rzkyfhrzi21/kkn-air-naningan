@@ -1,4 +1,20 @@
 <?php
+/* ======================================================
+   HALAMAN DASHBOARD ADMIN (RINGKASAN OVERVIEW)
+
+   File ini adalah "halaman beranda" panel admin. Ibarat
+   etalase awal yang menampilkan ringkasan kondisi data
+   Pekon Air Naningan (UMKM, Berita, Galeri) dalam bentuk
+   angka besar, daftar aktivitas terbaru, dan menu pintasan.
+
+   Data sudah disiapkan oleh DashboardController lalu
+   dikirim ke sini dalam bentuk variabel:
+   - $summaries       : daftar jumlah data (umkm, berita, galeri)
+   - $recentActivity  : daftar aktivitas terakhir yang terjadi
+
+   Halaman ini HANYA menampilkan data (tidak menyimpan apa pun),
+   jadi tidak ada form isian di sini.
+====================================================== */
 $pageTitle = 'Dashboard Overview';
 $activeNav = 'overview';
 $base      = defined('APP_BASE') ? APP_BASE : '';
@@ -7,6 +23,17 @@ require __DIR__ . '/../partials/header.php';
 
 <div class="flex flex-col w-full px-container-pad-mobile md:px-8 py-8 md:py-12 gap-10">
 
+    <!-- ======================================================
+         BAGIAN JUDUL HALAMAN + TOMBOL AKSI CEPAT
+
+         Di sini ada judul "Dashboard Overview" beserta dua
+         tombol pintasan:
+         - "Tambah UMKM"  → membuka halaman admin/kelola-umkm
+         - "Tambah Berita" → membuka halaman admin/kelola-berita
+         Nilai $base adalah alamat dasar website (misalnya
+         http://localhost/kkn-air-naningan/public) sehingga semua
+         link bisa otomatis mengarah ke folder yang benar.
+    ====================================================== -->
     <!-- Page Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="flex flex-col gap-2 max-w-2xl">
@@ -27,6 +54,18 @@ require __DIR__ . '/../partials/header.php';
         </div>
     </div>
 
+    <!-- ======================================================
+         KARTU STATISTIK (JUMLAH DATA UTAMA)
+
+         Tiga kartu angka besar yang diletakkan sejajar:
+         - UMKM Aktif   : membaca $summaries['umkm']   (jumlah usaha)
+         - Total Berita : membaca $summaries['berita'] (jumlah artikel)
+         - Foto Galeri  : membaca $summaries['galeri'] (jumlah foto)
+
+         Angka diambil dari variabel $summaries yang dihitung
+         oleh DashboardController dari file JSON data.
+         number_format() membuat angka terlihat rapi (misal 1.250).
+    ====================================================== -->
     <!-- Stat Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
@@ -77,6 +116,25 @@ require __DIR__ . '/../partials/header.php';
     <!-- Bottom Grid: Aktivitas + Chart -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
+        <!-- ======================================================
+             TABEL AKTIVITAS TERBARU
+
+             Bagian ini memperlihatkan riwayat kegiatan terakhir
+             (misalnya "Admin menambahkan berita baru"). Sistem
+             mengecek variabel $recentActivity satu per satu lewat
+             foreach — setiap satu aktivitas dibuatkan 1 baris tabel
+             (1 baris = 1 kejadian).
+
+             Kolom data yang dipakai dari setiap aktivitas:
+             - $activity['icon']  : ikon kecil (misal ikon koran)
+             - $activity['title'] : judul aktivitas
+             - $activity['desc']  : keterangan singkat aktivitas
+             - $activity['time']  : waktu kejadian (jam/tanggal)
+
+             Jika tidak ada aktivitas sama sekali ($recentActivity
+             kosong), ditampilkan tulisan "Belum ada aktivitas data."
+             menggantikan baris-baris tabel.
+        ====================================================== -->
         <!-- Aktivitas Terbaru -->
         <div class="lg:col-span-2 flex flex-col gap-6">
             <div class="flex items-center justify-between">
@@ -122,6 +180,25 @@ require __DIR__ . '/../partials/header.php';
             </div>
         </div>
 
+        <!-- ======================================================
+             PANEL "KELOLA CEPAT" + INFO SESI ADMIN
+
+             Dua kotak panel di sisi kanan:
+             1) Kelola Cepat — daftar pintasan menu (UMKM, Berita,
+                Galeri) yang dibuat dengan perulangan foreach pada
+                variabel $menuItems. Setiap item membawa:
+                - $slug  : alamat halaman (misal 'kelola-umkm')
+                - $icon  : nama ikon Material Symbols
+                - $label : nama menu yang tampil
+                - $count : jumlah data dari $summaries
+                Ada pula link "Lihat Situs Publik" untuk membuka
+                website pengunjung di tab baru.
+
+             2) Info Sesi — menampilkan siapa yang sedang login:
+                - $_SESSION['admin_username'] : nama pengguna admin
+                - $_SESSION['login_at']       : jam pertama login
+                Serta tombol "Keluar dari sesi" (logout).
+        ====================================================== -->
         <!-- Panel Ringkasan Data -->
         <div class="flex flex-col gap-6">
             <h3 class="font-h3 text-h3 text-ink">Kelola Cepat</h3>

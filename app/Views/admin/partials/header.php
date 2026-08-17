@@ -1,4 +1,16 @@
 <?php
+/* ======================================================
+   BAGIAN KEPALA DAERAH ADMIN (ADMIN HEADER PARTIAL)
+
+   File ini ibarat "pintu masuk ruang kerja kantor pengelola website":
+   ditampilkan di bagian atas seluruh halaman admin dashboard (Kelola UMKM, Kelola Berita, dll).
+
+   Isi Antarmuka (UI):
+   (1) Sidebar kiri (menu navigasi admin: Overview, Kelola Profil, Kelola UMKM, Kelola Berita, Kelola Galeri, Pesan Masuk, Profil Akun).
+   (2) Header topbar atas (menampilkan judul halaman & tombol Logout).
+   (3) Skrip penyiapan token CSRF pada `window.CSRF_TOKEN` untuk semua transaksi AJAX.
+   (4) Pemanggilan Tailwind Browser CDN v4 & Font Google Material Symbols.
+====================================================== */
 
 /**
  * Admin layout header — sidebar kiri + topbar atas.
@@ -24,13 +36,15 @@ $navItems = [
     ['profil',        'settings',           'Profil'],
 ];
 ?>
+
 <!doctype html>
 <html class="dark" lang="id">
 
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="noindex, nofollow" name="robots">
+    <meta content="noindex, nofollow, noarchive, nosnippet" name="robots">
+    <meta content="noindex, nofollow, noarchive, nosnippet" name="googlebot">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">

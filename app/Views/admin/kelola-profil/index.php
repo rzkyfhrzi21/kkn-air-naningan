@@ -1,7 +1,24 @@
 <?php
+/* ======================================================
+   HALAMAN KELOLA PROFIL PEKON (FORMULIR EDIT INFORMASI DESA)
+
+   Halaman ini adalah "buku induk pengeditan profil desa" panel admin.
+   Dari sini admin bisa mengubah:
+   - Identitas umum pekon (tahun berdiri, tagline, masa bakti aparatur),
+   - Visi & Misi pekon,
+   - Sejarah singkat pekon & quote tokoh,
+   - Peta administrasi Google Maps (URL Embed),
+   - Data statistik demografi (total jiwa, KK, luas wilayah, daftar dusun),
+   - Persentase mata pencaharian warga (harus 100%),
+   - Susunan aparatur desa & upload foto pengurus pekon.
+
+   Pengiriman data formulir diproses via AJAX oleh `store-profil.php`.
+====================================================== */
+
 $pageTitle = 'Kelola Profil Desa';
 $activeNav = 'kelola-profil';
 require __DIR__ . '/../partials/header.php';
+
 
 $profil   = $profil ?? [];
 $visi     = (string) ($profil['visi'] ?? '');

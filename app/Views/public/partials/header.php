@@ -1,4 +1,24 @@
 <?php
+/* ======================================================
+   BAGIAN KEPALA SITUS PUBLIK (PUBLIC HEADER PARTIAL)
+
+   File ini ibarat "pintu gerbang dan teras depan rumah desa":
+   setiap halaman publik (Beranda, Profil, UMKM, Berita, Galeri, Kontak)
+   memanggil file ini di paling atas untuk menampilkan judul halaman (SEO),
+   meta tag Open Graph (tampilan saat link dibagikan di WA/FB),
+   serta menu navigasi utama di bagian atas layar.
+
+   Data / Variabel yang dipanggil di file ini:
+   - $pageTitle       : Judul halaman (misal: "Profil Pekon Air Naningan")
+   - $currentPage     : Penanda halaman aktif (misal: "profil-desa")
+   - $metaDescription : Ringkasan teks untuk Google & media sosial
+   - $metaImage       : Gambar sampul saat link dibagikan (diambil dari /assets/images/logo.jpg)
+   - $navLinks        : Daftar menu navigasi (Beranda, Profil Desa, UMKM, Berita, Galeri, Kontak)
+
+   Folder File Gambar:
+   - logo.jpg diambil dari folder `/assets/images/logo.jpg`
+====================================================== */
+
 // header.php — Public site header partial
 // Variables expected: $pageTitle (string), $currentPage (string), $metaDescription (string)
 
@@ -11,16 +31,128 @@ $currentPage     = $currentPage     ?? 'beranda';
 $metaDescription = $metaDescription ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan berita pekon, dalam satu tempat.';
 $metaKeywords    = $metaKeywords    ?? 'Pekon Air Naningan, profil desa, UMKM, galeri, berita desa, Tanggamus';
 $metaImage       = $metaImage       ?? '';
+$articleSchema   = $articleSchema   ?? null;
+$googleVerification = trim((string) env('GOOGLE_SITE_VERIFICATION', ''));
 
 // Deteksi base path
 $base = defined('APP_BASE') ? APP_BASE : '';
 
-// URL absolut untuk og:url & canonical
-$scheme      = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host        = $_SERVER['HTTP_HOST'] ?? '';
-$reqUri      = $_SERVER['REQUEST_URI'] ?? '/';
-$canonicalUri = strtok($reqUri, '?'); // tanpa query string untuk canonical
-$metaImageUrl = $metaImage !== '' ? $metaImage : $scheme . '://' . $host . $base . '/assets/images/logo.jpg';
+// APP_URL menjadi sumber tunggal URL SEO agar proxy, alias .php, dan query tidak
+// membuat beberapa canonical untuk halaman yang sama.
+$requestScheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$requestHost   = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$siteUrl       = rtrim((string) env('APP_URL', $requestScheme . '://' . $requestHost . $base), '/');
+$pagePaths     = [
+    'beranda'     => '/',
+    'profil-desa' => '/profil',
+    'umkm'        => '/umkm',
+    'berita'      => '/berita',
+    'galeri'      => '/galeri',
+    'kontak'      => '/kontak',
+];
+$canonicalPath = $pagePaths[$currentPage] ?? '/';
+if (is_array($articleSchema) && !empty($articleSchema['slug'])) {
+    $canonicalPath = '/berita/' . rawurlencode((string) $articleSchema['slug']);
+}
+$canonicalUrl = $siteUrl . ($canonicalPath === '/' ? '/' : $canonicalPath);
+$metaImageUrl = $metaImage !== ''
+    ? (preg_match('/^https?:\/\//i', $metaImage) ? $metaImage : $siteUrl . '/' . ltrim($metaImage, '/'))
+    : $siteUrl . '/assets/images/logo.jpg';
+
+$organizationSchema = [
+    '@type' => 'GovernmentOrganization',
+    '@id' => $siteUrl . '/#organization',
+    'name' => 'Pekon Air Naningan',
+    'alternateName' => 'Desa Air Naningan',
+    'url' => $siteUrl . '/',
+    'logo' => [
+        '@type' => 'ImageObject',
+        'url' => $siteUrl . '/assets/images/logo.jpg',
+    ],
+    'description' => 'Situs resmi Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus, Lampung.',
+    'address' => [
+        '@type' => 'PostalAddress',
+        'addressLocality' => 'Air Naningan',
+        'addressRegion' => 'Lampung',
+        'addressCountry' => 'ID',
+    ],
+    'areaServed' => 'Pekon Air Naningan, Kabupaten Tanggamus, Lampung',
+];
+$webPageSchema = [
+    '@type' => 'WebPage',
+    '@id' => $canonicalUrl . '#webpage',
+    'url' => $canonicalUrl,
+    'name' => $pageTitle,
+    'description' => $metaDescription,
+    'inLanguage' => 'id-ID',
+    'isPartOf' => ['@id' => $siteUrl . '/#website'],
+];
+$schemaGraph = [
+    $organizationSchema,
+    [
+        '@type' => 'WebSite',
+        '@id' => $siteUrl . '/#website',
+        'url' => $siteUrl . '/',
+        'name' => 'Pekon Air Naningan',
+        'inLanguage' => 'id-ID',
+        'publisher' => ['@id' => $siteUrl . '/#organization'],
+    ],
+    $webPageSchema,
+];
+$breadcrumbNames = [
+    'profil-desa' => 'Profil Desa',
+    'umkm' => 'UMKM',
+    'berita' => 'Berita',
+    'galeri' => 'Galeri',
+    'kontak' => 'Kontak',
+];
+if ($currentPage !== 'beranda') {
+    $breadcrumbItems = [[
+        '@type' => 'ListItem',
+        'position' => 1,
+        'name' => 'Beranda',
+        'item' => $siteUrl . '/',
+    ]];
+    $breadcrumbItems[] = [
+        '@type' => 'ListItem',
+        'position' => 2,
+        'name' => (string) ($breadcrumbNames[$currentPage] ?? $pageTitle),
+        'item' => $siteUrl . ($pagePaths[$currentPage] ?? '/'),
+    ];
+    if (is_array($articleSchema)) {
+        $breadcrumbItems[] = [
+            '@type' => 'ListItem',
+            'position' => 3,
+            'name' => (string) ($articleSchema['headline'] ?? $pageTitle),
+            'item' => $canonicalUrl,
+        ];
+    }
+    $schemaGraph[] = [
+        '@type' => 'BreadcrumbList',
+        '@id' => $canonicalUrl . '#breadcrumb',
+        'itemListElement' => $breadcrumbItems,
+    ];
+}
+if (is_array($articleSchema)) {
+    $schemaGraph[] = [
+        '@type' => 'NewsArticle',
+        '@id' => $canonicalUrl . '#article',
+        'mainEntityOfPage' => ['@id' => $canonicalUrl . '#webpage'],
+        'headline' => (string) ($articleSchema['headline'] ?? $pageTitle),
+        'description' => $metaDescription,
+        'image' => [$metaImageUrl],
+        'datePublished' => (string) ($articleSchema['datePublished'] ?? ''),
+        'dateModified' => (string) ($articleSchema['dateModified'] ?? $articleSchema['datePublished'] ?? ''),
+        'author' => [
+            '@type' => 'Person',
+            'name' => (string) ($articleSchema['author'] ?? 'Admin Pekon'),
+        ],
+        'publisher' => ['@id' => $siteUrl . '/#organization'],
+        'articleSection' => (string) ($articleSchema['section'] ?? 'Berita Pekon'),
+        'keywords' => array_values((array) ($articleSchema['keywords'] ?? [])),
+        'inLanguage' => 'id-ID',
+    ];
+}
 
 if (!function_exists('mediaUrl')) {
     function mediaUrl(string $path, string $basePath): string {
@@ -41,14 +173,23 @@ $navLinks = [
 ];
 ?>
 <!doctype html>
+
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="icon" type="image/jpeg" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
+    <link rel="apple-touch-icon" href="<?= htmlspecialchars($base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="theme-color" content="#12201A">
     <meta name="description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
     <meta name="keywords" content="<?= htmlspecialchars($metaKeywords, ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="author" content="Pemerintah Pekon Air Naningan">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <?php if ($googleVerification !== ''): ?>
+    <meta name="google-site-verification" content="<?= htmlspecialchars($googleVerification, ENT_QUOTES, 'UTF-8') ?>">
+    <?php endif; ?>
     <!-- Open Graph -->
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
@@ -56,17 +197,18 @@ $navLinks = [
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:image:alt" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
-    <meta property="og:url" content="<?= htmlspecialchars($scheme . '://' . $host . $reqUri, ENT_QUOTES, 'UTF-8') ?>">
-    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
+    <meta property="og:type" content="<?= is_array($articleSchema) ? 'article' : 'website' ?>">
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="Pekon Air Naningan">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
     <meta name="twitter:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
     <meta name="twitter:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>">
     <meta name="twitter:image" content="<?= htmlspecialchars($metaImageUrl, ENT_QUOTES, 'UTF-8') ?>">
     <!-- Canonical (tanpa query string) -->
-    <link rel="canonical" href="<?= htmlspecialchars($scheme . '://' . $host . $canonicalUri, ENT_QUOTES, 'UTF-8') ?>">
+    <link rel="canonical" href="<?= htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8') ?>">
     <!-- Inline critical base styles -->
     <style>
         @layer base {
@@ -180,24 +322,12 @@ $navLinks = [
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-    <!-- JSON-LD: Organization / GovernmentOrganization -->
+    <!-- JSON-LD: situs, organisasi pemerintah, halaman, dan artikel bila relevan -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "GovernmentOrganization",
-      "name": "Pekon Air Naningan",
-      "alternateName": "Desa Air Naningan",
-      "url": "<?= htmlspecialchars($scheme . '://' . $host . $base . '/', ENT_QUOTES, 'UTF-8') ?>",
-      "logo": "<?= htmlspecialchars($scheme . '://' . $host . $base . '/assets/images/logo.jpg', ENT_QUOTES, 'UTF-8') ?>",
-      "description": "Situs resmi Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus, Lampung.",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Air Naningan",
-        "addressRegion": "Tanggamus, Lampung",
-        "addressCountry": "ID"
-      },
-      "areaServed": "Air Naningan, Kecamatan Air Naningan, Tanggamus"
-    }
+    <?= json_encode(
+        ['@context' => 'https://schema.org', '@graph' => $schemaGraph],
+        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+    ) ?>
     </script>
 </head>
 <body class="bg-bg font-body-md text-on-surface">

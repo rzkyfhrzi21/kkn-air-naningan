@@ -2,8 +2,26 @@
 
 declare(strict_types=1);
 
+/* ======================================================
+   ENDPOINT AJAX: SIMPAN PROFIL PEKON (FORM KELOLA PROFIL)
+
+   File ini ibarat "petugas pembaru buku induk desa":
+   saat admin mengubah visi-misi, sejarah, peta Google Maps, demografi dusun,
+   mata pencaharian, atau aparatur pekon pada halaman Kelola Profil, file ini dipanggil via AJAX.
+
+   Alur kerjanya:
+   (1) Memeriksa login admin & token keamanan CSRF.
+   (2) Validasi input bidang wajib: Visi, Misi (minimal 1).
+   (3) Sanitasi paragraf sejarah (sanitize_rich_html) & validasi URL embed Google Maps.
+   (4) Menghitung persentase mata pencaharian warga (wajib tepat 100%).
+   (5) Menangani upload foto aparatur desa ke `uploads/struktur/` (maks 2MB, format JPG/PNG/WebP/GIF).
+   (6) Memperbarui file JSON `public/data/profil.json` via Model Profil.
+   (7) Mengirimkan balasan JSON berpesan rinci untuk notifikasi toast.
+====================================================== */
+
 header('Content-Type: application/json; charset=utf-8');
 
+// (1) Cek Sesi Admin & Metode POST
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -20,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Cek Token Keamanan CSRF
 $csrf = (string) ($_POST['csrf_token'] ?? '');
 if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
     http_response_code(403);
@@ -30,6 +49,7 @@ if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['cs
 require_once __DIR__ . '/../../../app/Models/Profil.php';
 require_once __DIR__ . '/../../../includes/sanitize.php';
 
+// (2) Validasi Visi & Misi Desa
 $visi = trim((string) ($_POST['visi'] ?? ''));
 if ($visi === '') {
     echo json_encode(['success' => false, 'message' => 'Visi desa wajib diisi.']);
@@ -46,6 +66,7 @@ if ($misi === []) {
     exit;
 }
 
+// (3) Sanitasi Teks Sejarah & Validasi URL Peta Google Maps
 $sejarahText  = trim(sanitize_rich_html((string) ($_POST['sejarah_teks'] ?? '')));
 $sejarahQuote = trim((string) ($_POST['sejarah_quote'] ?? ''));
 $petaEmbedUrl = trim((string) ($_POST['peta_embed_url'] ?? ''));
@@ -58,6 +79,7 @@ if ($petaEmbedUrl !== '') {
     }
 }
 
+// Olah data dusun
 $dusunNama   = $_POST['dusun_nama'] ?? [];
 $dusunJumlah = $_POST['dusun_jumlah'] ?? [];
 $perDusun    = [];
@@ -74,6 +96,7 @@ if (is_array($dusunNama) && is_array($dusunJumlah)) {
     }
 }
 
+// (4) Validasi & Hitung Persentase Mata Pencaharian (Wajib 100%)
 $jobJenis  = $_POST['pekerjaan_jenis'] ?? [];
 $jobPersen = $_POST['pekerjaan_persen'] ?? [];
 $jobs      = [];
@@ -108,17 +131,12 @@ if ($jobTotal !== 100) {
     exit;
 }
 
-// ── Upload foto struktur ──────────────────────────────────────────────────────
-// Allowed MIME types (validasi server-side asli via finfo)
+// (5) Fungsi Pembantu Upload Foto Aparatur Desa (Maks 2MB)
 const FOTO_ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const FOTO_MAX_BYTES    = 2 * 1024 * 1024; // 2 MB
 const UPLOAD_DIR        = __DIR__ . '/../../../public/uploads/struktur/';
 const UPLOAD_URL_PREFIX = '/uploads/struktur/'; // path publik relatif dari web root
 
-/**
- * Upload satu file foto struktur, kembalikan URL path publik.
- * Lempar Exception jika gagal validasi.
- */
 function uploadFotoStruktur(array $file): string
 {
     if ($file['error'] !== UPLOAD_ERR_OK) {
@@ -127,13 +145,11 @@ function uploadFotoStruktur(array $file): string
     if ($file['size'] > FOTO_MAX_BYTES) {
         throw new RuntimeException("Foto \"{$file['name']}\" melebihi batas 2 MB.");
     }
-    // Validasi MIME asli (bukan dari ekstensi/header browser)
     $finfo    = new finfo(FILEINFO_MIME_TYPE);
     $mimeReal = $finfo->file($file['tmp_name']);
     if (!in_array($mimeReal, FOTO_ALLOWED_MIME, true)) {
         throw new RuntimeException("Format foto \"{$file['name']}\" tidak didukung ($mimeReal). Gunakan JPG, PNG, WEBP, atau GIF.");
     }
-    // Generate nama file aman: hash + ekstensi dari MIME asli
     $ext      = match ($mimeReal) {
         'image/jpeg' => 'jpg',
         'image/png'  => 'png',
@@ -153,9 +169,8 @@ function uploadFotoStruktur(array $file): string
     return UPLOAD_URL_PREFIX . $filename;
 }
 
-// Proses array file upload. PHP normalisasi $_FILES['struktur_foto_file'] menjadi array per field.
+// Pengolahan array upload file aparatur desa
 $uploadedFiles = $_FILES['struktur_foto_file'] ?? [];
-// Normalkan ke indexed array of per-file arrays
 $fotoFiles = [];
 if (!empty($uploadedFiles['name']) && is_array($uploadedFiles['name'])) {
     foreach ($uploadedFiles['name'] as $i => $name) {
@@ -169,10 +184,10 @@ if (!empty($uploadedFiles['name']) && is_array($uploadedFiles['name'])) {
     }
 }
 
-// ── Susun array struktur ──────────────────────────────────────────────────────
+// Susun array struktur aparatur desa
 $strNama    = $_POST['struktur_nama']    ?? [];
 $strJabatan = $_POST['struktur_jabatan'] ?? [];
-$strFoto    = $_POST['struktur_foto']    ?? []; // path foto lama (hidden input)
+$strFoto    = $_POST['struktur_foto']    ?? [];
 $strLevel   = $_POST['struktur_level']   ?? [];
 $struktur   = [];
 
@@ -184,7 +199,6 @@ if (is_array($strNama)) {
             continue;
         }
 
-        // Tentukan path foto: pakai file baru jika ada, fallback ke path lama
         $fotoPath = trim((string) ($strFoto[$i] ?? ''));
         $fileEntry = $fotoFiles[$i] ?? null;
         if ($fileEntry && $fileEntry['error'] === UPLOAD_ERR_OK && $fileEntry['size'] > 0) {
@@ -205,6 +219,7 @@ if (is_array($strNama)) {
     }
 }
 
+// (6) Eksekusi simpan ke file JSON via Model Profil
 try {
     $saved = Profil::save([
         'tahun_berdiri' => (int) ($_POST['tahun_berdiri'] ?? 0),
@@ -238,8 +253,10 @@ try {
     exit;
 }
 
+// (7) Kirim respon balasan JSON sukses
 echo json_encode([
     'success' => true,
     'message' => 'Profil desa berhasil disimpan.',
     'data'    => $saved,
 ], JSON_UNESCAPED_UNICODE);
+

@@ -1,18 +1,31 @@
 <?php
+/* ======================================================
+   VIEW BERANDA PUBLIK (HOME PAGE VIEW)
+
+   File ini ibarat "ruang tamu utama website Pekon Air Naningan":
+   halaman pertama yang dilihat pengunjung saat membuka website pekon.
+
+   Data / Variabel yang dipanggil di file ini:
+   - $homepage['stats']        : Statistik desa (luas wilayah, total jiwa, kk, dusun, ketinggian mdpl)
+   - $homepage['tagline']      : Tagline / deskripsi singkat pekon
+   - $homepage['history']      : Sejarah singkat pekon (paragraf & quote)
+   - $homepage['hamlets']      : Daftar dusun beserta jumlah warganya
+   - $homepage['livelihoods']  : Data mata pencaharian warga (persentase kopi/aren/dll)
+   - $homepage['featured_umkm']: Produk unggulan UMKM pekon yang ditampilkan di beranda
+   - $homepage['latest_news']  : Berita desa terbaru yang baru saja diterbitkan
+   - $homepage['featured_media']: Galeri foto & video unggulan desa
+====================================================== */
+
 $currentPage     = 'beranda';
-$pageTitle       = 'Beranda | Pekon Air Naningan';
+$pageTitle       = 'Pekon Air Naningan Tanggamus | Website Resmi Desa';
 $homepage        = $homepage ?? [];
-$metaDescription = (string) ($homepage['tagline'] ?? 'Situs resmi Pekon Air Naningan — profil desa, produk UMKM warga, dan berita pekon, dalam satu tempat.');
+$metaDescription = 'Website resmi Pekon Air Naningan, Tanggamus. Temukan profil desa, data pemerintahan, UMKM lokal, berita terbaru, galeri, dan layanan warga.';
+$metaKeywords    = 'Pekon Air Naningan, Desa Air Naningan, Air Naningan Tanggamus, website desa Tanggamus, UMKM Air Naningan';
 $history         = $homepage['history'] ?? [];
 $hamlets         = is_array($homepage['hamlets'] ?? null) ? $homepage['hamlets'] : [];
 $livelihoods     = is_array($homepage['livelihoods'] ?? null) ? $homepage['livelihoods'] : [];
 require __DIR__ . '/../partials/header.php';
 ?>
-
-<div class="flex flex-col w-full">
-
-    <!-- Hero Section -->
-    <section class="relative pt-24 lg:pt-32 pb-section-v-mobile lg:pb-section-v-desktop px-container-pad-mobile lg:px-container-pad-desktop overflow-hidden">
         <!-- Abstract wavy background lines (SVG) -->
         <div class="absolute inset-0 pointer-events-none opacity-20 text-gold-soft">
             <svg class="w-full h-full" fill="none" preserveAspectRatio="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 1440 600">

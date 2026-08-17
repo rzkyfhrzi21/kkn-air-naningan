@@ -1,3 +1,21 @@
+/* ======================================================
+   SKRIP JAVASCRIPT: JEBAKAN FOKUS MODAL (MODAL FOCUS TRAP)
+
+   File ini ibarat "petugas pengatur lalu lintas papan popup (modal)":
+   saat sebuah modal popup muncul di layar, skrip ini memastikan pengguna
+   yang menggunakan keyboard (tombol Tab) atau pembaca layar (screen reader)
+   tidak "tersesat" keluar dari modal sebelum modal tersebut ditutup.
+
+   Alur Kerjanya:
+   (1) Mengamati perubahan di layar (MutationObserver) — jika ada modal dengan atribut `data-modal`
+       yang muncul (kelas `.hidden` dilepas), jalankan jebakan fokus.
+   (2) Saat modal terbuka, otomatis gerakkan kursor fokus ke elemen interaktif pertama (tombol/input).
+   (3) Jika pengguna menekan tombol **Tab**, kunci kursor agar berputar di dalam modal saja
+       (dari tombol terakhir kembali ke tombol pertama).
+   (4) Jika pengguna menekan tombol **ESC**, otomatis simulasikan klik tombol silang (Close).
+   (5) Saat modal ditutup, kembalikan kursor fokus ke tombol pemicu awal sebelum modal dibuka.
+====================================================== */
+
 /**
  * modal-focus.js — Focus trap ringan untuk modal custom.
  *
@@ -14,35 +32,42 @@
 (function () {
     'use strict';
 
+    // Daftar selector elemen yang bisa menerima fokus kursor (tombol, input, link, dll)
     var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-    var stack = [];      // modal yang sedang terbuka (tumpukan)
-    var triggers = [];   // elemen pemicu per modal
+    var stack = [];      // Tumpukan modal yang sedang terbuka
+    var triggers = [];   // Daftar tombol pemicu awal per modal
 
+    // Fungsi cek: apakah elemen modal sedang tampil di layar (tidak tersembunyi)?
     function isOpen(el) {
         return el && !el.classList.contains('hidden') && getComputedStyle(el).display !== 'none';
     }
 
+    // Fungsi cari: temukan tombol silang / tombol tutups di dalam modal
     function closeBtn(el) {
         var btn = el.querySelector('[data-modal-close]');
         if (btn) return btn;
         return el.querySelector('button[aria-label*="Tutup" i], button[aria-label*="close" i]');
     }
 
+    // (3) & (4) Penangan tombol keyboard (Tab dan Escape)
     function onKey(e) {
-        var top = stack[stack.length - 1];
+        var top = stack[stack.length - 1]; // Ambil modal paling atas yang sedang aktif
         if (!top) return;
 
+        // (3) Kunci tombol Tab di dalam modal
         if (e.key === 'Tab') {
             var focusables = top.querySelectorAll(FOCUSABLE);
             if (!focusables.length) return;
             var first = focusables[0];
             var last = focusables[focusables.length - 1];
 
+            // Shift + Tab di elemen pertama → lempar fokus ke elemen terakhir
             if (e.shiftKey && (document.activeElement === first || !top.contains(document.activeElement))) {
                 e.preventDefault();
                 last.focus();
             } else if (!e.shiftKey && document.activeElement === last) {
+                // Tab biasa di elemen terakhir → putar balik ke elemen pertama
                 e.preventDefault();
                 first.focus();
             } else if (!top.contains(document.activeElement)) {
@@ -50,11 +75,13 @@
                 first.focus();
             }
         } else if (e.key === 'Escape') {
+            // (4) Tekan ESC → klik tombol tutup
             var btn = closeBtn(top);
             if (btn) btn.click();
         }
     }
 
+    // (2) Buka Modal: simpan elemen pemicu & pindahkan fokus ke input/tombol pertama
     function openModal(el) {
         stack.push(el);
         triggers.push(document.activeElement);
@@ -62,6 +89,7 @@
         if (first && typeof first.focus === 'function') first.focus();
     }
 
+    // (5) Tutup Modal: keluarkan dari tumpukan & kembalikan fokus ke pemicu awal
     function closeModal(el) {
         var idx = stack.indexOf(el);
         if (idx === -1) return;
@@ -77,8 +105,10 @@
         }
     }
 
+    // Pasang pendengar tombol keyboard pada dokumen
     document.addEventListener('keydown', onKey, true);
 
+    // (1) Pengamat Perubahan DOM (MutationObserver) untuk mendeteksi kapan modal muncul/sembunyi
     var observer = new MutationObserver(function (mutations) {
         for (var i = 0; i < mutations.length; i++) {
             var m = mutations[i];
@@ -98,3 +128,4 @@
         observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['class'] });
     }
 })();
+

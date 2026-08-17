@@ -1,7 +1,22 @@
 <?php
+/* ======================================================
+   VIEW KONTAK & PENGADUAN PUBLIK (CONTACT PAGE VIEW)
+
+   File ini ibarat "loket pelayanan & meja pengaduan balai pekon":
+   tempat warga atau pengunjung situs mengirimkan pesan/pertanyaan/aspirasi,
+   serta melihat alamat balai pekon, jam kerja kantor, dan nomor WhatsApp resmi.
+
+   Data / Variabel yang dipanggil di file ini:
+   - $alamat       : Alamat balai pekon (diambil dari env KONTAK_ALAMAT)
+   - $whatsapp     : Nomor WA balai pekon (diambil dari env KONTAK_WHATSAPP)
+   - $mapsEmbed    : URL embed Google Maps balai pekon
+   - $jamLayanan   : Jam kerja operasional kantor balai pekon (Senin-Minggu)
+====================================================== */
+
 $currentPage     = 'kontak';
-$pageTitle       = 'Kontak | Pekon Air Naningan';
-$metaDescription = 'Hubungi Pekon Air Naningan — layanan informasi, pengaduan, dan saran. Kami siap melayani pada jam kerja operasional balai pekon.';
+$pageTitle       = 'Kontak Pekon Air Naningan | Layanan Warga Tanggamus';
+$metaDescription = 'Hubungi Balai Pekon Air Naningan, Tanggamus untuk informasi, layanan warga, pengaduan, dan saran. Lihat alamat, peta, WhatsApp, dan jam pelayanan.';
+$metaKeywords    = 'kontak Pekon Air Naningan, Balai Pekon Air Naningan, layanan warga Tanggamus, alamat Air Naningan';
 
 $alamat      = env('KONTAK_ALAMAT') ?? 'Balai Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus';
 $whatsapp    = env('KONTAK_WHATSAPP') ?? '';

@@ -2,8 +2,26 @@
 
 declare(strict_types=1);
 
+/* ======================================================
+   ENDPOINT AJAX: SIMPAN / PERBARUI DATA UMKM (FORM KELOLA UMKM)
+
+   File ini ibarat "petugas pendaftaran usaha warga":
+   saat admin menekan tombol "Simpan UMKM" (tambah usaha baru atau edit data usaha lama),
+   halaman Kelola UMKM memanggil file ini lewat AJAX.
+
+   Alur kerjanya:
+   (1) Memeriksa login admin & token keamanan CSRF.
+   (2) Validasi nama usaha (wajib) & format nomor WhatsApp (diawali 0 atau 62).
+   (3) Pengolahan upload foto produk/usaha ke `uploads/umkm/` (maks 2MB, format JPG/PNG/GIF/WebP).
+   (4) Menyiapkan array payload (nama, jenis usaha, kategori, deskripsi, pemilik, dusun, no_wa, status, is_featured).
+   (5) Jika ID kosong: panggil `Umkm::create()` untuk menambah data usaha baru.
+       Jika ID ada: panggil `Umkm::update()` untuk memperbarui data usaha lama.
+   (6) Mengirimkan balasan JSON berpesan rinci untuk notifikasi toast.
+====================================================== */
+
 header('Content-Type: application/json; charset=utf-8');
 
+// (1) Cek Sesi Admin & Metode POST
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -18,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Cek Token Keamanan CSRF
 $csrf = (string) ($_POST['csrf_token'] ?? '');
 if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $csrf)) {
     http_response_code(403);
@@ -27,6 +46,7 @@ if ($csrf === '' || empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['cs
 
 require_once __DIR__ . '/../../../app/Models/Umkm.php';
 
+// (2) Validasi Nama Usaha & Nomor WhatsApp
 $nama = trim((string) ($_POST['nama'] ?? ''));
 if ($nama === '') {
     echo json_encode(['success' => false, 'message' => 'Nama produk/usaha wajib diisi.']);
@@ -39,6 +59,7 @@ if ($wa !== '' && !str_starts_with($wa, '62') && !str_starts_with($wa, '0')) {
     exit;
 }
 
+// (3) Pengolahan Upload File Foto Produk/Usaha (Maks 2MB)
 $fotoPath  = '';
 $fileErr   = $_FILES['foto_file']['error'] ?? UPLOAD_ERR_NO_FILE;
 $id        = trim((string) ($_POST['id'] ?? ''));
@@ -88,6 +109,7 @@ if ($fileErr === UPLOAD_ERR_OK) {
     }
 }
 
+// (4) Rangkai array payload untuk disimpan
 $payload = [
     'nama'        => $nama,
     'usaha'       => trim((string) ($_POST['usaha'] ?? '')),
@@ -101,7 +123,7 @@ $payload = [
     'is_featured' => !empty($_POST['is_featured']),
 ];
 
-
+// (5) Eksekusi simpan baru (create) atau perbarui lama (update)
 try {
     if ($id !== '') {
         $item = Umkm::update($id, $payload);
@@ -126,3 +148,4 @@ try {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Gagal menyimpan: ' . $e->getMessage()]);
 }
+

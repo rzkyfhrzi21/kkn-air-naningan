@@ -1,4 +1,22 @@
 <?php
+/* ======================================================
+   BAGIAN KAKI SITUS PUBLIK (PUBLIC FOOTER PARTIAL)
+
+   File ini ibarat "fondasi kaki & halaman belakang rumah desa":
+   ditampilkan di paling bawah seluruh halaman publik situs Pekon Air Naningan.
+
+   Isi Bagian Antarmuka (UI):
+   (1) Logo pekon & Visi singkat pekon.
+   (2) Instagram resmi pekon (@pkpm56_airnaningan1).
+   (3) Informasi kontak desa (alamat kantor pekon dari file `.env`, email resmi).
+   (4) Tautan cepat menuju halaman Profil, Berita, UMKM, dan Kontak.
+   (5) Hak Cipta (Copyright) dengan tahun dinamis otomatis (`date('Y')`).
+   (6) Skrip JavaScript penangan menu HP (Mobile Menu Toggle):
+       - (6.1) Mendengarkan tombol garis tiga (hamburger menu) di layar HP.
+       - (6.2) Buka/tutup menu tersembunyi dengan animasi backdrop blur.
+       - (6.3) Tutup menu otomatis jika salah satu link diklik.
+====================================================== */
+
 $base = defined('APP_BASE') ? APP_BASE : '';
 $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
 ?>
@@ -7,6 +25,7 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
 <footer class="bg-surface-container-lowest border-t border-line-strong pt-section-v-mobile lg:pt-section-v-desktop pb-12">
     <div class="max-w-container-max mx-auto px-container-pad-mobile lg:px-container-pad-desktop">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-12">
+            <!-- (1) Logo & Deskripsi Singkat Pekon -->
             <div class="flex flex-col gap-4">
                 <div class="flex items-center gap-3">
                     <img class="h-8 w-auto"
@@ -17,7 +36,7 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
                 <p class="text-ink-dim text-body-md max-w-xs">
                     Mewujudkan masyarakat pekon yang mandiri, berbudaya, dan sejahtera melalui optimalisasi potensi alam.
                 </p>
-                <!-- Instagram -->
+                <!-- (2) Link Instagram Resmi Pekon -->
                 <a href="https://www.instagram.com/pkpm56_airnaningan1/"
                    target="_blank" rel="noopener noreferrer"
                    class="inline-flex items-center gap-2.5 text-ink-dim hover:text-gold-soft transition-colors group w-fit"
@@ -30,6 +49,7 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
                     <span class="font-label-mono text-label-mono tracking-wider">@pkpm56_airnaningan1</span>
                 </a>
             </div>
+            <!-- (3) Informasi Alamat & Email Pekon -->
             <div class="flex flex-col gap-4">
                 <h4 class="font-h3 text-h3 text-gold-soft">Kontak Kami</h4>
                 <div class="flex flex-col gap-2 text-ink-dim text-body-md">
@@ -43,6 +63,7 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
                     </span>
                 </div>
             </div>
+            <!-- (4) Tautan Navigasi Cepat -->
             <div class="flex flex-col gap-4">
                 <h4 class="font-h3 text-h3 text-gold-soft">Tautan Cepat</h4>
                 <div class="grid grid-cols-2 gap-2 text-ink-dim text-body-md">
@@ -53,6 +74,7 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
                 </div>
             </div>
         </div>
+        <!-- (5) Baris Hak Cipta & Kebijakan -->
         <div class="border-t border-line pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-label-mono text-ink-dim">
             <p>© <?= date('Y') ?> PEKON AIR NANINGAN. ALL RIGHTS RESERVED.</p>
             <div class="flex items-center gap-6">
@@ -74,8 +96,17 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
     </div>
 </footer>
 
+<!-- (6) Skrip JavaScript Penangan Menu HP -->
 <script>
-    // Mobile menu toggle
+    /* ======================================================
+       SKRIP JAVASCRIPT: OPEN/CLOSE MENU NAVIGASI HP (MOBILE MENU)
+       
+       Alur Kerjanya:
+       (6.1) Dengarkan klik pada tombol garis tiga (#mobile-menu-btn).
+       (6.2) Jika menu terbuka: sembunyikan menu & kembalikan scroll layar.
+             Jika menu tertutup: tampilkan menu & kunci scroll layar (overflow hidden).
+       (6.3) Jika pengguna mengklik salah satu link menu, tutup menu otomatis.
+    ====================================================== */
     (function () {
         const btn    = document.getElementById('mobile-menu-btn');
         const menu   = document.getElementById('mobile-menu');
@@ -97,7 +128,7 @@ $footerAlamat = env('KONTAK_ALAMAT') ?? 'Jl. Raya Air Naningan, Tanggamus';
             }
         });
 
-        // Close menu when a nav link inside it is clicked
+        // Tutup menu otomatis setelah link diklik
         menu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 menu.classList.remove('flex');
