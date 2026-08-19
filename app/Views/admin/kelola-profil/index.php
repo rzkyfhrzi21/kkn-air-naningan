@@ -78,7 +78,9 @@ if ($struktur === []) {
     </div>
 
 
-    <form id="form-profil" class="flex flex-col gap-gutter" enctype="multipart/form-data">
+    <!-- novalidate: validasi bisnis ditangani handler JS (toast) + server;
+         constraint validation (min/max/step) tidak boleh memblokir submit diam-diam. -->
+    <form id="form-profil" class="flex flex-col gap-gutter" enctype="multipart/form-data" novalidate>
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf, ENT_QUOTES, 'UTF-8') ?>">
 
         <!-- Tab Nav -->
@@ -446,7 +448,121 @@ if ($struktur === []) {
     const form = document.getElementById('form-profil');
 
     function showToast(msg, ok) {
-        window.showAdminToast(msg, ok);
+        if (typeof window.showAdminToast === 'function') {
+            window.showAdminToast(msg, ok);
+            return;
+        }
+        // Fallback: fungsi global belum tersedia (footer gagal dimuat) —
+        // tampilkan toast sederhana agar pengguna tidak pernah "diam tanpa kabar".
+        let wrap = document.getElementById('admin-toast-wrap');
+        if (!wrap) {
+            wrap = document.createElement('div');
+            wrap.id = 'admin-toast-wrap';
+            wrap.className = 'fixed top-4 right-4 z-[150] flex flex-col gap-2 items-end pointer-events-none';
+            document.body.appendChild(wrap);
+        }
+        const toast = document.createElement('div');
+        toast.style.cssText = 'pointer-events:auto;display:flex;align-items:flex-start;gap:.75rem;min-width:300px;max-width:400px;padding:1rem 1rem .75rem;border-radius:1rem;background:var(--color-surface,#ffffff);border:1px solid ' + (ok ? 'rgba(242,191,93,.35)' : 'rgba(255,180,171,.4)') + ';box-shadow:0 16px 48px rgba(0,0,0,.5);transform:translateX(120%);opacity:0;transition:transform .3s ease,opacity .3s ease;';
+        toast.innerHTML = '<div style="flex:1;min-width:0;word-break:break-word;"><p style="margin:0;font-size:.875rem;line-height:1.4;color:var(--color-ink,#0f172a);"></p></div><button type="button" aria-label="Tutup notifikasi" style="flex-shrink:0;margin-left:.5rem;border:none;background:none;cursor:pointer;font-size:1rem;line-height:1;color:var(--color-ink-dim,#64748b);">&times;</button>';
+        toast.querySelector('p').textContent = String(msg ?? '');
+        wrap.appendChild(toast);
+        requestAnimationFrame(() => {
+            toast.style.transform = 'translateX(0)';
+            toast.style.opacity = '1';
+        });
+        const close = () => {
+            toast.style.transform = 'translateX(120%)';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        };
+        toast.querySelector('button').addEventListener('click', close);
+        if (ok) setTimeout(close, 2000);
+    }
+
+    // ── Submit via event delegation ──────────────────────────────────────────
+    // Listener dipasang sejak awal sehingga tetap hidup meski ada error JS lain
+    // saat inisialisasi (mis. elemen rich-text belum siap). Tanpa ini, tombol
+    // "Simpan Perubahan" bisa diam tanpa toast bila salah satu inisialisasi gagal.
+    document.addEventListener('submit', (e) => {
+        if (e.target && e.target.id === 'form-profil') handleProfilSubmit(e);
+    });
+
+    async function handleProfilSubmit(e) {
+        e.preventDefault();
+        try {
+            if (rte && rteInput) {
+                rteInput.value = normalizeRichHtml(rte.innerHTML);
+            }
+
+        const jobInputs = [...document.querySelectorAll('#job-list input[name="pekerjaan_persen[]"]')];
+        const jobTotal = jobInputs.reduce((sum, input) => sum + Math.max(0, Number(input.value) || 0), 0);
+        if (jobInputs.length === 0) {
+            showToast('Minimal satu jenis mata pencaharian harus diisi.', false);
+            return;
+        }
+        if (jobTotal !== 100) {
+            showToast(`Total persentase mata pencaharian harus tepat 100%. Saat ini ${jobTotal}%.`, false);
+            return;
+        }
+
+        // Validasi client-side semua file foto sebelum kirim
+        let fotoError = false;
+        document.querySelectorAll('.struktur-foto-input').forEach(inp => {
+            const file = inp.files[0];
+            if (!file) return;
+            if (file.size > FOTO_MAX_BYTES) {
+                showToast(`Foto "${file.name}" melebihi batas 2 MB.`, false);
+                fotoError = true;
+            } else if (!FOTO_ACCEPT.includes(file.type)) {
+                showToast(`Format foto "${file.name}" tidak didukung (JPG/PNG/WEBP/GIF).`, false);
+                fotoError = true;
+            }
+        });
+        if (fotoError) return;
+
+        const btn = document.getElementById('btn-simpan-profil');
+        btn.disabled = true;
+        btn.classList.add('opacity-60');
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 20000);
+
+        try {
+            const fd = new FormData(form);
+            const res = await fetch(base + '/admin/ajax/store-profil', {
+                method: 'POST',
+                body: fd,
+                credentials: 'same-origin',
+                signal: controller.signal,
+            });
+            const json = await res.json().catch(() => null);
+            if (json === null) {
+                showToast('Respons server tidak valid. Muat ulang halaman lalu coba lagi.', false);
+            } else {
+                showToast(json.message || (json.success ? 'Tersimpan.' : 'Gagal.'), !!json.success);
+            }
+        } catch (err) {
+            showToast(
+                err.name === 'AbortError'
+                    ? 'Waktu permintaan habis. Periksa koneksi internet Anda lalu coba lagi.'
+                    : 'Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.',
+                false
+            );
+        } finally {
+            clearTimeout(timer);
+            btn.disabled = false;
+            btn.classList.remove('opacity-60');
+        }
+        } catch (err) {
+            // Error tak terduga di dalam handler: beri tahu lewat toast + pulihkan tombol,
+            // agar tombol Simpan tidak pernah "diam" tanpa umpan balik.
+            showToast('Terjadi kesalahan pada halaman: ' + ((err && err.message) ? err.message : String(err)), false);
+            const btn = document.getElementById('btn-simpan-profil');
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60');
+            }
+        }
     }
 
     function renumberMisi() {
@@ -607,7 +723,10 @@ if ($struktur === []) {
         }
         inputs.forEach(input => {
             const otherTotal = total - (Math.max(0, Number(input.value) || 0));
-            input.max = String(Math.max(0, 100 - otherTotal));
+            const limit = Math.max(0, 100 - otherTotal);
+            // Jangan pernah menurunkan max di bawah nilai yang sudah ada di input —
+            // jika tidak, nilai lama jadi invalid (rangeOverflow) dan submit diblokir diam-diam.
+            input.max = String(Math.max(limit, Math.max(0, Number(input.value) || 0)));
         });
     }
 
@@ -682,57 +801,6 @@ if ($struktur === []) {
 
     rte.addEventListener('input', () => { rteInput.value = normalizeRichHtml(rte.innerHTML); });
     rte.addEventListener('blur', () => { rteInput.value = normalizeRichHtml(rte.innerHTML); });
-
-    form?.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        rteInput.value = normalizeRichHtml(rte.innerHTML);
-
-        const jobInputs = [...document.querySelectorAll('#job-list input[name="pekerjaan_persen[]"]')];
-        const jobTotal = jobInputs.reduce((sum, input) => sum + Math.max(0, Number(input.value) || 0), 0);
-        if (jobInputs.length === 0) {
-            showToast('Minimal satu jenis mata pencaharian harus diisi.', false);
-            return;
-        }
-        if (jobTotal !== 100) {
-            showToast(`Total persentase mata pencaharian harus tepat 100%. Saat ini ${jobTotal}%.`, false);
-            return;
-        }
-
-        // Validasi client-side semua file foto sebelum kirim
-        let fotoError = false;
-        document.querySelectorAll('.struktur-foto-input').forEach(inp => {
-            const file = inp.files[0];
-            if (!file) return;
-            if (file.size > FOTO_MAX_BYTES) {
-                showToast(`Foto "${file.name}" melebihi batas 2 MB.`, false);
-                fotoError = true;
-            } else if (!FOTO_ACCEPT.includes(file.type)) {
-                showToast(`Format foto "${file.name}" tidak didukung (JPG/PNG/WEBP/GIF).`, false);
-                fotoError = true;
-            }
-        });
-        if (fotoError) return;
-
-        const btn = document.getElementById('btn-simpan-profil');
-        btn.disabled = true;
-        btn.classList.add('opacity-60');
-
-        try {
-            const fd = new FormData(form);
-            const res = await fetch(base + '/admin/ajax/store-profil', {
-                method: 'POST',
-                body: fd,
-                credentials: 'same-origin',
-            });
-            const json = await res.json();
-            showToast(json.message || (json.success ? 'Tersimpan.' : 'Gagal.'), !!json.success);
-        } catch (err) {
-            showToast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false);
-        } finally {
-            btn.disabled = false;
-            btn.classList.remove('opacity-60');
-        }
-    });
 })();
 </script>
 <?php require __DIR__ . '/../partials/footer.php'; ?>
