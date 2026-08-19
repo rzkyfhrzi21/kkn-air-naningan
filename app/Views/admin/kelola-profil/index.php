@@ -766,15 +766,60 @@ if ($struktur === []) {
         if (row) row.querySelector('.struktur-foto-input')?.click();
     });
 
-    avatarModalKosong?.addEventListener('click', () => {
+    avatarModalKosong?.addEventListener('click', async () => {
         const row = activeAvatarRow;
         closeAvatarPreview();
         if (!row) return;
-        const preview = row.querySelector('.struktur-foto-preview');
-        const hidden  = row.querySelector('.struktur-foto-hidden');
-        if (hidden) hidden.value = '';
-        if (preview) preview.innerHTML = '<span class="material-symbols-outlined text-ink-dim text-[22px]">person</span>';
-        showToast('Foto pengurus dikosongkan. Klik Simpan Perubahan untuk menerapkan.', true);
+        const rows = [...document.querySelectorAll('.struktur-row')];
+        const idx = rows.indexOf(row);
+        if (idx === -1) {
+            showToast('Data pengurus tidak ditemukan. Muat ulang halaman lalu coba lagi.', false);
+            return;
+        }
+        const form = document.getElementById('form-profil');
+        const token = form?.querySelector('input[name="csrf_token"]')?.value || '';
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 20000);
+        const fd = new FormData();
+        fd.append('csrf_token', token);
+        fd.append('index', String(idx));
+        try {
+            const res = await fetch(base + '/admin/ajax/delete-struktur-foto', {
+                method: 'POST',
+                body: fd,
+                credentials: 'same-origin',
+                signal: controller.signal,
+            });
+            const json = await res.json().catch(() => null);
+            if (!json) {
+                showToast('Respons server tidak valid. Muat ulang halaman lalu coba lagi.', false);
+                return;
+            }
+            if (json.success) {
+                const hidden = row.querySelector('.struktur-foto-hidden');
+                const preview = row.querySelector('.struktur-foto-preview');
+                const label = row.querySelector('label');
+                if (hidden) hidden.value = '';
+                if (preview) preview.innerHTML = '<span class="material-symbols-outlined text-ink-dim text-[22px]">person</span>';
+                if (label) {
+                    const textNode = [...label.childNodes].find(n => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== '');
+                    if (textNode) textNode.nodeValue = 'Pilih Foto';
+                    label.classList.remove('detail-foto-btn');
+                }
+                showToast(json.message, true);
+            } else {
+                showToast(json.message || 'Gagal menghapus foto.', false);
+            }
+        } catch (err) {
+            showToast(
+                err.name === 'AbortError'
+                    ? 'Waktu permintaan habis. Periksa koneksi internet Anda lalu coba lagi.'
+                    : 'Gagal terhubung ke server. Periksa koneksi internet Anda lalu coba lagi.',
+                false
+            );
+        } finally {
+            clearTimeout(timer);
+        }
     });
 
     document.getElementById('btn-add-job')?.addEventListener('click', () => {
