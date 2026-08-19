@@ -263,7 +263,7 @@ if ($struktur === []) {
                     <div class="flex flex-col md:flex-row gap-3 items-start struktur-row bg-surface p-3 rounded-xl border border-line">
                         <!-- Thumbnail + file input -->
                         <div class="flex flex-col items-center gap-1.5 shrink-0">
-                            <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-line-strong bg-surface-2 flex items-center justify-center struktur-foto-preview">
+                            <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-line-strong bg-surface-2 flex items-center justify-center struktur-foto-preview<?= $fotoLama !== '' ? ' cursor-pointer' : '' ?>"<?= $fotoLama !== '' ? ' role="button" title="Lihat foto" tabindex="0"' : '' ?>>
                                 <?php if ($fotoLama !== ''): ?>
                                     <img src="<?= htmlspecialchars($fotoLama, ENT_QUOTES, 'UTF-8') ?>" class="w-full h-full object-cover" alt="">
                                 <?php else: ?>
@@ -441,6 +441,25 @@ if ($struktur === []) {
     #rte-narasi p { margin: .5em 0; }
     #rte-narasi a { color: var(--color-primary, #1f584a); text-decoration: underline; }
 </style>
+
+<!-- Modal preview foto pengurus (avatar) -->
+<div id="modal-preview-avatar" data-modal class="hidden fixed inset-0 z-[140] items-center justify-center p-4 md:p-8" role="dialog" aria-modal="true" aria-label="Preview foto pengurus">
+    <div class="absolute inset-0 bg-black/80" id="modal-preview-avatar-backdrop"></div>
+    <div class="relative flex h-[88vh] w-[94vw] max-w-[1400px] items-center justify-center">
+        <img id="modal-preview-avatar-img" src="" alt="Preview foto pengurus" class="h-full w-full rounded-2xl border border-line bg-black/20 object-contain shadow-2xl">
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3">
+            <button type="button" id="modal-preview-avatar-ubah" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase tracking-wider bg-primary text-on-primary hover:bg-primary-fixed shadow-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">photo_camera</span> Ubah Foto
+            </button>
+            <button type="button" id="modal-preview-avatar-kosongkan" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase tracking-wider bg-surface text-danger hover:bg-surface-2 border border-line shadow-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">image_not_supported</span> Kosongkan
+            </button>
+        </div>
+        <button type="button" id="modal-preview-avatar-close" class="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface text-ink shadow-lg hover:bg-surface-2" aria-label="Tutup preview foto">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+</div>
 
 <script>
 (function () {
@@ -695,6 +714,58 @@ if ($struktur === []) {
         if (btn) btn.closest('.struktur-row')?.remove();
     });
 
+    // ── Preview foto pengurus (avatar) ───────────────────────────────────────
+    const avatarModal       = document.getElementById('modal-preview-avatar');
+    const avatarModalImg    = document.getElementById('modal-preview-avatar-img');
+    const avatarModalUbah   = document.getElementById('modal-preview-avatar-ubah');
+    const avatarModalKosong = document.getElementById('modal-preview-avatar-kosongkan');
+    let activeAvatarRow = null;
+
+    function openAvatarPreview(src) {
+        if (!src || !avatarModal) return;
+        avatarModalImg.src = src;
+        avatarModal.classList.remove('hidden');
+        avatarModal.classList.add('flex');
+    }
+
+    function closeAvatarPreview() {
+        if (!avatarModal) return;
+        avatarModal.classList.add('hidden');
+        avatarModal.classList.remove('flex');
+        avatarModalImg.src = '';
+        activeAvatarRow = null;
+    }
+
+    document.getElementById('struktur-list')?.addEventListener('click', (e) => {
+        const preview = e.target.closest('.struktur-foto-preview');
+        if (!preview) return;
+        const img = preview.querySelector('img');
+        if (img && img.getAttribute('src')) {
+            activeAvatarRow = preview.closest('.struktur-row');
+            openAvatarPreview(img.getAttribute('src'));
+        }
+    });
+
+    document.getElementById('modal-preview-avatar-close')?.addEventListener('click', closeAvatarPreview);
+    document.getElementById('modal-preview-avatar-backdrop')?.addEventListener('click', closeAvatarPreview);
+
+    avatarModalUbah?.addEventListener('click', () => {
+        const row = activeAvatarRow;
+        closeAvatarPreview();
+        if (row) row.querySelector('.struktur-foto-input')?.click();
+    });
+
+    avatarModalKosong?.addEventListener('click', () => {
+        const row = activeAvatarRow;
+        closeAvatarPreview();
+        if (!row) return;
+        const preview = row.querySelector('.struktur-foto-preview');
+        const hidden  = row.querySelector('.struktur-foto-hidden');
+        if (hidden) hidden.value = '';
+        if (preview) preview.innerHTML = '<span class="material-symbols-outlined text-ink-dim text-[22px]">person</span>';
+        showToast('Foto pengurus dikosongkan. Klik Simpan Perubahan untuk menerapkan.', true);
+    });
+
     document.getElementById('btn-add-job')?.addEventListener('click', () => {
         const list = document.getElementById('job-list');
         const row = document.createElement('div');
@@ -803,4 +874,5 @@ if ($struktur === []) {
     rte.addEventListener('blur', () => { rteInput.value = normalizeRichHtml(rte.innerHTML); });
 })();
 </script>
+
 <?php require __DIR__ . '/../partials/footer.php'; ?>
