@@ -21,7 +21,9 @@ $metaKeywords    = 'kontak Pekon Air Naningan, Balai Pekon Air Naningan, layanan
 $alamat      = env('KONTAK_ALAMAT') ?? 'Balai Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus';
 $whatsapp    = env('KONTAK_WHATSAPP') ?? '';
 $whatsappTel = preg_match('/^0(\d+)$/', $whatsapp, $m) ? '62' . $m[1] : preg_replace('/\D/', '', $whatsapp);
-$mapsEmbed   = env('MAPS_EMBED_URL') ?? '';
+$mapsEmbed   = $mapsEmbed ?? env('MAPS_EMBED_URL') ?? '';
+$mapsLocation = $mapsLocation ?? 'Balai Pekon Air Naningan, Kecamatan Air Naningan, Kabupaten Tanggamus';
+$mapsLink    = $mapsEmbed !== '' ? $mapsEmbed : 'https://maps.google.com/?q=' . rawurlencode($mapsLocation);
 
 $jamLayanan = [
     'Senin'   => env('JAM_SENIN')   ?? '08:00 - 15:00',
@@ -133,7 +135,7 @@ require __DIR__ . '/../partials/header.php';
                     <?php endif; ?>
                     <div class="absolute bottom-4 left-4 right-4 bg-surface/90 backdrop-blur-md border border-line p-3 rounded-lg flex items-center justify-between">
                         <span class="font-body-md text-sm text-ink-dim">Peta Lokasi Kantor Pekon</span>
-                        <a href="<?= htmlspecialchars($mapsEmbed !== '' ? $mapsEmbed : 'https://maps.google.com', ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"
+                        <a href="<?= htmlspecialchars($mapsLink, ENT_QUOTES, 'UTF-8') ?>" target="_blank" rel="noopener noreferrer"
                            class="text-primary hover:text-gold-soft text-sm font-medium flex items-center gap-1 transition-colors">
                             Buka Map <span class="material-symbols-outlined text-[16px]">open_in_new</span>
                         </a>

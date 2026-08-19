@@ -143,6 +143,56 @@ class Galeri
         return null; // Id tidak ketemu → null
     }
 
+    public static function swapOrder(string $id, string $direction): bool
+    {
+        // (1) Ambil seluruh galeri; minimal 2 media agar ada yang bisa ditukar
+        $items = self::all();
+        $n     = count($items);
+        if ($n < 2) {
+            return false;
+        }
+        // (2) Cari posisi media yang diminta
+        $pos = null;
+        foreach ($items as $i => $item) {
+            if (($item['id'] ?? '') === $id) {
+                $pos = $i;
+                break;
+            }
+        }
+        if ($pos === null) {
+            return false; // Media tidak ditemukan
+        }
+        // (3) Tentukan tetangga tujuan: naik = posisi sebelumnya, turun = sesudahnya
+        if ($direction === 'up') {
+            $target = $pos - 1;
+            if ($target < 0) {
+                return false; // Sudah paling atas, tidak bisa naik lagi
+            }
+        } elseif ($direction === 'down') {
+            $target = $pos + 1;
+            if ($target >= $n) {
+                return false; // Sudah paling bawah, tidak bisa turun lagi
+            }
+        } else {
+            return false; // Arah tidak sah
+        }
+        // (4) Tukar nilai urutan kedua media
+        $tmp = $items[$pos]['urutan'];
+        $items[$pos]['urutan']     = $items[$target]['urutan'];
+        $items[$target]['urutan']  = $tmp;
+        $items[$pos]['updated_at'] = date('c');
+        $items[$target]['updated_at'] = date('c');
+        // (5) Urutkan ulang lalu rapikan nomor 1..n (menutup celah dari angka dobel lama)
+        usort($items, static fn($a, $b) => ((int) ($a['urutan'] ?? 0)) <=> ((int) ($b['urutan'] ?? 0)));
+        foreach ($items as $i => &$item) {
+            $item['urutan'] = $i + 1;
+        }
+        unset($item);
+        // (6) Simpan sekali; save() otomatis backup versi lama sebelum menimpa
+        self::save($items);
+        return true;
+    }
+
     public static function delete(string $id): bool
     {
         $items = self::all(); // (1) Ambil seluruh galeri

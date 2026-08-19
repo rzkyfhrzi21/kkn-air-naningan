@@ -59,14 +59,8 @@ if (!$item) {
     exit;
 }
 
-// (3) Kalau pesan ini belum dibaca (is_read masih kosong/false), tandai
-//     sekarang sebagai sudah dibaca (is_read = true) via Model Pesan —
-//     seperti membuka amplop surat. Update juga ikut membuat backup
-//     otomatis file JSON lama. Kalau update gagal, data lama tetap dipakai.
-if (!($item['is_read'] ?? false)) {
-    $item = Pesan::update($id, ['is_read' => true]) ?? $item;
-}
-
-// (4) Kirim isi pesan lengkap dalam bentuk JSON ke halaman Kotak Masuk,
+// (3) Kirim isi pesan lengkap dalam bentuk JSON ke halaman Kotak Masuk,
 //     supaya admin bisa membaca dan menindaklanjuti pesan tersebut.
+//     Catatan: endpoint ini read-only — membuka pesan TIDAK mengubah
+//     status is_read. Status baca hanya berubah lewat aksi tombol admin.
 echo json_encode(['success' => true, 'data' => $item]);

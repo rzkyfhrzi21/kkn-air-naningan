@@ -18,7 +18,7 @@ loadEnv(BASE_PATH . '/.env');
 // ── Deteksi APP_BASE secara otomatis ─────────────────────────────────────────
 // Misal SCRIPT_NAME = /kkn-air-naningan2/index.php → APP_BASE = /kkn-air-naningan2
 // Misal SCRIPT_NAME = /index.php                   → APP_BASE = ''
-$_scriptDir = dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php');
+$_scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/index.php'));
 define('APP_BASE', $_scriptDir === '/' ? '' : rtrim($_scriptDir, '/'));
 unset($_scriptDir);
 

@@ -41,10 +41,13 @@ $search = trim($_POST['search'] ?? '');
 $readFilter = trim($_POST['read_filter'] ?? 'all');
 $perPage = 10;
 
-// (3) Ambil semua pesan dari file JSON via Model Pesan & hitung statistik
+// (3) Ambil semua pesan dari file JSON via Model Pesan & hitung statistik.
+//     Statistik (total/baru/dibaca) dihitung dari KOTAK MASUK saja —
+//     pesan yang diarsipkan keluar dari hitungan inbox.
 $allItems = Pesan::all();
-$statTotal  = count($allItems);
-$statBaru   = count(array_filter($allItems, static fn(array $i): bool => !($i['is_read'] ?? false)));
+$inboxItems = array_values(array_filter($allItems, static fn(array $i): bool => !($i['is_archived'] ?? false)));
+$statTotal  = count($inboxItems);
+$statBaru   = count(array_filter($inboxItems, static fn(array $i): bool => !($i['is_read'] ?? false)));
 $statDibaca = $statTotal - $statBaru;
 
 $items = $allItems;
@@ -57,11 +60,17 @@ if ($search !== '') {
     );
 }
 
-// Filter berdasarkan status dibaca (unread / read / all)
-if ($readFilter === 'unread') {
-    $items = array_filter($items, static fn(array $i): bool => !($i['is_read'] ?? false));
-} elseif ($readFilter === 'read') {
-    $items = array_filter($items, static fn(array $i): bool => (bool) ($i['is_read'] ?? false));
+// Filter berdasarkan status: unread / read / archived / all (inbox)
+if ($readFilter === 'archived') {
+    $items = array_filter($items, static fn(array $i): bool => (bool) ($i['is_archived'] ?? false));
+} else {
+    // Semua filter kotak masuk hanya menampilkan pesan NON-arsip
+    $items = array_filter($items, static fn(array $i): bool => !($i['is_archived'] ?? false));
+    if ($readFilter === 'unread') {
+        $items = array_filter($items, static fn(array $i): bool => !($i['is_read'] ?? false));
+    } elseif ($readFilter === 'read') {
+        $items = array_filter($items, static fn(array $i): bool => (bool) ($i['is_read'] ?? false));
+    }
 }
 
 // (5) Paginasi data (10 item per halaman)

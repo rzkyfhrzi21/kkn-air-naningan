@@ -26,6 +26,7 @@ $hamlets         = is_array($homepage['hamlets'] ?? null) ? $homepage['hamlets']
 $livelihoods     = is_array($homepage['livelihoods'] ?? null) ? $homepage['livelihoods'] : [];
 require __DIR__ . '/../partials/header.php';
 ?>
+    <section class="relative pt-24 lg:pt-32 pb-section-v-mobile lg:pb-section-v-desktop px-container-pad-mobile lg:px-container-pad-desktop overflow-hidden">
         <!-- Abstract wavy background lines (SVG) -->
         <div class="absolute inset-0 pointer-events-none opacity-20 text-gold-soft">
             <svg class="w-full h-full" fill="none" preserveAspectRatio="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 1440 600">

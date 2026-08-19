@@ -111,7 +111,8 @@ $kategori = $kategori ?? Galeri::KATEGORI;
                 <div class="flex flex-col gap-2">
                     <label class="font-body-md text-body-md text-ink-dim">Urutkan</label>
                     <div class="flex gap-2">
-                        <button type="button" class="sort-btn flex-1 py-3 rounded-lg bg-surface-2 text-ink border border-primary text-sm font-label-mono" data-sort="newest">Terbaru</button>
+                        <button type="button" class="sort-btn flex-1 py-3 rounded-lg bg-surface-2 text-ink border border-primary text-sm font-label-mono" data-sort="urutan">Urutan</button>
+                        <button type="button" class="sort-btn flex-1 py-3 rounded-lg bg-surface text-ink-dim border border-line hover:bg-surface-2 text-sm font-label-mono transition-colors" data-sort="newest">Terbaru</button>
                         <button type="button" class="sort-btn flex-1 py-3 rounded-lg bg-surface text-ink-dim border border-line hover:bg-surface-2 text-sm font-label-mono transition-colors" data-sort="oldest">Terlama</button>
                     </div>
                 </div>
@@ -178,14 +179,10 @@ $kategori = $kategori ?? Galeri::KATEGORI;
                 <textarea name="deskripsi" id="galeri-deskripsi" rows="3" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary resize-y" placeholder="Deskripsi singkat media..."></textarea>
             </label>
 
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 gap-3">
                 <label class="flex flex-col gap-1.5">
                     <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Rasio (opsional)</span>
                     <input name="rasio" id="galeri-rasio" type="text" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="100%" value="100%">
-                </label>
-                <label class="flex flex-col gap-1.5">
-                    <span class="font-label-mono text-label-mono text-gold-soft uppercase tracking-widest text-[10px]">Urutan</span>
-                    <input name="urutan" id="galeri-urutan" type="number" min="0" class="bg-surface-2 border border-line-strong rounded-xl p-3 text-on-surface font-body-md focus:outline-none focus:ring-1 focus:ring-primary" placeholder="otomatis">
                 </label>
             </div>
 
@@ -261,7 +258,7 @@ $kategori = $kategori ?? Galeri::KATEGORI;
 (function () {
     const base = <?= json_encode($base, JSON_UNESCAPED_SLASHES) ?>;
     const csrf = <?= json_encode($csrf) ?>;
-    let page = 1, search = '', kategori = '', sort = 'newest';
+    let page = 1, search = '', kategori = '', sort = 'urutan';
     let hasNext = false, hasPrev = false, searchTimer = null;
     let deleteIds = [], selected = new Set(), pendingFile = null;
 
@@ -462,12 +459,16 @@ $kategori = $kategori ?? Galeri::KATEGORI;
                 const src = mediaUrl(row.file);
                 const isVideo = (row.tipe || 'foto') === 'video';
                 const checked = selected.has(row.id) ? 'checked' : '';
+                const orderable = sort === 'urutan' && search === '' && kategori === '';
                 return `<div class="group relative bg-surface-container rounded-2xl overflow-hidden border border-line hover:border-primary/50 transition-all shadow-sm hover:shadow-xl hover:-translate-y-1 duration-300" data-id="${esc(row.id)}">
                     <div class="absolute top-3 left-3 z-10">
                         <input type="checkbox" data-check="${esc(row.id)}" ${checked} class="w-5 h-5 rounded border-line-strong bg-surface/80 cursor-pointer accent-primary backdrop-blur-sm"/>
                     </div>
                     <div class="absolute top-3 right-3 z-10 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full border border-line">
                         <span class="font-label-mono text-[10px] text-gold-soft uppercase tracking-wider">${esc(row.kategori_label || row.kategori || '—')}</span>
+                    </div>
+                    <div class="absolute top-14 right-3 z-10 bg-surface/80 backdrop-blur-md px-3 py-1 rounded-full border border-line">
+                        <span class="font-label-mono text-[10px] text-ink uppercase tracking-wider">#${esc(row.urutan ?? '—')}</span>
                     </div>
                     <button type="button" data-preview="${esc(src)}" data-preview-type="${isVideo ? 'video' : 'foto'}" class="w-full aspect-[4/3] bg-surface-2 relative overflow-hidden block text-left cursor-zoom-in" aria-label="Perbesar ${esc(row.judul)}">
                         ${isVideo
@@ -480,9 +481,15 @@ $kategori = $kategori ?? Galeri::KATEGORI;
                             <span class="text-ink font-body-lg line-clamp-1">${esc(row.judul)}</span>
                             <span class="font-label-mono text-[10px] text-ink-dim">Ditambah ${esc(relativeTime(row.created_at))}</span>
                         </div>
-                        <div class="flex items-center justify-end gap-1">
-                            <button type="button" data-edit="${esc(row.id)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-ink" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
-                            <button type="button" data-del="${esc(row.id)}" data-nama="${esc(row.judul)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-danger" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                        <div class="flex items-center justify-between gap-1">
+                            <div class="flex items-center gap-1 ${orderable ? '' : 'hidden'}">
+                                <button type="button" data-up="${esc(row.id)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-primary" title="Naikkan urutan"><span class="material-symbols-outlined text-[18px]">arrow_upward</span></button>
+                                <button type="button" data-down="${esc(row.id)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-primary" title="Turunkan urutan"><span class="material-symbols-outlined text-[18px]">arrow_downward</span></button>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button type="button" data-edit="${esc(row.id)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-ink" title="Edit"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                                <button type="button" data-del="${esc(row.id)}" data-nama="${esc(row.judul)}" class="w-8 h-8 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-ink-dim hover:text-danger" title="Hapus"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -582,6 +589,22 @@ $kategori = $kategori ?? Galeri::KATEGORI;
         const previewBtn = e.target.closest('[data-preview]');
         const editBtn = e.target.closest('[data-edit]');
         const delBtn = e.target.closest('[data-del]');
+        const upBtn = e.target.closest('[data-up]');
+        const downBtn = e.target.closest('[data-down]');
+        if (upBtn || downBtn) {
+            const btn = upBtn || downBtn;
+            const fd = new FormData();
+            fd.append('csrf_token', csrf);
+            fd.append('id', btn.dataset.up || btn.dataset.down);
+            fd.append('direction', upBtn ? 'up' : 'down');
+            try {
+                const res = await fetch(base + '/admin/ajax/reorder-galeri', { method: 'POST', body: fd, credentials: 'same-origin' });
+                const json = await res.json();
+                toast(json.message || (json.success ? 'Urutan diubah.' : 'Gagal.'), !!json.success);
+                if (json.success) loadList();
+            } catch (err) { toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false); }
+            return;
+        }
         if (previewBtn) {
             openPhotoPreview(previewBtn.dataset.preview, previewBtn.dataset.previewType === 'video');
             return;
@@ -605,7 +628,6 @@ $kategori = $kategori ?? Galeri::KATEGORI;
                 document.getElementById('galeri-tipe').value = d.tipe || 'foto';
                 document.getElementById('galeri-deskripsi').value = d.deskripsi || '';
                 document.getElementById('galeri-rasio').value = d.rasio || '100%';
-                document.getElementById('galeri-urutan').value = d.urutan || '';
                 pendingFile = null;
                 clearMediaInput();
                 const previewBox = document.getElementById('galeri-media-preview');
@@ -660,7 +682,6 @@ $kategori = $kategori ?? Galeri::KATEGORI;
         try {
             const fd = new FormData(form);
             if (pendingFile) fd.set('media_file', pendingFile, pendingFile.name);
-            if (!document.getElementById('galeri-urutan').value) fd.delete('urutan');
             const res = await fetch(base + '/admin/ajax/store-galeri', { method: 'POST', body: fd, credentials: 'same-origin' });
             const json = await res.json();
             toast(json.message || (json.success ? 'Tersimpan.' : 'Gagal.'), !!json.success);

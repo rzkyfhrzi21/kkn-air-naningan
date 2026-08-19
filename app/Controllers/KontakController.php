@@ -17,7 +17,15 @@ final class KontakController
 {
     public function index(): void
     {
-        // (1) Tampilkan antarmuka View Kontak publik (formulir pesan + peta + info kontak)
+        // (1) Ambil data peta dari Model Profil (public/data/profil.json)
+        require_once __DIR__ . '/../Models/Profil.php';
+        $profil = Profil::get();
+
+        // (2) Serahkan data peta ke view: embed Google Maps + label lokasi
+        $mapsEmbed    = (string) ($profil['peta']['embed_url'] ?? '');
+        $mapsLocation = (string) ($profil['peta']['lokasi'] ?? '');
+
+        // (3) Tampilkan antarmuka View Kontak publik (formulir pesan + peta + info kontak)
         require __DIR__ . '/../Views/public/kontak/index.php';
     }
 }

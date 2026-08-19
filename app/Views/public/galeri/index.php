@@ -67,9 +67,10 @@ require __DIR__ . '/../partials/header.php';
         <!-- ======================================================
              KOTAK GALERI (SUSUNAN MASONRY)
 
-             Susunan kolom: 1 kolom di HP, 2 di layar sedang,
-             3 di layar lebar (columns-1 md:columns-2
-             lg:columns-3).
+             Susunan kolom: 3 kolom di semua ukuran layar
+             (columns-3), dengan jarak antar media lebih rapat
+             di layar kecil (gap-2.5) dan lebar di layar besar
+             (gap-6).
 
              Perulangan: sistem memeriksa seluruh $items satu
              per satu lalu membuat 1 kartu untuk tiap media.
@@ -88,7 +89,7 @@ require __DIR__ . '/../partials/header.php';
              perbesar (lightbox) saat kartu diklik.
         ====================================================== -->
         <!-- Masonry Grid -->
-        <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6" id="gallery-grid">
+        <div class="columns-3 gap-2.5 md:gap-6 space-y-2.5 md:space-y-6" id="gallery-grid">
 
             <?php if (empty($items)): ?>
             <div class="col-span-full py-12 text-center text-ink-dim w-full flex flex-col items-center justify-center gap-4">

@@ -42,7 +42,7 @@ require_once __DIR__ . '/../../../app/Models/Galeri.php';
 $page     = max(1, (int) ($_POST['page'] ?? 1));
 $search   = trim((string) ($_POST['search'] ?? ''));
 $kategori = trim((string) ($_POST['kategori'] ?? ''));
-$sort     = trim((string) ($_POST['sort'] ?? 'newest'));
+$sort     = trim((string) ($_POST['sort'] ?? 'urutan'));
 $perPage  = 12;
 
 // (3) Ambil semua media dari Model & hitung statistik foto vs video
@@ -64,14 +64,16 @@ if ($kategori !== '' && $kategori !== 'all') {
     $items = array_values(array_filter($items, static fn(array $i): bool => ($i['kategori'] ?? '') === $kategori));
 }
 
-// (5) Urutkan array berdasarkan tanggal/urutan
+// (5) Urutkan array berdasarkan urutan manual / tanggal
 usort($items, static function (array $a, array $b) use ($sort): int {
+    $ua = (int) ($a['urutan'] ?? 0);
+    $ub = (int) ($b['urutan'] ?? 0);
     $ta = strtotime((string) ($a['created_at'] ?? '')) ?: 0;
     $tb = strtotime((string) ($b['created_at'] ?? '')) ?: 0;
-    if ($ta === $tb) {
-        return ((int) ($a['urutan'] ?? 0)) <=> ((int) ($b['urutan'] ?? 0));
+    if ($sort === 'urutan') {
+        return $ua !== $ub ? ($ua <=> $ub) : ($tb <=> $ta);
     }
-    return $sort === 'oldest' ? ($ta <=> $tb) : ($tb <=> $ta);
+    return $ta !== $tb ? ($sort === 'oldest' ? ($ta <=> $tb) : ($tb <=> $ta)) : ($ua <=> $ub);
 });
 
 // (6) Paginasi (potong array 12 media per halaman)

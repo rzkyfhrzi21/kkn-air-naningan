@@ -260,25 +260,25 @@ require __DIR__ . '/../partials/header.php';
 
 </div>
 
-/* ======================================================
-   SKRIP FILTER KATEGORI & PENCARIAN BERITA
+<!-- ======================================================
+     SKRIP FILTER KATEGORI & PENCARIAN BERITA
 
-   Skrip ini menyaring kartu berita langsung di browser,
-   tanpa memuat ulang halaman. Alur kerjanya:
-   (1) Tunggu seluruh HTML selesai dimuat.
-   (2) Siapkan semua "alat": tombol kategori, kotak pencarian,
-       kartu berita, dan kotak pesan "tidak ada hasil".
-   (3) Fungsi filterNews() memeriksa setiap kartu: cocok tidak
-       dengan kategori aktif dan kata kunci pencarian? Data
-       pembanding diambil dari atribut data-category,
-       data-title, dan data-summary yang diisikan PHP.
-   (4) Kartu yang cocok ditampilkan, yang tidak cocok
-       disembunyikan.
-   (5) Jika tidak ada kartu yang cocok, kotak "Tidak ada
-       berita yang sesuai" tampil.
-   (6) Tombol kategori dipasangi pendengar: saat diklik, tombol
-       yang aktif dipertukarkan dan daftar disaring ulang.
-====================================================== */
+     Skrip ini menyaring kartu berita langsung di browser,
+     tanpa memuat ulang halaman. Alur kerjanya:
+     (1) Tunggu seluruh HTML selesai dimuat.
+     (2) Siapkan semua "alat": tombol kategori, kotak pencarian,
+         kartu berita, dan kotak pesan "tidak ada hasil".
+     (3) Fungsi filterNews() memeriksa setiap kartu: cocok tidak
+         dengan kategori aktif dan kata kunci pencarian? Data
+         pembanding diambil dari atribut data-category,
+         data-title, dan data-summary yang diisikan PHP.
+     (4) Kartu yang cocok ditampilkan, yang tidak cocok
+         disembunyikan.
+     (5) Jika tidak ada kartu yang cocok, kotak "Tidak ada
+         berita yang sesuai" tampil.
+     (6) Tombol kategori dipasangi pendengar: saat diklik, tombol
+         yang aktif dipertukarkan dan daftar disaring ulang.
+====================================================== -->
 <script>
 // (1) Tunggu seluruh HTML halaman selesai dimuat dulu
 document.addEventListener('DOMContentLoaded', function() {

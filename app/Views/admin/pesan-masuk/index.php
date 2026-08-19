@@ -87,6 +87,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
                             <button type="button" data-filter="all"    class="filter-btn px-3 py-1.5 rounded-full bg-surface-2 text-ink border border-line-strong font-label-mono text-[11px] whitespace-nowrap">Semua</button>
                             <button type="button" data-filter="unread"  class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Belum Dibaca</button>
                             <button type="button" data-filter="read"    class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Sudah Dibaca</button>
+                            <button type="button" data-filter="archived" class="filter-btn px-3 py-1.5 rounded-full bg-transparent text-ink-dim border border-transparent font-label-mono text-[11px] whitespace-nowrap hover:bg-surface-2 transition-colors">Diarsipkan</button>
                         </div>
                         <div class="flex justify-end">
                             <button type="button" id="btn-reset-filter" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface border border-line text-ink-dim hover:text-ink hover:border-line-strong font-label-mono text-[10px] uppercase tracking-wider transition-colors" title="Reset semua filter">
@@ -136,7 +137,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                <button id="btn-toggle-read" type="button" title="Tandai Belum Dibaca"
+                                <button id="btn-action-pesan" type="button" title="Tandai Sudah Dibaca"
                                         class="p-2 rounded-xl text-ink-dim hover:text-ink hover:bg-surface-container-high transition-colors">
                                     <span class="material-symbols-outlined text-[20px]">mark_email_read</span>
                                 </button>
@@ -281,6 +282,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
                 listEl.innerHTML = json.data.map(item => {
                     const isUnread = !item.is_read;
                     const isActive = item.id === activePesanId;
+                    const isArchived = !!item.is_archived;
                     return `
                     <button type="button"
                         class="pesan-item w-full text-left px-4 py-4 border-b border-line hover:bg-surface-container-high transition-colors ${isActive ? 'bg-surface-container-high border-l-2 border-l-primary' : ''} flex items-start gap-3"
@@ -297,7 +299,7 @@ $base = defined('APP_BASE') ? APP_BASE : '';
                                 ${isUnread ? '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>' : ''}
                                 <span class="text-ink-dim text-xs truncate">${esc((item.pesan || '').substring(0, 60))}…</span>
                             </div>
-                            <span class="inline-block mt-1 text-[9px] font-label-mono px-1.5 py-0.5 rounded-full ${isUnread ? 'bg-amber-400/15 text-amber-400' : 'bg-surface-container text-ink-dim'}">${isUnread ? 'BARU' : 'DIBACA'}</span>
+                            <span class="inline-block mt-1 text-[9px] font-label-mono px-1.5 py-0.5 rounded-full ${isArchived ? 'bg-surface-container text-ink-dim' : (isUnread ? 'bg-amber-400/15 text-amber-400' : 'bg-surface-container text-ink-dim')}">${isArchived ? 'ARSIP' : (isUnread ? 'BARU' : 'DIBACA')}</span>
                         </div>
                     </button>`;
                 }).join('');
@@ -356,7 +358,10 @@ $base = defined('APP_BASE') ? APP_BASE : '';
             document.getElementById('detail-kategori').textContent = katLabel;
 
             const badge = document.getElementById('detail-badge');
-            if (d.is_read) {
+            if (d.is_archived) {
+                badge.textContent  = 'ARSIP';
+                badge.className    = 'text-[10px] font-label-mono px-2 py-0.5 rounded-full bg-surface-container text-ink-dim';
+            } else if (d.is_read) {
                 badge.textContent  = 'DIBACA';
                 badge.className    = 'text-[10px] font-label-mono px-2 py-0.5 rounded-full bg-surface-container text-ink-dim';
             } else {
@@ -364,13 +369,22 @@ $base = defined('APP_BASE') ? APP_BASE : '';
                 badge.className    = 'text-[10px] font-label-mono px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-400';
             }
 
-            // Update toggle button state
-            const toggleBtn = document.getElementById('btn-toggle-read');
-            toggleBtn.dataset.id     = d.id;
-            toggleBtn.dataset.isRead = d.is_read ? '1' : '0';
-            const toggleIcon = toggleBtn.querySelector('span');
-            toggleIcon.textContent = d.is_read ? 'mark_email_unread' : 'mark_email_read';
-            toggleBtn.title        = d.is_read ? 'Tandai Belum Dibaca' : 'Tandai Sudah Dibaca';
+            // Update action button state (kontekstual per tab aktif)
+            const actionBtn = document.getElementById('btn-action-pesan');
+            actionBtn.dataset.id    = d.id;
+            actionBtn.dataset.state = filter === 'archived' ? 'archived' : (d.is_read ? 'read' : 'unread');
+            const actionState = actionBtn.dataset.state;
+            const actionIcon  = actionBtn.querySelector('span');
+            if (actionState === 'unread') {
+                actionIcon.textContent = 'mark_email_read';
+                actionBtn.title        = 'Tandai Sudah Dibaca';
+            } else if (actionState === 'read') {
+                actionIcon.textContent = 'archive';
+                actionBtn.title        = 'Arsip';
+            } else {
+                actionIcon.textContent = 'mark_email_unread';
+                actionBtn.title        = 'Tandai Belum Dibaca';
+            }
 
             // Refresh list to update badge
             loadList();
@@ -380,23 +394,47 @@ $base = defined('APP_BASE') ? APP_BASE : '';
         }
     }
 
-    // ── Toggle Read Status ────────────────────────────────────────────────────
-    document.getElementById('btn-toggle-read')?.addEventListener('click', async function () {
-        const id     = this.dataset.id;
-        const isRead = this.dataset.isRead === '1';
-        if (!id) return;
+    // ── Action: tandai sudah dibaca / arsip / kembalikan ke inbox ───────────
+    document.getElementById('btn-action-pesan')?.addEventListener('click', async function () {
+        const id    = this.dataset.id;
+        const state = this.dataset.state;
+        if (!id || !state) return;
 
         const fd = new FormData();
         fd.append('id', id);
-        fd.append('is_read', isRead ? '0' : '1');
+        fd.append('csrf_token', csrf);
+
+        if (state === 'unread') {
+            // Inbox + belum dibaca → tandai sudah dibaca
+            fd.append('is_read', '1');
+        } else if (state === 'archived') {
+            // Tab arsip → kembalikan ke kotak masuk sebagai belum dibaca
+            fd.append('is_archived', '0');
+            fd.append('is_read', '0');
+        } else {
+            // Inbox + sudah dibaca → arsipkan
+            fd.append('is_archived', '1');
+        }
 
         try {
             const res  = await fetch(base + '/admin/ajax/update-pesan', { method: 'POST', body: fd, credentials: 'same-origin' });
             const json = await res.json();
             if (!json.success) { toast(json.message || 'Gagal memperbarui status.', false); return; }
-            toast(isRead ? 'Pesan ditandai belum dibaca.' : 'Pesan ditandai sudah dibaca.');
-            // Re-open to refresh detail
-            openPesan(id);
+            toast(json.message || 'Pesan berhasil diperbarui.');
+
+            if (state === 'read') {
+                // Diarsipkan dari kotak masuk → pesan pindah ke tab Arsip, tutup detail
+                activePesanId = null;
+                activePesanNama = '';
+                document.getElementById('detail-content').classList.add('hidden');
+                document.getElementById('detail-content').classList.remove('flex');
+                document.getElementById('detail-empty').classList.remove('hidden');
+                page = 1;
+                loadList();
+            } else {
+                // Refresh detail + daftar dengan status terbaru dari server
+                openPesan(id);
+            }
         } catch {
             toast('Gagal terhubung ke server atau terjadi kesalahan internal. Periksa koneksi internet Anda dan coba lagi.', false);
         }

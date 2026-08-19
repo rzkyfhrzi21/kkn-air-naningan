@@ -96,6 +96,7 @@ class Pesan
             'kategori_label' => self::KATEGORI[$kat], // Simpan juga label tampilnya (misal 'Kritik & Saran')
             'pesan'      => trim((string) ($payload['pesan'] ?? '')), // Isi surat dari pengunjung
             'is_read'    => false, // Pesan baru selalu berstatus "belum dibaca" (false)
+            'is_archived' => false, // Pesan baru selalu di kotak masuk, belum diarsipkan
             'created_at' => date('c'), // Waktu pesan masuk
         ];
         $items[] = $item; // (4) Tumpuk pesan baru ke belakang daftar
@@ -110,9 +111,12 @@ class Pesan
             if (($item['id'] ?? '') !== $id) {
                 continue; // Bukan pesan yang dicari, lewati
             }
-            // (3) Satu-satunya hal yang bisa diubah dari pesan adalah tanda "sudah dibaca"
+            // (3) Hal yang bisa diubah dari pesan: tanda "sudah dibaca" dan status arsip
             if (array_key_exists('is_read', $payload)) {
                 $item['is_read'] = (bool) $payload['is_read']; // true = sudah dibaca admin, false = belum
+            }
+            if (array_key_exists('is_archived', $payload)) {
+                $item['is_archived'] = (bool) $payload['is_archived']; // true = diarsipkan, false = di kotak masuk
             }
             self::save($items); // (4) Simpan seluruh daftar ke file JSON
             return $item; // Selesai
