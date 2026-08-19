@@ -270,8 +270,8 @@ if ($struktur === []) {
                                     <span class="material-symbols-outlined text-ink-dim text-[22px]">person</span>
                                 <?php endif; ?>
                             </div>
-                            <label class="cursor-pointer text-[9px] text-primary font-bold uppercase tracking-widest hover:underline">
-                                Ganti
+                            <label class="cursor-pointer text-[9px] text-primary font-bold uppercase tracking-widest hover:underline<?= $fotoLama !== '' ? ' detail-foto-btn' : '' ?>">
+                                <?= $fotoLama !== '' ? 'Detail' : 'Pilih Foto' ?>
                                 <input type="file" name="struktur_foto_file[]" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden struktur-foto-input">
                             </label>
                             <!-- Path foto lama, dikosongkan jika ada file baru -->
@@ -737,6 +737,17 @@ if ($struktur === []) {
     }
 
     document.getElementById('struktur-list')?.addEventListener('click', (e) => {
+        const detailBtn = e.target.closest('.detail-foto-btn');
+        if (detailBtn) {
+            e.preventDefault();
+            const row = detailBtn.closest('.struktur-row');
+            const img = row?.querySelector('.struktur-foto-preview img');
+            if (img && img.getAttribute('src')) {
+                activeAvatarRow = row;
+                openAvatarPreview(img.getAttribute('src'));
+            }
+            return;
+        }
         const preview = e.target.closest('.struktur-foto-preview');
         if (!preview) return;
         const img = preview.querySelector('img');
