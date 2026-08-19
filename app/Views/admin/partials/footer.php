@@ -75,14 +75,21 @@
     const isDesktopView  = () => window.matchMedia('(min-width: 1024px)').matches;
     const SIDEBAR_KEY    = 'admin-sidebar-collapsed';
 
-    if (isDesktopView() && localStorage.getItem(SIDEBAR_KEY) === '1') {
+    let sidebarStored = null;
+    try {
+        sidebarStored = localStorage.getItem(SIDEBAR_KEY);
+    } catch (e) { /* storage diblokir browser — abaikan */ }
+
+    if (isDesktopView() && sidebarStored === '1') {
         document.body.classList.add('sidebar-collapsed');
     }
 
     sidebarToggle?.addEventListener('click', () => {
         if (isDesktopView()) {
             document.body.classList.toggle('sidebar-collapsed');
-            localStorage.setItem(SIDEBAR_KEY, document.body.classList.contains('sidebar-collapsed') ? '1' : '0');
+            try {
+                localStorage.setItem(SIDEBAR_KEY, document.body.classList.contains('sidebar-collapsed') ? '1' : '0');
+            } catch (e) { /* storage diblokir browser — abaikan */ }
         } else {
             document.body.classList.toggle('sidebar-open');
         }

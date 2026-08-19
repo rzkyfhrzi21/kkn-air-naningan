@@ -161,7 +161,9 @@ $navItems = [
 <body class="bg-bg text-ink font-body-md">
     <!-- §8.2 Anti-FOUC: terapkan state sidebar sebelum layout dirender -->
     <script>
-        document.body.classList.toggle('sidebar-collapsed', localStorage.getItem('admin-sidebar-collapsed') === '1');
+        try {
+            document.body.classList.toggle('sidebar-collapsed', localStorage.getItem('admin-sidebar-collapsed') === '1');
+        } catch (e) { /* storage diblokir browser — sidebar tetap default */ }
     </script>
 
     <!-- Anti-FOUC overlay: menutupi paint awal agar Tailwind CDN sempat generate CSS
