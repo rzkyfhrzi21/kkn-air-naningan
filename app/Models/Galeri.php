@@ -200,7 +200,14 @@ class Galeri
         if (count($new) === count($items)) {
             return false; // (3) Jumlah tidak berubah → id tidak ketemu, gagal hapus
         }
-        self::save($new); // (4) Simpan daftar tanpa item tersebut
+        // (4) Sinkronkan urutan: urutkan lalu rapikan nomor 1..n supaya tidak ada
+        //     celah (mis. hapus urutan 1 → item berikutnya jadi 1, bukan tetap 2)
+        usort($new, static fn($a, $b) => ((int) ($a['urutan'] ?? 0)) <=> ((int) ($b['urutan'] ?? 0)));
+        foreach ($new as $i => &$item) {
+            $item['urutan'] = $i + 1;
+        }
+        unset($item);
+        self::save($new); // (5) Simpan daftar tanpa item tersebut, urutan sudah rapi
         return true; // Berhasil
     }
 

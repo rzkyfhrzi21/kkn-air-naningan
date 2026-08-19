@@ -19,6 +19,27 @@ require_once PROJECT_ROOT . '/app/Models/Galeri.php';
 ensureServer();
 protectDataFiles();
 
+// File fisik media galeri ikut di-snapshot: tes hapus akan meng-unlink file
+// uploads/galeri/* — backup ini memastikan media production tidak hilang permanen.
+$galeriDir = PROJECT_ROOT . '/public/uploads/galeri';
+$fileBak   = [];
+foreach (glob($galeriDir . '/*') ?: [] as $f) {
+    if (is_file($f)) {
+        $tmp = tempnam(sys_get_temp_dir(), 'gal') ?: '';
+        if ($tmp !== '' && copy($f, $tmp)) {
+            $fileBak[$f] = $tmp;
+        }
+    }
+}
+register_shutdown_function(static function () use ($fileBak): void {
+    foreach ($fileBak as $path => $tmp) {
+        if (is_file($tmp)) {
+            @copy($tmp, $path);
+            @unlink($tmp);
+        }
+    }
+});
+
 $jar  = adminSessionCookie();
 $csrf = TEST_CSRF;
 
@@ -142,6 +163,49 @@ runTest('store-galeri: judul kosong ditolak dengan pesan detail', static functio
     $json = json_decode($resp['body'], true);
     assertTrue(($json['success'] ?? false) === false, 'Judul kosong harus gagal.');
     assertContains('wajib diisi', (string) ($json['message'] ?? ''), 'Pesan harus menyebut wajib diisi.');
+});
+
+runTest('delete-galeri: hapus urutan 1 → urutan tersisa di-renumber 1..n tanpa celah', static function () use ($jar, $csrf): void {
+    $before = Galeri::all();
+    assertTrue(count($before) >= 3, 'Butuh minimal 3 item galeri untuk tes renumber.');
+    $target = $before[0];
+    assertSame('1', (string) $target['urutan'], 'Asumsi tes: item pertama berurutan 1.');
+
+    $resp = httpRequest('POST', '/admin/ajax/delete-galeri.php', [
+        'csrf_token' => $csrf,
+        'id'         => $target['id'],
+    ], $jar);
+    assertStatus(200, $resp);
+    $json = json_decode($resp['body'], true);
+    assertTrue(($json['success'] ?? false) === true, 'Hapus harus sukses — pesan: ' . ($json['message'] ?? ''));
+
+    $after = Galeri::all();
+    assertSame(count($before) - 1, count($after), 'Jumlah item berkurang satu.');
+    foreach ($after as $i => $item) {
+        $expected = (string) ($i + 1);
+        assertSame($expected, (string) ($item['urutan'] ?? ''), 'Urutan harus berurutan 1..n tanpa celah — item ' . $i . ' = ' . ($item['urutan'] ?? '?') . ' (harusnya ' . $expected . ').');
+    }
+});
+
+runTest('delete-galeri: hapus massal → urutan tetap berurutan 1..n', static function () use ($jar, $csrf): void {
+    $before = Galeri::all();
+    assertTrue(count($before) >= 4, 'Butuh minimal 4 item galeri untuk tes hapus massal.');
+    $ids = [$before[1]['id'], $before[2]['id']]; // hapus urutan 2 & 3
+
+    $resp = httpRequest('POST', '/admin/ajax/delete-galeri.php', [
+        'csrf_token' => $csrf,
+        'ids'        => $ids,
+    ], $jar);
+    assertStatus(200, $resp);
+    $json = json_decode($resp['body'], true);
+    assertTrue(($json['success'] ?? false) === true, 'Hapus massal harus sukses — pesan: ' . ($json['message'] ?? ''));
+
+    $after = Galeri::all();
+    assertSame(count($before) - 2, count($after), 'Jumlah item berkurang dua.');
+    foreach ($after as $i => $item) {
+        $expected = (string) ($i + 1);
+        assertSame($expected, (string) ($item['urutan'] ?? ''), 'Urutan harus berurutan 1..n tanpa celah — item ' . $i . ' = ' . ($item['urutan'] ?? '?') . ' (harusnya ' . $expected . ').');
+    }
 });
 
 finishTests();
