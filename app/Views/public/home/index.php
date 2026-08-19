@@ -10,8 +10,7 @@
    - $homepage['tagline']      : Tagline / deskripsi singkat pekon
    - $homepage['history']      : Sejarah singkat pekon (paragraf & quote)
    - $homepage['hamlets']      : Daftar dusun beserta jumlah warganya
-   - $homepage['livelihoods']  : Data mata pencaharian warga (persentase kopi/aren/dll)
-   - $homepage['featured_umkm']: Produk unggulan UMKM pekon yang ditampilkan di beranda
+- $homepage['livelihoods']  : Data mata pencaharian warga (persentase kopi/aren/dll)
    - $homepage['latest_news']  : Berita desa terbaru yang baru saja diterbitkan
    - $homepage['featured_media']: Galeri foto & video unggulan desa
 ====================================================== */

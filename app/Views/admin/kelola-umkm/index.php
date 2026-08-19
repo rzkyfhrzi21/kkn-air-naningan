@@ -6,8 +6,7 @@
    Dari sini admin bisa:
    - Melihat daftar usaha UMKM warga pekon,
    - Menambahkan produk UMKM baru / mengedit data UMKM lama (nama, kategori, pemilik, no WA, foto, status),
-   - Menghapus data UMKM,
-   - Memilih produk UMKM mana yang ditampilkan di Beranda (is_featured).
+   - Menghapus data UMKM.
 
    Tabel data UMKM diisi secara interaktif oleh JavaScript via AJAX (list-umkm.php).
 ====================================================== */
@@ -42,7 +41,7 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
     <div class="flex-1 px-container-pad-mobile lg:px-container-pad-desktop pt-10 pb-section-v-desktop">
         <div class="flex flex-col gap-6">
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
                     <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary text-[22px]">storefront</span></div>
                     <div><div class="font-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Total UMKM</div><div class="font-h2 text-h2 text-ink leading-none" id="stat-total">—</div></div>
@@ -54,10 +53,6 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                 <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
                     <div class="w-12 h-12 rounded-xl bg-surface-container border border-line flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-ink-dim text-[22px]">cancel</span></div>
                     <div><div class="font-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Nonaktif</div><div class="font-h2 text-h2 text-ink-dim leading-none" id="stat-nonaktif">—</div></div>
-                </div>
-                <div class="bg-surface-2 rounded-2xl p-5 border border-line flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-xl bg-tertiary-fixed-dim/10 border border-tertiary-fixed-dim/20 flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-tertiary-fixed-dim text-[22px]">stars</span></div>
-                    <div><div class="font-label-mono text-ink-dim uppercase text-[10px] mb-0.5">Tampil di Beranda</div><div class="font-h2 text-h2 text-ink leading-none" id="stat-featured">—</div></div>
                 </div>
             </div>
 
@@ -222,11 +217,6 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                     </button>
                 </div>
             </div>
-            <label class="flex items-center gap-2 cursor-pointer">
-                <input name="is_featured" id="umkm-featured" type="checkbox" value="1" class="rounded border-line-strong text-primary focus:ring-primary">
-                <span class="font-body-md text-sm text-ink">Tampilkan di beranda (featured)</span>
-            </label>
-
             <div class="flex justify-end gap-3 pt-2 border-t border-line mt-2">
                 <button type="button" id="modal-umkm-batal" class="px-5 py-2.5 rounded-full font-label-mono text-[11px] uppercase tracking-wider text-ink bg-surface-2 hover:bg-surface-container-highest">Batal</button>
                 <button type="submit" id="btn-simpan-umkm" class="px-6 py-2.5 rounded-full font-label-mono text-[11px] uppercase tracking-wider bg-primary text-on-primary hover:bg-primary-fixed flex items-center gap-2">
@@ -375,7 +365,6 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
             document.getElementById('stat-total').textContent = json.total;
             document.getElementById('stat-aktif').textContent = json.stat_aktif;
             document.getElementById('stat-nonaktif').textContent = json.stat_nonaktif;
-            document.getElementById('stat-featured').textContent = json.stat_featured;
             updateCharts(json);
             if (!json.data.length) {
                 tbody.innerHTML = '<tr><td colspan="6" class="py-12 text-center text-ink-dim">Belum ada data UMKM.</td></tr>';
@@ -486,7 +475,6 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
                 document.getElementById('umkm-pemilik').value = d.pemilik || '';
                 document.getElementById('umkm-dusun').value = d.dusun || '';
                 document.getElementById('umkm-wa').value = d.no_wa || '';
-                document.getElementById('umkm-featured').checked = !!d.is_featured;
                 // Reset file input — foto lama ditampilkan di preview di bawah
                 const fi = document.getElementById('umkm-foto-file');
                 if (fi) fi.value = '';
@@ -533,10 +521,14 @@ $base     = defined('APP_BASE') ? APP_BASE : '';
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btn-simpan-umkm');
+        const wa = (document.getElementById('umkm-wa').value || '').replace(/\D+/g, '');
+        if (wa !== '' && !/^62\d{9,13}$/.test(wa)) {
+            toast('Format No. WhatsApp tidak valid. Nomor harus diawali 62 dan terdiri dari 11-15 digit.', false);
+            return;
+        }
         btn.disabled = true;
         try {
             const fd = new FormData(form);
-            if (!document.getElementById('umkm-featured').checked) fd.delete('is_featured');
             const res = await fetch(base + '/admin/ajax/store-umkm', { method: 'POST', body: fd, credentials: 'same-origin' });
             const json = await res.json();
             toast(json.message || (json.success ? 'Tersimpan.' : 'Gagal.'), !!json.success);

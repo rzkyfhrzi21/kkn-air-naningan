@@ -97,7 +97,6 @@ class Umkm
             'foto'           => trim((string) ($payload['foto'] ?? '')), // Nama file foto usaha yang di-upload
             'status'         => in_array($payload['status'] ?? '', ['aktif', 'nonaktif'], true) // Status hanya boleh 'aktif'/'nonaktif'
                 ? $payload['status'] : 'aktif', // Kalau aneh, amankan jadi 'aktif'
-            'is_featured'    => !empty($payload['is_featured']), // true = tampil di bagian unggulan (kotak centang di form)
             'created_at'     => date('c'), // Waktu UMKM dibuat
             'updated_at'     => date('c'), // Waktu UMKM diperbarui
         ];
@@ -144,9 +143,6 @@ class Umkm
             if (isset($payload['status'])) {
                 $item['status'] = in_array($payload['status'], ['aktif', 'nonaktif'], true) // Nilai tidak sah → pertahankan status lama
                     ? $payload['status'] : $item['status'];
-            }
-            if (array_key_exists('is_featured', $payload)) {
-                $item['is_featured'] = !empty($payload['is_featured']); // Kotak centang diubah jadi true/false
             }
             $item['updated_at'] = date('c'); // (4) Catat waktu perubahan
             self::save($items); // (5) Simpan seluruh daftar ke file JSON

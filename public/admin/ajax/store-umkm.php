@@ -11,9 +11,9 @@ declare(strict_types=1);
 
    Alur kerjanya:
    (1) Memeriksa login admin & token keamanan CSRF.
-   (2) Validasi nama usaha (wajib) & format nomor WhatsApp (diawali 0 atau 62).
+   (2) Validasi nama usaha (wajib) & format nomor WhatsApp (diawali 62, panjang 11-15 digit).
    (3) Pengolahan upload foto produk/usaha ke `uploads/umkm/` (maks 2MB, format JPG/PNG/GIF/WebP).
-   (4) Menyiapkan array payload (nama, jenis usaha, kategori, deskripsi, pemilik, dusun, no_wa, status, is_featured).
+   (4) Menyiapkan array payload (nama, jenis usaha, kategori, deskripsi, pemilik, dusun, no_wa, status).
    (5) Jika ID kosong: panggil `Umkm::create()` untuk menambah data usaha baru.
        Jika ID ada: panggil `Umkm::update()` untuk memperbarui data usaha lama.
    (6) Mengirimkan balasan JSON berpesan rinci untuk notifikasi toast.
@@ -54,8 +54,8 @@ if ($nama === '') {
 }
 
 $wa = preg_replace('/\D+/', '', (string) ($_POST['no_wa'] ?? '')) ?? '';
-if ($wa !== '' && !str_starts_with($wa, '62') && !str_starts_with($wa, '0')) {
-    echo json_encode(['success' => false, 'message' => 'Nomor WhatsApp harus diawali 62 atau 0.']);
+if ($wa !== '' && !preg_match('/^62\d{9,13}$/', $wa)) {
+    echo json_encode(['success' => false, 'message' => 'Format No. WhatsApp tidak valid. Nomor harus diawali 62 dan terdiri dari 11-15 digit.']);
     exit;
 }
 
@@ -120,7 +120,6 @@ $payload = [
     'no_wa'       => $wa,
     'foto'        => $fotoPath,
     'status'      => trim((string) ($_POST['status'] ?? 'aktif')),
-    'is_featured' => !empty($_POST['is_featured']),
 ];
 
 // (5) Eksekusi simpan baru (create) atau perbarui lama (update)

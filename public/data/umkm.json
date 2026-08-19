@@ -12,7 +12,6 @@
         "no_wa": "6281234567890",
         "foto": "/uploads/konten/umkm-kopi-bubuk.jpg",
         "status": "aktif",
-        "is_featured": true,
         "created_at": "2024-10-08T10:00:00+07:00",
         "updated_at": "2024-10-08T10:00:00+07:00"
     },
@@ -29,7 +28,6 @@
         "no_wa": "6281234567891",
         "foto": "/uploads/konten/umkm-gula-aren.jpg",
         "status": "aktif",
-        "is_featured": false,
         "created_at": "2024-10-08T10:00:00+07:00",
         "updated_at": "2024-10-08T10:00:00+07:00"
     },
@@ -46,7 +44,6 @@
         "no_wa": "6281234567892",
         "foto": "/uploads/konten/umkm-keripik-pisang.jpg",
         "status": "aktif",
-        "is_featured": false,
         "created_at": "2024-10-08T10:00:00+07:00",
         "updated_at": "2024-10-08T10:00:00+07:00"
     },
@@ -63,7 +60,6 @@
         "no_wa": "6281234567893",
         "foto": "/uploads/konten/umkm-anyaman-bambu.jpg",
         "status": "aktif",
-        "is_featured": false,
         "created_at": "2024-10-08T10:00:00+07:00",
         "updated_at": "2024-10-08T10:00:00+07:00"
     }

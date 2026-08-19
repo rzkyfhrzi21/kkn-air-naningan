@@ -298,6 +298,7 @@ function protectDataFiles(): array
     $paths = [
         PROJECT_ROOT . '/public/data/galeri.json',
         PROJECT_ROOT . '/public/data/pesan.json',
+        PROJECT_ROOT . '/public/data/umkm.json',
         PROJECT_ROOT . '/secure/login_attempts.json',
     ];
     $backups = [];
