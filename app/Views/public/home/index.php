@@ -115,7 +115,7 @@ require __DIR__ . '/../partials/header.php';
                     </div>
                     <h3 class="font-h3 text-h3 text-ink mb-4">Agraris &amp; pegunungan</h3>
                     <p class="text-body-md font-body-md text-ink-dim leading-relaxed">
-                        Karakteristik wilayah ini didominasi oleh daerah perbukitan pedesaan dengan sektor agraris yang sangat kuat, di mana sebagian besar warga bermata pencaharian sebagai petani perkebunan, khususnya komoditas kopi robusta.
+                        "Karakteristik wilayah ini didominasi oleh daerah perbukitan pedesaan dengan sektor agraris yang sangat kuat, di mana sebagian besar warga bermata pencaharian sebagai petani perkebunan, khususnya komoditas kopi robusta."
                     </p>
                 </div>
             </div>
